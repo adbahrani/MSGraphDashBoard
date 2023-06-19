@@ -6,16 +6,14 @@ import "./App.css";
 
 import Button from "react-bootstrap/Button";
 import { MainContent } from "./components/MainContent";
+import DashBoard from "./components/DashBoard";
 export default function App() {
   return (
     <PageLayout>
       <center>
         <MainContent />
       </center>
-
-      <Button>
-        
-      </Button>
+      <DashBoard />
     </PageLayout>
   );
 }

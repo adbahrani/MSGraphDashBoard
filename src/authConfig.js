@@ -12,8 +12,11 @@ import { LogLevel } from "@azure/msal-browser";
  */
 export const settings = {
   clientId: "5107c906-38b3-4cef-b630-7fd01f814ed9",
+
   clientSecret: "AaB8Q~dsf1cz-S77NUzfrK5.SKw2GKVTKsd4Vc_z",
-  tenantId: "a6dfed0e-808d-4a2e-ae4f-9adac874f50d"
+  tenantId: "a6dfed0e-808d-4a2e-ae4f-9adac874f50d",
+  secretId: "6fd170a8-5a08-4427-a306-8af59c6c7261",
+  secretValue: "_hh8Q~9m7BST~c_zvzkFSHfOtPayCJDT2wbxqc_O"
 };
 
 export const msalConfig = {

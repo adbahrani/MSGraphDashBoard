@@ -1,4 +1,3 @@
-import { setDefaultResultOrder } from "dns";
 import React, { useEffect } from "react";
 /**
  * Renders information about the user obtained from MS Graph
@@ -25,14 +24,13 @@ export const Users = (props: any) => {
   useEffect(() => {
     console.log("guests", guests);
     console.log("members", members);
-    console.log(setDefaultResultOrder)
   }, [guests, members]);
 
   return (
     <>
       <p>List</p>
       {/* make a list of all user data to show   */}
-      
+
       <p> Number of Guests: {guests.length}</p>
       <p> Number of Members: {members.length}</p>
       {/* <ul>
