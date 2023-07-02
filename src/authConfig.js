@@ -16,18 +16,18 @@ export const settings = {
   clientSecret: "AaB8Q~dsf1cz-S77NUzfrK5.SKw2GKVTKsd4Vc_z",
   tenantId: "a6dfed0e-808d-4a2e-ae4f-9adac874f50d",
   secretId: "6fd170a8-5a08-4427-a306-8af59c6c7261",
-  secretValue: "_hh8Q~9m7BST~c_zvzkFSHfOtPayCJDT2wbxqc_O"
+  secretValue: "_hh8Q~9m7BST~c_zvzkFSHfOtPayCJDT2wbxqc_O",
 };
 
 export const msalConfig = {
   auth: {
     clientId: `${settings.clientId}`,
     authority: `https://login.microsoftonline.com/${settings.tenantId}`,
-    redirectUri: "http://localhost:3000"
+    redirectUri: "http://localhost:3000",
   },
   cache: {
     cacheLocation: "sessionStorage", // This configures where your cache will be stored
-    storeAuthStateInCookie: false // Set this to "true" if you are having issues on IE11 or Edge
+    storeAuthStateInCookie: false, // Set this to "true" if you are having issues on IE11 or Edge
   },
   system: {
     loggerOptions: {
@@ -51,9 +51,9 @@ export const msalConfig = {
         //   default:
         //     return;
         //}
-      }
-    }
-  }
+      },
+    },
+  },
 };
 
 /**
@@ -63,7 +63,7 @@ export const msalConfig = {
  * https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-permissions-and-consent#openid-connect-scopes
  */
 export const loginRequest = {
-  scopes: ["User.Read"]
+  scopes: ["User.Read"],
 };
 
 /**
@@ -74,5 +74,6 @@ export const graphConfig = {
   graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
   application: "https://graph.microsoft.com/v1.0/applications",
   usersEndGuest: `https://graph.microsoft.com/v1.0/users?$filter=usertype eq 'member'`,
-  usersEndMember: `https://graph.microsoft.com/v1.0/users?$filter=usertype eq 'guest'`
+  usersEndMember: `https://graph.microsoft.com/v1.0/users?$filter=usertype eq 'guest'`,
+  users: "https://graph.microsoft.com/v1.0/users",
 };
