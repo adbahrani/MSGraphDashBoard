@@ -4,7 +4,6 @@ import { Pie } from "./shared/Pie";
 import { Stats } from "./shared/Stats";
 import { UsersList } from "./UsersList";
 import { UsersService } from "../services/users";
-import { tmpToken } from "../token";
 
 export const Users = () => {
   const stats = [
@@ -40,8 +39,9 @@ export const Users = () => {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    UsersService.getAll(tmpToken).then(setUsers);
+    UsersService.getAll().then(setUsers);
   }, [])
+  
 
   return (
     <>
