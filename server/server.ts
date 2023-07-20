@@ -1,27 +1,31 @@
-/**
- * TODO: to be moved to a subfolder
- * dependencies to install: axios, express, cors
- * change cors origin: "*" to "frontend.url"
- *  */ 
+import path from "path";
+
 const { default: axios } = require("axios");
 const express = require("express");
 const cors = require("cors");
+var compression = require("compression");
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+
+app.use(compression());
+app.use(express.json());
+app.use(cors({ origin: "*" }));
+
+app.use(express.static("client/build"));
 
 app.get("/token", async (_, res) => {
   const body = {
     client_id: "5107c906-38b3-4cef-b630-7fd01f814ed9",
     client_secret: "OZB8Q~l9fEVvsv06U49Cu5IxHjToqs1M2HodSaoG",
     scope: "https://graph.microsoft.com/.default",
-    grant_type: "client_credentials",
+    grant_type: "client_credentials"
   };
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+  });
 
   const formData = Object.entries(body)
     .reduce((acc, [key, value]) => {
@@ -40,5 +44,5 @@ app.get("/token", async (_, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`server started on port ${PORT}`);
+  console.log(`server started on port http://localhost:${PORT}`);
 });
