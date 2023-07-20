@@ -3,19 +3,17 @@ import path from "path";
 const { default: axios } = require("axios");
 const express = require("express");
 const cors = require("cors");
+var compression = require("compression");
+
+const PORT = process.env.PORT || 5000;
 
 const app = express();
-const PORT = process.env.PORT || 5000;
-app.use(
-  cors({
-    origin: "*"
-  })
-);
+
+app.use(compression());
+app.use(express.json());
+app.use(cors({ origin: "*" }));
 
 app.use(express.static("client/build"));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
 
 app.get("/token", async (_, res) => {
   const body = {
@@ -24,6 +22,10 @@ app.get("/token", async (_, res) => {
     scope: "https://graph.microsoft.com/.default",
     grant_type: "client_credentials"
   };
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../client/build/index.html"));
+  });
 
   const formData = Object.entries(body)
     .reduce((acc, [key, value]) => {
