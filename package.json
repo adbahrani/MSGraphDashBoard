@@ -4,7 +4,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "ts-node server/server.ts",
-    "prod:start": "ts-node server.ts",
+    "prod:start": "ts-node server/server.ts",
     "watch-local": "concurrently \"cd client && nodemon server.ts\" \"cd client && npm start\"",
     "watch-dev": "concurrently \"nodemon server/server.ts\" \"cd client && npm start\"",
     "watch-be": "nodemon server/server.ts",
