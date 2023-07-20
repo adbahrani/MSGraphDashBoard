@@ -43,6 +43,11 @@ app.get("/token", async (_, res) => {
   res.send(data.access_token);
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, function () {
   console.log(`server started on port http://localhost:${PORT}`);
+  console.log(
+    "Express server listening on port %d in %s mode",
+    this.address().port,
+    app.settings.env
+  );
 });
