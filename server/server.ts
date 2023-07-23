@@ -7,7 +7,6 @@ var compression = require('compression')
 require('dotenv').config()
 
 const PORT = process.env.PORT || 5000
-console.log(process.env)
 
 const app = express()
 
