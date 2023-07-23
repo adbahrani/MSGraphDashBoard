@@ -120,3 +120,6 @@ dist
 
 # production
 /dist
+
+# idea
+.idea

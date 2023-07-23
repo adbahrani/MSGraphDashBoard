@@ -1,39 +1,38 @@
 {
-  "name": "msgraphdashboard",
-  "version": "1.0.0",
-  "main": "server/server.js",
-  "type": "module",
-  "scripts": {
-    "start": "ts-node server/server.ts",
-    "prod": "ts-node server/server.ts",
-    "watch-local": "concurrently \"cd client && nodemon server.ts\" \"cd client && npm start\"",
-    "watch-dev": "concurrently \"nodemon server/server.ts\" \"cd client && npm start\"",
-    "watch-be": "nodemon server/server.ts",
-    "install": "concurrently \"cd server && npm i \" \"cd client && npm i\"",
-    "build": "cd client && npm run build",
-    "prepare": "husky install"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/adbahrani/MSGraphDashBoard.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/adbahrani/MSGraphDashBoard/issues"
-  },
-  "devDependencies": {
-    "concurrently": "^8.2.0",
-    "eslint": "^8.45.0",
-    "heroku": "^8.1.9",
-    "husky": "^8.0.3",
-    "nodemon": "^3.0.1"
-  },
-  "description": "",
-  "dependencies": {
-    "dotenv": "^16.3.1",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
-  }
+    "name": "msgraphdashboard",
+    "version": "1.0.0",
+    "main": "server/server.js",
+    "type": "module",
+    "scripts": {
+        "prod": "ts-node server/server.ts",
+        "start": "concurrently \"nodemon server/server.ts\" \"cd client && npm start\"",
+        "watch-be": "nodemon server/server.ts",
+        "watch-fe": "cd client && npm start",
+        "install": "concurrently \"cd server && npm i \" \"cd client && npm i\"",
+        "build": "cd client && npm run build",
+        "prepare": "husky install"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/adbahrani/MSGraphDashBoard.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/adbahrani/MSGraphDashBoard/issues"
+    },
+    "devDependencies": {
+        "concurrently": "^8.2.0",
+        "eslint": "^8.45.0",
+        "heroku": "^8.1.9",
+        "husky": "^8.0.3",
+        "nodemon": "^3.0.1"
+    },
+    "description": "",
+    "dependencies": {
+        "dotenv": "^16.3.1",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.1.6"
+    }
 }
