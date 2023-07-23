@@ -10,7 +10,8 @@
     "watch-dev": "concurrently \"nodemon server/server.ts\" \"cd client && npm start\"",
     "watch-be": "nodemon server/server.ts",
     "install": "concurrently \"cd server && npm i \" \"cd client && npm i\"",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -24,11 +25,14 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.0",
+    "eslint": "^8.45.0",
     "heroku": "^8.1.9",
+    "husky": "^8.0.3",
     "nodemon": "^3.0.1"
   },
   "description": "",
   "dependencies": {
+    "dotenv": "^16.3.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
