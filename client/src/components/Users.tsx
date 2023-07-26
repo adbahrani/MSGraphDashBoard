@@ -1,111 +1,41 @@
 import { useEffect, useState } from 'react'
-import { Block } from './shared/Block'
-import { Pie } from './shared/Pie'
 import { Stats } from './shared/Stats'
 import { UsersList } from './UsersList'
-import { UsersService } from '../services/users'
+import { User, UsersService } from '../services/users'
+import { UsersPie } from './UsersPie'
 
-//TODO: use real data, add types
 export const Users = () => {
-    const stats = [
-        { label: 'Users', value: 35 },
-        { label: 'Internal', value: 32 },
-        { label: 'Guests', value: 3 },
-        { label: 'Licensed', value: 21 },
-        { label: 'Deactivated', value: 0 },
-        { label: 'Deleted', value: 20 },
-    ]
-    const usersPerType = {
-        data: [
-            { label: 'Guest', value: 22 },
-            { label: 'Member', value: 124 },
-        ],
-        fills: ['#8bd4eb', '#808080'],
-    }
-    const usersPerDepartment = {
-        data: [
-            { label: 'Sales', value: 22 },
-            { label: 'Retail', value: 25 },
-            { label: 'R&D', value: 30 },
-            { label: 'Operations', value: 20 },
-            { label: 'Manufacturing', value: 23 },
-            { label: 'IT', value: 5 },
-            { label: 'HR', value: 4 },
-            { label: 'Finance', value: 4 },
-            { label: 'Exec', value: 2 },
-            { label: '(Blank)', value: 6 },
-        ],
-        fills: [
-            '#fb8281',
-            '#5f6b6d',
-            '#4bc5bc',
-            '#dfbfbf',
-            '#3699b8',
-            '#8bd4eb',
-            '#5f6b6d',
-            '#5f6b6d',
-            '#fd625e',
-            '#374649',
-        ],
-    }
-    const [users, setUsers] = useState([])
+  const [users, setUsers] = useState<Array<User>>([]);
+  const [deletedUsersCount, setDeletedUsersCount] = useState(0);
 
-    useEffect(() => {
-        UsersService.getAll().then(setUsers)
-    }, [])
+  useEffect(() => {
+    UsersService.getAll().then(users => {
+        setUsers(users);
+    });
+    UsersService.getDeletedUsersCount().then(setDeletedUsersCount)
+  }, []);
 
-    return (
-        <>
-            <Stats stats={stats} />
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: '60% 40%',
-                    height: '40vh',
-                }}
-            >
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '50% 50%',
-                        height: '40vh',
-                    }}
-                >
-                    <div>
-                        <Block title="Users per Type">
-                            <Pie
-                                data={usersPerType.data}
-                                fills={usersPerType.fills}
-                            />
-                        </Block>
-                    </div>
-                    <div>
-                        <Block title="Users per Department">
-                            <Pie
-                                data={usersPerDepartment.data}
-                                fills={usersPerDepartment.fills}
-                            />
-                        </Block>
-                    </div>
-                    <div>
-                        <Block title="Users per Type">
-                            <Pie
-                                data={usersPerType.data}
-                                fills={usersPerType.fills}
-                            />
-                        </Block>
-                    </div>
-                    <div>
-                        <Block title="Users per Department">
-                            <Pie
-                                data={usersPerDepartment.data}
-                                fills={usersPerDepartment.fills}
-                            />
-                        </Block>
-                    </div>
-                </div>
-                <UsersList users={users} />
-            </div>
-        </>
-    )
-}
+
+  return (
+    <>
+      <Stats users={users} deletedUsersCount={deletedUsersCount} />
+      <div style={{display: 'grid', gridTemplateColumns: '60% 40%', height: '40vh'}}>
+        <div style={{display: 'grid', gridTemplateColumns: '50% 50%', height: '40vh'}}>
+          <div>
+              <UsersPie title="Users per Type" users={users} property='userType' fills={['#8bd4eb', '#808080']} />
+          </div>
+          <div>
+              <UsersPie title="Users per Department" users={users} property='department' fills={['#fb8281', '#5f6b6d', '#4bc5bc', '#dfbfbf', '#3699b8', '#8bd4eb', '#5f6b6d', '#5f6b6d', '#fd625e', '#374649']} />
+          </div>
+          <div>
+              <UsersPie title="Users per Usage Location" users={users} property='usageLocation' fills={['#8bd4eb', '#808080']} />
+          </div>
+          <div>
+              <UsersPie title="Users per State" users={users} property='state' fills={['#fb8281', '#5f6b6d', '#4bc5bc', '#dfbfbf', '#3699b8', '#8bd4eb', '#5f6b6d', '#5f6b6d', '#fd625e', '#374649']} />
+          </div>
+        </div>
+        <UsersList users={users}/>
+      </div>
+    </>
+  );
+};
