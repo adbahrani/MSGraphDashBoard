@@ -7,13 +7,10 @@ import {
   GetRowIdFunc,
   GetRowIdParams,
 } from 'ag-grid-community';
+import { User } from '../services/users';
 
 interface UsersListProps  {
-  users: Array<{
-    userPrincipalName: string;
-    jobTitle: string;
-    officeLocation: string;
-  }>;
+  users: Array<User>;
 }
 
 export const UsersList = ({users}: UsersListProps) => {
