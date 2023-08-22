@@ -2,51 +2,80 @@ import { useEffect, useState } from 'react'
 import { Stats } from '../components/shared/Stats'
 import { UsersList } from '../components/UsersList'
 import { User, UsersService } from '../services/users'
-import { UsersPie } from '../components/UsersPie'
+import { PieData } from '../components/shared/PieData'
 import { Menu } from '../components/Menu'
 
 export const Users = () => {
     const [users, setUsers] = useState<Array<User>>([])
-    const [deletedUsersCount, setDeletedUsersCount] = useState(0)
+    const [stats, setStats] = useState({
+        users: 0,
+        internal: 0,
+        guests: 0,
+        licensed: 0,
+        deactivated: 0,
+        deleted: 0,
+    })
 
     useEffect(() => {
         UsersService.getAll().then(users => {
+            const newStats = {
+                users: users.length,
+                internal: 0,
+                guests: 0,
+                licensed: 0,
+                deactivated: 0,
+            }
+
+            for (const user of users) {
+                if (user.userType === 'Member') {
+                    newStats.internal++
+                } else {
+                    newStats.guests++
+                }
+                if (user.assignedLicenses.length > 0) {
+                    newStats.licensed++
+                }
+                if (!user.accountEnabled) {
+                    newStats.deactivated++
+                }
+            }
+            setStats(currStats => ({ ...currStats, ...newStats }))
             setUsers(users)
         })
-        UsersService.getDeletedUsersCount().then(setDeletedUsersCount)
+        UsersService.getDeletedUsersCount().then(deletedUsersCount => {
+            setStats(currStats => ({ ...currStats, deleted: deletedUsersCount }))
+        })
     }, [])
 
     return (
         <>
             <Menu />
             <div style={{ padding: '80px 64px 0' }}>
-                <Stats users={users} deletedUsersCount={deletedUsersCount} />
+                <Stats stats={stats} />
                 <div
                     style={{
                         display: 'grid',
                         gridTemplateColumns: '60% 40%',
-                        height: '40vh',
                     }}
                 >
                     <div
                         style={{
                             display: 'grid',
                             gridTemplateColumns: '50% 50%',
-                            height: '40vh',
                         }}
                     >
                         <div>
-                            <UsersPie
+                            <PieData
                                 title="Users per Type"
-                                users={users}
+                                data={users}
                                 property="userType"
                                 fills={['#8bd4eb', '#808080']}
                             />
                         </div>
                         <div>
-                            <UsersPie
+                            <PieData
                                 title="Users per Department"
-                                users={users}
+                                data={users}
                                 property="department"
                                 fills={[
                                     '#fb8281',
@@ -63,17 +92,17 @@ export const Users = () => {
                             />
                         </div>
                         <div>
-                            <UsersPie
+                            <PieData
                                 title="Users per Usage Location"
-                                users={users}
+                                data={users}
                                 property="usageLocation"
                                 fills={['#8bd4eb', '#808080']}
                             />
                         </div>
                         <div>
-                            <UsersPie
+                            <PieData
                                 title="Users per State"
-                                users={users}
+                                data={users}
                                 property="state"
                                 fills={[
                                     '#fb8281',

@@ -6,6 +6,7 @@ const links = [
     { title: 'About', to: '/#about' },
     { title: 'Services', to: '/#services' },
     { title: 'Users', to: '/users' },
+    { title: 'Groups', to: '/groups' },
     { title: 'Contact', to: '/#contact' },
 ]
 

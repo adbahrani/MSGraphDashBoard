@@ -1,5 +1,5 @@
 import { graphLinks } from '../graphHelper'
-import { TokenService } from './token'
+import { BaseService } from './base'
 
 export interface User {
     id: string
@@ -14,18 +14,7 @@ export interface User {
     state: string
 }
 
-export class UsersService {
-    private static async httpGet(url: string) {
-        const token = await TokenService.getToken()
-        return fetch(url, {
-            method: 'GET',
-            headers: {
-                Authorization: `Bearer ${token}`,
-                ConsistencyLevel: 'eventual',
-            },
-        }).then(response => response.json())
-    }
-
+export class UsersService extends BaseService {
     public static async getAll(): Promise<Array<User>> {
         const fields: Array<keyof User> = [
             'id',
@@ -39,9 +28,7 @@ export class UsersService {
             'accountEnabled',
             'state',
         ]
-        const { value } = await this.httpGet(
-            `${graphLinks.users}?$select=${fields.join(',')}`
-        )
+        const { value } = await this.httpGet(`${graphLinks.users}?$select=${fields.join(',')}`)
 
         return value
     }
@@ -54,9 +41,7 @@ export class UsersService {
          * https://learn.microsoft.com/en-us/previous-versions/azure/ad/graph/api/entity-and-complex-type-reference#user-entity
          * We need to get the count through the directory endpoint
          */
-        const deletedUsers = await this.httpGet(
-            `${graphLinks.deletedUsers}?&$count=true&$top=1`
-        )
+        const deletedUsers = await this.httpGet(`${graphLinks.deletedUsers}?&$count=true&$top=1`)
 
         return deletedUsers['@odata.count']
     }
