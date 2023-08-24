@@ -6,6 +6,7 @@ import { Users } from './views/Users'
 import { Landing } from './views/Landing'
 import { Groups } from './views/Groups'
 import { GroupDetails } from './views/GroupDetails'
+import { Reports } from './views/Reports'
 
 export default function App() {
     return (
@@ -15,6 +16,7 @@ export default function App() {
                 <Route path="/users" element={<Users />} />
                 <Route path="/groups" element={<Groups />} />
                 <Route path="/group" element={<GroupDetails />} />
+                <Route path="/reports" element={<Reports />} />
             </Routes>
         </Router>
     )
