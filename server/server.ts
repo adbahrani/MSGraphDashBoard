@@ -44,11 +44,26 @@ app.get('/token', async (_, res) => {
     res.send(data.access_token)
 })
 
+app.get('/report', async (req, res) => {
+    const { token, reportType, period } = req.query
+
+    const { data } = await axios.get(
+        `https://graph.microsoft.com/v1.0/reports/microsoft.graph.${reportType}(period='D${period}')`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                ConsistencyLevel: 'eventual',
+            },
+            responseType: 'blob',
+        }
+    )
+
+    res.header('Content-Type', 'text/csv')
+    res.attachment(`${reportType}-${period}-days-${new Date().toISOString()}.csv`)
+    res.send(data)
+})
+
 app.listen(PORT, function () {
     console.log(`server started on port http://localhost:${PORT}`)
-    console.log(
-        'Express server listening on port %d in %s mode',
-        this.address().port,
-        app.settings.env
-    )
+    console.log('Express server listening on port %d in %s mode', this.address().port, app.settings.env)
 })
