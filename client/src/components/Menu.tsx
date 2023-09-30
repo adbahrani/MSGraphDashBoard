@@ -7,6 +7,7 @@ const links = [
     { title: 'Services', to: '/#services' },
     { title: 'Users', to: '/users' },
     { title: 'Groups', to: '/groups' },
+    { title: 'Teams', to: '/teams' },
     { title: 'Reports', to: '/reports' },
     { title: 'Contact', to: '/#contact' },
 ]
@@ -32,7 +33,7 @@ export const Menu = () => {
             >
                 <div style={{ fontSize: '22px' }}>
                     <Link to="/" style={linkStyle}>
-                        LOGO
+                        M365 Pulse
                     </Link>
                 </div>
                 <div>
