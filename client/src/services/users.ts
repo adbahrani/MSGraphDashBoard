@@ -14,6 +14,19 @@ export interface User {
     state: string
 }
 
+export interface UserActivity {
+    userPrincipalName: string
+    teamChatMessageCount: number
+    privateChatMessageCount: number
+    urgentMessages: number
+    postMessages: number
+    replyMessages: number
+    callCount: number
+    meetingCount: number
+    meetingsOrganizedCount: number
+    meetingsAttendedCount: number
+}
+
 export class UsersService extends BaseService {
     public static async getAll(): Promise<Array<User>> {
         const fields: Array<keyof User> = [
@@ -44,5 +57,11 @@ export class UsersService extends BaseService {
         const deletedUsers = await this.httpGet(`${graphLinks.deletedUsers}?&$count=true&$top=1`)
 
         return deletedUsers['@odata.count']
+    }
+
+    public static async getActivity(period: 30 | 90): Promise<Array<UserActivity>> {
+        const { value } = await this.httpGet(graphLinks.usersActivity(period))
+
+        return value
     }
 }

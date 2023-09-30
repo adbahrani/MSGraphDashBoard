@@ -7,6 +7,7 @@ import { Landing } from './views/Landing'
 import { Groups } from './views/Groups'
 import { GroupDetails } from './views/GroupDetails'
 import { Reports } from './views/Reports'
+import { Teams } from './views/Teams'
 
 export default function App() {
     return (
@@ -16,6 +17,7 @@ export default function App() {
                 <Route path="/users" element={<Users />} />
                 <Route path="/groups" element={<Groups />} />
                 <Route path="/group" element={<GroupDetails />} />
+                <Route path="/teams" element={<Teams />} />
                 <Route path="/reports" element={<Reports />} />
             </Routes>
         </Router>
