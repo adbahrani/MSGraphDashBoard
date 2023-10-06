@@ -1,18 +1,29 @@
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 const linkStyle = { color: '#343434', textDecoration: 'none' }
+const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
 const links = [
-    { title: 'Home', to: '/' },
-    { title: 'About', to: '/#about' },
-    { title: 'Services', to: '/#services' },
-    { title: 'Users', to: '/users' },
-    { title: 'Groups', to: '/groups' },
-    { title: 'Teams', to: '/teams' },
-    { title: 'Reports', to: '/reports' },
-    { title: 'Contact', to: '/#contact' },
+    { title: 'Home', to: '/', activeSet: new Set(['/']) },
+    { title: 'About', to: '/#about', activeSet: new Set(['/#about']) },
+    { title: 'Services', to: '/#services', activeSet: new Set(['/#services']) },
+    { title: 'Users', to: '/users', activeSet: new Set(['/users']) },
+    { title: 'Groups', to: '/groups', activeSet: new Set(['/groups', '/group']) },
+    { title: 'Teams', to: '/teams', activeSet: new Set(['/teams']) },
+    { title: 'SharePoint', to: '/sharepoint', activeSet: new Set(['/sharepoint']) },
+    { title: 'Reports', to: '/reports', activeSet: new Set(['/reports']) },
+    { title: 'Contact', to: '/#contact', activeSet: new Set(['/#contact']) },
 ]
 
 export const Menu = () => {
+    const location = useLocation()
+    const [activeLink, setActiveLink] = useState('')
+
+    useEffect(() => {
+        const pathHash = `${location.pathname}${location.hash}`
+        setActiveLink(links.find(link => link.activeSet.has(pathHash))?.to || '')
+    }, [location])
+
     return (
         <>
             <div
@@ -47,7 +58,7 @@ export const Menu = () => {
                     >
                         {links.map(link => (
                             <li key={link.title}>
-                                <Link to={link.to} style={linkStyle}>
+                                <Link to={link.to} style={activeLink === link.to ? activeLinkStyle : linkStyle}>
                                     {link.title}
                                 </Link>
                             </li>
