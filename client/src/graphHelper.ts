@@ -14,6 +14,6 @@ export const graphLinks = {
     sitesActivity: (period: 30 | 90) =>
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getSharePointSiteUsageDetail(period='D${period}')?$format=application/json`,
     deletedUsers: 'https://graph.microsoft.com/beta/directory/deletedItems/microsoft.graph.user',
-    token: 'https://ms-dashboard-ccecc603061b.herokuapp.com/token',
-    report: 'https://ms-dashboard-ccecc603061b.herokuapp.com/report',
+    token:  '/token',
+    report:  '/report',
 }
