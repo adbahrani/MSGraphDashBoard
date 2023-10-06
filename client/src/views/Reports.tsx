@@ -14,7 +14,7 @@ const reportTypes: { [type in ReportType]: string } = {
     getTeamsUserActivityCounts: 'User Activity Counts',
 }
 const periodsByReportType: { [type in ReportType]: number[] } = {
-    getTeamsTeamCounts: [30, 60, 90],
+    getTeamsTeamCounts: [30, 90],
     getTeamsTeamActivityCounts: [30],
     getTeamsUserActivityCounts: [30],
 }
