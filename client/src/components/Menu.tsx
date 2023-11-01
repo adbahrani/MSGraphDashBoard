@@ -11,6 +11,7 @@ const links = [
     { title: 'Groups', to: '/groups', activeSet: new Set(['/groups', '/group']) },
     { title: 'Teams', to: '/teams', activeSet: new Set(['/teams']) },
     { title: 'SharePoint', to: '/sharepoint', activeSet: new Set(['/sharepoint']) },
+    { title: 'OneDrive', to: '/onedrive', activeSet: new Set(['/onedrive']) },
     { title: 'Reports', to: '/reports', activeSet: new Set(['/reports']) },
     { title: 'Contact', to: '/#contact', activeSet: new Set(['/#contact']) },
 ]

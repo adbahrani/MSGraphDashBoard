@@ -13,7 +13,11 @@ export const graphLinks = {
     sites: `https://graph.microsoft.com/v1.0/sites/getAllSites`,
     sitesActivity: (period: 30 | 90) =>
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getSharePointSiteUsageDetail(period='D${period}')?$format=application/json`,
+    driveOneActivity: (period: 30 | 90) =>
+        `https://graph.microsoft.com/beta/reports/microsoft.graph.getOneDriveUsageAccountDetail(period='D${period}')?$format=application/json`,
+    driveOneUserActivity: (period: 30 | 90) =>
+        `https://graph.microsoft.com/beta/reports/microsoft.graph.getOneDriveActivityUserDetail(period='D${period}')?$format=application/json`,
     deletedUsers: 'https://graph.microsoft.com/beta/directory/deletedItems/microsoft.graph.user',
-    token:  '/token',
-    report:  '/report',
+    token: '/token',
+    report: '/report',
 }
