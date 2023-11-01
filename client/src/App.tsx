@@ -9,6 +9,7 @@ import { GroupDetails } from './views/GroupDetails'
 import { Reports } from './views/Reports'
 import { Teams } from './views/Teams'
 import { SharePoint } from './views/SharePoint'
+import { OneDrive } from './views/OneDrive'
 
 export default function App() {
     return (
@@ -21,6 +22,7 @@ export default function App() {
                 <Route path="/teams" element={<Teams />} />
                 <Route path="/sharepoint" element={<SharePoint />} />
                 <Route path="/reports" element={<Reports />} />
+                <Route path="/onedrive" element={<OneDrive />} />
             </Routes>
         </Router>
     )
