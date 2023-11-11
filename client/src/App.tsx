@@ -10,10 +10,12 @@ import { Reports } from './views/Reports'
 import { Teams } from './views/Teams'
 import { SharePoint } from './views/SharePoint'
 import { OneDrive } from './views/OneDrive'
+import { Menu } from './components/Menu'
 
 export default function App() {
     return (
         <Router>
+            <Menu />
             <Routes>
                 <Route path="/" element={<Landing />} />
                 <Route path="/users" element={<Users />} />
