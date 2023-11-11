@@ -26,7 +26,6 @@ export const Reports = () => {
 
     return (
         <>
-            <Menu />
             <div style={{ padding: '80px 64px 0' }}>
                 <Stack spacing={2}>
                     {Object.entries(reportTypes).map(([reportType, title]) => (

@@ -175,7 +175,6 @@ export const Teams = () => {
 
     return (
         <>
-            <Menu />
             <div style={{ padding: '80px 64px 0' }}>
                 <Block title="Teams count" onClick={() => setIsDrawerOpen(true)}>
                     <Box component="span" sx={boxStyle}>

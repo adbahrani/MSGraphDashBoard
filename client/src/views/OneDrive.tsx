@@ -111,7 +111,6 @@ export const OneDrive = () => {
 
     return (
         <>
-            <Menu />
             <div style={{ padding: '80px 64px 0' }}>
                 <Block title="Sites count">
                     <Box component="span" sx={boxStyle}>
