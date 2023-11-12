@@ -88,7 +88,7 @@ export const Menu = () => {
                                 </li>
                             ))}
                         <FormControl sx={{ minWidth: 150, maxHeight: 0, marginTop: -0.85 }} size="small">
-                            <InputLabel id="dropdown-link-select- label">Data Analytics</InputLabel>
+                            <InputLabel id="dropdown-link-select- label" style={{color: 'black'}}>Data Analytics</InputLabel>
                             <Select
                                 labelId="dropdown-link-select-label"
                                 id="dropdown-link-select"
