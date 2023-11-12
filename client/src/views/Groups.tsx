@@ -34,7 +34,6 @@ export const Groups = () => {
 
     return (
         <>
-            <Menu />
             <div style={{ padding: '80px 64px 0' }}>
                 <Stats stats={stats} />
                 <div

@@ -29,7 +29,6 @@ export const GroupDetails = () => {
 
     return (
         <>
-            <Menu />
             <div
                 style={{
                     padding: '80px 64px 0',

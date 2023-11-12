@@ -12,7 +12,6 @@ export const Landing = () => {
 
     return (
         <>
-            <Menu />
             <section
                 id="home"
                 style={{
