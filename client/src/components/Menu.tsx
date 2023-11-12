@@ -25,7 +25,7 @@ export const Menu = () => {
     const [activeLink, setActiveLink] = useState('');
     const navigate = useNavigate();
     const [currentPage, setCurrentPage] = useState('');
-    const isLinkAnchor = (linkTo: string) => linkTo === '/' || linkTo.length >= 2 && linkTo.substring(0, 2) === '/#';
+    const isLinkAnchor = (linkTo: string) => linkTo === '/' || linkTo.startsWith('/#');
     
     const handleChange = (event: SelectChangeEvent) => {
         setCurrentPage(event.target.value);
@@ -81,14 +81,17 @@ export const Menu = () => {
                                 </Link>
                             </li>
                         ))}
-                        <FormControl sx={{minWidth: 150, maxHeight: 0, marginTop: -1}} size="small">
-                            <InputLabel id="dropdown-link-select- label" style={{color: 'black'}}>My Data</InputLabel>
+                        <FormControl sx={{minWidth: 150, maxHeight: 0, marginTop: -.85}} size="small">
+                            <InputLabel id="dropdown-link-select- label">Data Analytics</InputLabel>
                             <Select 
                                 labelId="dropdown-link-select-label"
                                 id="dropdown-link-select"
                                 value={currentPage}
                                 label="MyData"
                                 onChange={handleChange}
+                                sx={{boxShadow: 'none', '.MuiOutlinedInput-notchedOutline': { border: 0 }, "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
+                                { border: 0 }, "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                                { border: 0 }}}
                             >
                                 {links.filter(link => !isLinkAnchor(link.to)).map(link => (
                                     <MenuItem value={link.to}>{link.title}</MenuItem>
