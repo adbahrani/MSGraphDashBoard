@@ -16,6 +16,7 @@ export interface User {
 
 export interface UserActivity {
     userPrincipalName: string
+    lastActivityDate: string
     teamChatMessageCount: number
     privateChatMessageCount: number
     urgentMessages: number

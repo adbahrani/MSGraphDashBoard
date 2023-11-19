@@ -8,6 +8,7 @@ export const graphLinks = {
     usersActivity: (period: 30 | 90) =>
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getTeamsUserActivityUserDetail(period='D${period}')?$format=application/json`,
     teams: `https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified') and (resourceProvisioningOptions/Any(x:x eq 'Team'))`,
+    team: (id: string) => `https://graph.microsoft.com/v1.0/teams/${id}`,
     teamsActivity: (period: 30 | 90) =>
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getTeamsTeamActivityDetail(period='D${period}')?$format=application/json`,
     sites: `https://graph.microsoft.com/v1.0/sites/getAllSites`,

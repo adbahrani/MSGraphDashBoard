@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react'
-import { Menu } from '../components/Menu'
 import { Team, TeamActivity, TeamsService } from '../services/teams'
 import { Block } from '../components/shared/Block'
 import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
 import { TeamsList } from '../components/TeamsList'
 import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
 import { UsersService } from '../services/users'
+import { InfluencersList } from '../components/InfluencersList'
 
 export const Teams = () => {
-    const [teams, setTeams] = useState<Array<Team>>([])
-    const [teamsActivity, setTeamsActivity] = useState<Array<TeamActivity>>([])
-    const [activeTeamsCount, setActiveTeamsCount] = useState(0)
+    const [teams, setTeams] = useState<Array<Team & TeamActivity>>([])
+    const [teamsStats, setTeamsStats] = useState({
+        total: 0,
+        active: 0,
+        inactive: 0,
+        orphaned: 0,
+        public: 0,
+        private: 0,
+        calls: 0,
+        meetings: 0,
+        messages: 0,
+        activeMembers: 0,
+        guestEnabled: 0,
+    })
 
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const periods = [
         { label: 'Last 30 days', value: 30 },
         { label: 'Last 90 days', value: 90 },
@@ -102,25 +111,44 @@ export const Teams = () => {
     }
 
     useEffect(() => {
-        TeamsService.getAll().then(setTeams)
-    }, [])
+        const minDate = new Date()
+        minDate.setDate(minDate.getDate() - selectedPeriod)
 
-    useEffect(() => {
-        TeamsService.getActivity(selectedPeriod).then(teamsActivity => {
-            setTeamsActivity(teamsActivity)
-
-            const minDate = new Date()
-            minDate.setDate(minDate.getDate() - selectedPeriod)
-            let activeTeams = 0
-            for (const activity of teamsActivity) {
-                if (new Date(activity.lastActivityDate) >= minDate) {
-                    activeTeams++
-                }
+        TeamsService.getActivity(selectedPeriod).then(teams => {
+            setTeams(teams)
+            const stats = {
+                active: 0,
+                public: 0,
+                guestEnabled: 0,
+                messages: 0,
+                meetings: 0,
+                orphaned: 0,
             }
-            setActiveTeamsCount(activeTeams)
+            for (const activity of teams) {
+                const { guests, postMessages, replyMessages, urgentMessages, channelMessages, meetingsOrganized } =
+                    activity.details[0]
+                stats.active += new Date(activity.lastActivityDate) >= minDate ? 1 : 0
+                stats.public += activity.teamType === 'Public' ? 1 : 0
+                stats.guestEnabled += guests ? 1 : 0
+                stats.messages += postMessages + replyMessages + urgentMessages + channelMessages
+                stats.meetings += meetingsOrganized
+                stats.orphaned += activity.summary.ownersCount === 0 ? 1 : 0
+            }
+            setTeamsStats(currStats => ({
+                ...currStats,
+                total: teams.length,
+                active: stats.active,
+                inactive: teams.length - stats.active,
+                public: stats.public,
+                private: teams.length - stats.public,
+                meetings: stats.meetings,
+                messages: stats.messages,
+                guestEnabled: stats.guestEnabled,
+                orphaned: stats.orphaned,
+            }))
 
             setReactionsData(
-                teamsActivity.map(activity => {
+                teams.map(activity => {
                     const {
                         mentions,
                         postMessages,
@@ -142,6 +170,20 @@ export const Teams = () => {
         })
 
         UsersService.getActivity(selectedPeriod).then(usersActivity => {
+            const stats = {
+                activeMembers: 0,
+                calls: 0,
+            }
+            for (const activity of usersActivity) {
+                stats.activeMembers += new Date(activity.lastActivityDate) >= minDate ? 1 : 0
+                stats.calls += activity.callCount
+            }
+            setTeamsStats(currStats => ({
+                ...currStats,
+                activeMembers: stats.activeMembers,
+                calls: stats.calls,
+            }))
+
             setInfluencersData(
                 usersActivity
                     .map(activity => {
@@ -173,45 +215,63 @@ export const Teams = () => {
         })
     }, [selectedPeriod])
 
+    const Stat = (props: { title: string; property: keyof typeof teamsStats }) => (
+        <Block title={props.title}>
+            <Box component="span" sx={boxStyle}>
+                {teamsStats[props.property]}
+            </Box>
+        </Block>
+    )
+
     return (
-        <>
-            <div style={{ padding: '80px 64px 0' }}>
-                <Block title="Teams count" onClick={() => setIsDrawerOpen(true)}>
-                    <Box component="span" sx={boxStyle}>
-                        {teams.length}
-                    </Box>
-                </Block>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    {periods.map(period => (
-                        <Chip
-                            key={period.value}
-                            label={period.label}
-                            variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
-                            onClick={() => setSelectedPeriod(period.value)}
-                        />
-                    ))}
-                </div>
-                <Box component="div" sx={{ display: 'flex', gap: '8px' }}>
-                    <Block title="Active teams">
-                        <Box component="span" sx={boxStyle}>
-                            {activeTeamsCount} ({Math.round((100 * activeTeamsCount) / teams.length)} %)
-                        </Box>
-                    </Block>
-                    <Block title="Inactive teams">
-                        <Box component="span" sx={boxStyle}>
-                            {teams.length - activeTeamsCount} (
-                            {100 - Math.round((100 * activeTeamsCount) / teams.length)} %)
-                        </Box>
-                    </Block>
-                </Box>
-                <AgChartsReact options={{ ...reactionsOptions, data: reactionsData }} />
-                <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
+        <div style={{ padding: '80px 64px 0' }}>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                {periods.map(period => (
+                    <Chip
+                        key={period.value}
+                        label={period.label}
+                        variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
+                        onClick={() => setSelectedPeriod(period.value)}
+                    />
+                ))}
             </div>
-            <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-                <div style={{ width: '50vw', height: '100vh' }}>
+
+            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr) 0.5fr 0.5fr' }}>
+                <Stat title="Teams count" property="total" />
+                <Stat title="Active Teams" property="active" />
+                <Stat title="Inactive Teams" property="inactive" />
+                <Stat title="Orphaned Teams" property="orphaned" />
+                <Stat title="Public" property="public" />
+                <Stat title="Private" property="private" />
+            </Box>
+
+            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
+                <Stat title="Calls" property="calls" />
+                <Stat title="Meetings" property="meetings" />
+                <Stat title="Messages" property="messages" />
+                <Stat title="Active Member" property="activeMembers" />
+                <Stat title="Guest-Enabled" property="guestEnabled" />
+            </Box>
+
+            <Block title="Teams Activity">
+                <div style={{ height: '30vh' }}>
                     <TeamsList teams={teams} />
                 </div>
-            </Drawer>
-        </>
+            </Block>
+
+            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                <Block title="File collaboration">
+                    <div style={{ height: '280px' }}>Missing data</div>
+                </Block>
+                <Block title="Top influencers">
+                    <div style={{ height: '280px' }}>
+                        <InfluencersList users={influencersData} />
+                    </div>
+                </Block>
+            </Box>
+
+            <AgChartsReact options={{ ...reactionsOptions, data: reactionsData }} />
+            <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
+        </div>
     )
 }
