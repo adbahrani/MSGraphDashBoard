@@ -27,7 +27,7 @@ const links = [
 
 export const Menu = () => {
     const location = useLocation()
-    const [activeLink, setActiveLink] = useState('')
+    const [activeLinks, setActiveLinks] = useState(new Set())
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
     const handleClick = (link: (typeof links)[0], event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -43,11 +43,20 @@ export const Menu = () => {
 
     useEffect(() => {
         const pathHash = `${location.pathname}${location.hash}`
-        setActiveLink(
-            links.find(
-                link => link.activeSet?.has(pathHash) || link.children?.find(child => child.activeSet.has(pathHash))
-            )?.to || ''
-        )
+        const activeLinks = links
+            .map(link => {
+                if (link.activeSet?.has(pathHash)) {
+                    return [link]
+                }
+                const childMatch = link.children?.find(child => child.activeSet.has(pathHash))
+                if (childMatch) {
+                    return [link, childMatch]
+                }
+                return []
+            })
+            .flat()
+        document.title = `M365 Pulse | ${activeLinks.map(link => link.title).join(' - ')}`
+        setActiveLinks(new Set(activeLinks.map(link => link.to)))
     }, [location])
 
     return (
@@ -86,7 +95,7 @@ export const Menu = () => {
                             <li key={link.title}>
                                 <Link
                                     to={link.to}
-                                    style={activeLink === link.to ? activeLinkStyle : linkStyle}
+                                    style={activeLinks.has(link.to) ? activeLinkStyle : linkStyle}
                                     onClick={e => handleClick(link, e)}
                                 >
                                     {link.title}
@@ -102,10 +111,10 @@ export const Menu = () => {
                                         }}
                                     >
                                         {link.children.map(subLink => (
-                                            <MenuItem onClick={handleClose}>
+                                            <MenuItem selected={activeLinks.has(subLink.to)} onClick={handleClose}>
                                                 <Link
                                                     to={subLink.to}
-                                                    style={activeLink === subLink.to ? activeLinkStyle : linkStyle}
+                                                    style={linkStyle}
                                                     onClick={e => handleClick(link, e)}
                                                 >
                                                     {subLink.title}
