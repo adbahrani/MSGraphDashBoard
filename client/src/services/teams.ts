@@ -4,12 +4,21 @@ import { BaseService } from './base'
 export interface Team {
     id: string
     displayName: string
+    description: string
     mail: string
     visibility: string
+    webUrl: string
+    summary: {
+        ownersCount: number
+        membersCount: number
+        guestsCount: number
+    }
 }
 
 export interface TeamActivity {
+    teamId: string
     teamName: string
+    teamType: string
     lastActivityDate: string
     isDeleted: boolean
     details: [
@@ -32,15 +41,16 @@ export interface TeamActivity {
 }
 
 export class TeamsService extends BaseService {
-    public static async getAll(): Promise<Array<Team>> {
-        const { value } = await this.httpGet(graphLinks.teams)
+    public static async getActivity(period: 30 | 90): Promise<Array<TeamActivity & Team>> {
+        const { value: teamsActivity } = await this.httpGet(graphLinks.teamsActivity(period))
+        await Promise.all(
+            teamsActivity.map((activity: TeamActivity) => this.httpGet(graphLinks.team(activity.teamId)))
+        ).then(teamsData =>
+            teamsData.forEach((data: Team, index) => {
+                teamsActivity[index] = { ...teamsActivity[index], ...data }
+            })
+        )
 
-        return value
-    }
-
-    public static async getActivity(period: 30 | 90): Promise<Array<TeamActivity>> {
-        const { value } = await this.httpGet(graphLinks.teamsActivity(period))
-
-        return value
+        return teamsActivity
     }
 }
