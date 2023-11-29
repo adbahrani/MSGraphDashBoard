@@ -8,7 +8,7 @@ interface StatsProps {
 
 export const Stats = ({ stats }: PropsWithChildren<StatsProps>) => {
     return (
-        <Box component="div" sx={{ display: 'flex', gap: '8px' }}>
+        <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', columnGap: '8px' }}>
             {Object.entries(stats).map(([label, value]) => (
                 <Block title={label} key={label}>
                     <Box

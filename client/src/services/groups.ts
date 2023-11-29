@@ -10,7 +10,8 @@ export interface Group {
     securityEnabled: boolean
     groupTypes: Array<string>
     resourceProvisioningOptions: Array<string>
-    visibility: string | null
+    visibility: string | null,
+    createdDateTime: string
 }
 
 export class GroupsService extends BaseService {
@@ -24,6 +25,7 @@ export class GroupsService extends BaseService {
             'groupTypes',
             'resourceProvisioningOptions',
             'visibility',
+            'createdDateTime'
         ]
         const { value } = await this.httpGet(`${graphLinks.groups}?$select=${fields.join(',')}`)
 

@@ -28,7 +28,7 @@ export const GroupsList = ({ groups }: GroupsListProps) => {
     }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ margin: '8px' }}>
+        <div className="ag-theme-alpine" style={{ width: '100%', height: '400px', margin: '8px' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={groups}

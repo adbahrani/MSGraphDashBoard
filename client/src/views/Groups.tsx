@@ -38,10 +38,13 @@ export const Groups = () => {
                 <Stats stats={stats} />
                 <div
                     style={{
-                        display: 'grid',
-                        gridTemplateColumns: '30% 70%',
+                        display: 'flex',
+                        flexDirection: 'column',
                     }}
                 >
+                    
+                    <GroupsList groups={groups} />
+
                     <div
                         style={{
                             display: 'flex',
@@ -65,7 +68,7 @@ export const Groups = () => {
                             />
                         </div>
                     </div>
-                    <GroupsList groups={groups} />
+                    
                 </div>
             </div>
         </>
