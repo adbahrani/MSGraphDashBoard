@@ -11,7 +11,12 @@ export interface Group {
     groupTypes: Array<string>
     resourceProvisioningOptions: Array<string>
     visibility: string | null,
-    createdDateTime: string
+    createdDateTime: string,
+    renewedDateTime: string,
+    deletedDateTime: string | null,
+    expirationDateTime: string | null,
+    owners?: Array<any>,
+    members?: Array<any>
 }
 
 export class GroupsService extends BaseService {
@@ -25,12 +30,27 @@ export class GroupsService extends BaseService {
             'groupTypes',
             'resourceProvisioningOptions',
             'visibility',
-            'createdDateTime'
+            'createdDateTime',
+            'renewedDateTime',
+            'deletedDateTime',
+            'expirationDateTime'
         ]
         const { value } = await this.httpGet(`${graphLinks.groups}?$select=${fields.join(',')}`)
-
         return value
     }
+
+    public static async getAllGroupByOwnersAndMembers(): Promise<Array<Group>> {
+        const allGroups = await this.getAll()
+
+        const allOwners = await Promise.all(allGroups.map(group => this.getOwners(group.id)))
+        const allUsers = await Promise.all(allGroups.map(group => this.getMembers(group.id)))
+        return allGroups.map((group, index) => ({
+            ...group,
+            owners: allOwners.at(index),
+            members: allUsers.at(index)
+        }))
+    }
+    
 
     public static async getMembers(id: string): Promise<Array<User>> {
         const fields: Array<keyof User> = ['userPrincipalName', 'jobTitle', 'officeLocation']

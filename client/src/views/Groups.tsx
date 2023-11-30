@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Stats } from '../components/shared/Stats'
 import { PieData } from '../components/shared/PieData'
 import { Menu } from '../components/Menu'
 import { Group, GroupsService } from '../services/groups'
 import { aggregateGroups } from '../utils/groups'
 import { GroupsList } from '../components/GroupsList'
+import { ColDef } from 'ag-grid-community'
 
 export const Groups = () => {
     const [groups, setGroups] = useState<Array<Group>>([])
     const [stats, setStats] = useState({})
     const [pieData, setPieData] = useState<Array<{ connection: string; visibility: string | null }>>([])
 
-    useEffect(() => {
-        GroupsService.getAll().then(groups => {
+    async function setGroupData() {
+        try {
+            const groups = await GroupsService.getAllGroupByOwnersAndMembers()
             const aggregatedGroups = aggregateGroups(groups)
             setGroups(groups)
             setStats(
@@ -29,8 +31,67 @@ export const Groups = () => {
                     visibility: group.visibility,
                 }))
             )
-        })
+        } catch (e) {
+            console.log('error is', e);
+        }
+    }
+    useEffect(() => {
+        setGroupData()
     }, [])
+
+    const deletedGroups = useMemo(() => {
+        return groups.filter(group => group.deletedDateTime)
+    }, [groups])
+
+    const columnDefGroups: ColDef[] = [{ field: 'displayName' }, { field: 'description' }, {
+        field: 'owners', valueFormatter: params => {
+            return params.value.length
+        },
+        width: 120
+    }, {
+        field: 'members', valueFormatter: params => {
+            return params.value.length
+        },
+        width: 120
+
+    }, {
+        headerName: 'Guest', field: 'members', valueFormatter: params => {
+            return params.value.filter((val: any) => val.userType === 'Guest').length
+        },
+        width: 120
+
+    }, {
+        field: 'visibility',
+        width: 180
+    }, {
+        headerName: 'Team Status',
+        field: 'resourceProvisioningOptions',
+        valueFormatter: params => {
+            return params.value.includes("Team") ? "Team Connected" : ""
+        },
+        width: 180
+    }, {
+        field: 'membershipRule',
+        headerName: 'Membership Rule',
+        width: 180
+    }, {
+        field: 'createdDateTime',
+        width: 220
+    }, {
+        field: 'renewedDateTime',
+        width: 220
+    }]
+
+
+
+    const columnDefDeletedGroups: ColDef[] = [{ field: 'displayName' }, { field: 'description' },{
+        field: 'visibility'
+    }, {
+        field: 'deletedDateTime'
+    },  {
+        field: 'expirationDateTime'
+    }]
+
 
     return (
         <>
@@ -42,8 +103,10 @@ export const Groups = () => {
                         flexDirection: 'column',
                     }}
                 >
-                    
-                    <GroupsList groups={groups} />
+
+                    <GroupsList columnDefs={columnDefGroups} height='400px' width='100%' groups={groups} />
+
+                    <GroupsList columnDefs={columnDefDeletedGroups} height='400px' width='60%' groups={deletedGroups} />
 
                     <div
                         style={{
@@ -68,7 +131,7 @@ export const Groups = () => {
                             />
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
         </>

@@ -8,12 +8,15 @@ import { useNavigate } from 'react-router-dom'
 
 interface GroupsListProps {
     groups: Array<Group>
+    width: string,
+    height: string,
+    columnDefs: ColDef[]
 }
 
-export const GroupsList = ({ groups }: GroupsListProps) => {
+export const GroupsList = ({ groups, height, width, columnDefs}: GroupsListProps) => {
     const navigate = useNavigate()
     const gridRef = useRef<AgGridReact>(null)
-    const columnDefs: ColDef[] = [{ field: 'displayName' }, { field: 'description' }]
+    
 
     const getRowId = useMemo<GetRowIdFunc>(() => {
         return (params: GetRowIdParams) => params.data.id
@@ -28,7 +31,7 @@ export const GroupsList = ({ groups }: GroupsListProps) => {
     }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ width: '100%', height: '400px', margin: '8px' }}>
+        <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={groups}
