@@ -1,9 +1,25 @@
 import { Group } from '../services/groups'
 
 export type GroupAggKey = 'unified' | 'dynamic' | 'distribution' | 'security' | 'mailEnabled' | 'teamConnected' | 'public' | 'private' | 'orphaned' | 'active' | 'others'
+
+export const groupLabelDisplayMap: {
+  [key in GroupAggKey]: string
+} = {
+  unified: 'Unified',
+  dynamic: 'Dynamic',
+  distribution: 'Distribution',
+  security: 'Security',
+  mailEnabled: 'Mail Enabled',
+  teamConnected: 'Team Connected',
+  public: 'Public',
+  private: 'Private',
+  orphaned: 'Orphaned',
+  active: 'Active',
+  others: 'Others'
+}
 export type AggGroups = { [key in GroupAggKey]: Array<Group> }
 
-export function aggregateGroups(groups: Array<Group>) {
+export function aggregateGroups(groups: Array<Group>): AggGroups {
     const aggregatedGroups: { [key in GroupAggKey]: Array<Group> } = {
         unified: [],
         dynamic: [],
@@ -27,46 +43,6 @@ export function aggregateGroups(groups: Array<Group>) {
     return aggregatedGroups
 }
 
-// function getGroupAggregationKey(group: Group): GroupAggKey[] {
-//     const outputKeys: GroupAggKey[] = [];
-//     if (group.groupTypes.includes('Unified')) {
-//         outputKeys.push('unified')
-//     }
-//     if (!group.mailEnabled && group.securityEnabled) {
-//         const key = group.groupTypes.includes('DynamicMembership') ? 'dynamic' : 'security'
-//         outputKeys.push(key)
-//     }
-//     if (group.mailEnabled) {
-//         if (!group.securityEnabled) outputKeys.push('distribution')
-//         outputKeys.push('mailEnabled')
-//     }
-//     if(group.resourceProvisioningOptions.some(option => option === "Team")){
-//         outputKeys.push("teamConnected")
-//     }
-
-//     if(group.visibility === "Public"){
-//         outputKeys.push("public")
-//     }
-
-//     if(group.visibility === "Private"){
-//         outputKeys.push("private")
-//     }
-
-//     if(group.description === null){
-//         outputKeys.push("orphaned")
-//     }
-
-//     // once created in last 30 days are assumed to be active
-//     if(new Date(group.createdDateTime) >= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)){
-//         outputKeys.push('active')
-//     }
-
-//     if(outputKeys.length){
-//         return outputKeys;
-//     }
-//     return ['others']
-// }
-
 function getGroupAggregationKey(group: Group): GroupAggKey[] {
     const keyMap = new Map([
       ["Unified", "unified"],
@@ -88,15 +64,15 @@ function getGroupAggregationKey(group: Group): GroupAggKey[] {
   
     const outputKeys = [
       ...group.groupTypes.filter((type) => keyMap.has(type)).map((type) => keyMap.get(type)),
-      ...(isMailEnabledWithoutSecurity ?  ["distribution"]: []),
-      ...(isMailEnabled ? ["mailEnabled"]: []),
-      ...(hasDynamicMembership ? ['dynamic']: [] ),
-      ...(hasNoDynamicMembership ? ['security']: [] ),
+      ...([isMailEnabledWithoutSecurity && "distribution"]),
+      ...([isMailEnabled && "mailEnabled"]),
+      ...([hasDynamicMembership && 'dynamic']),
+      ...([hasNoDynamicMembership && 'security']),
       ...(group.resourceProvisioningOptions.includes("Team") && ["teamConnected"] || []),
       ...(visibilityMap.has(group.visibility!) && [visibilityMap.get(group.visibility!)] || []),
-      ...(group.owners?.length === 0 && ["orphaned"] || []),
-      ...(new Date(group.createdDateTime) <= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && ["active"] || []),
-    ];
+      ...([group.owners?.length === 0 && "orphaned"]),
+      ...([new Date(group.createdDateTime) <= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && "active"]),
+    ].filter(val => val !== false);
   
     return outputKeys.length ? outputKeys as any[] : ["others"];
   }
