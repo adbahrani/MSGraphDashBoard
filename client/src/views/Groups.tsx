@@ -46,45 +46,54 @@ export const Groups = () => {
         return groups.filter(group => group.deletedDateTime)
     }, [groups])
 
-    const columnDefGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name' }, { field: 'description', headerName: 'Description' }, {
+    const columnDefGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', width: 200, wrapText: true,
+    autoHeight: true}, { field: 'description', headerName: 'Description', flex: 10, wrapText: true, autoHeight: true }, 
+    {
         field: 'owners', valueFormatter: params => {
             return params.value.length
         },
         headerName: 'Owners',
+        flex: 4
     }, {
         field: 'members', valueFormatter: params => {
             return params.value.length
         },
         headerName: 'Members',
+        flex: 4
 
     }, {
         headerName: 'Guest', field: 'members', valueFormatter: params => {
             return params.value.filter((val: any) => val.userType === 'Guest').length
         },
-
+        flex: 3
     }, {
         field: 'visibility',
         headerName: 'Visibility',
+        flex: 4
     }, {
         headerName: 'Team Status',
         field: 'resourceProvisioningOptions',
         valueFormatter: params => {
             return params.value.includes("Team") ? "Team Connected" : ""
         },
+        flex: 6
     }, {
         field: 'membershipRule',
         headerName: 'Membership Rule',
+        flex: 6
     }, {
         field: 'createdDateTime',
         headerName: 'Created At',
+        flex: 8
     }, {
         field: 'renewedDateTime',
         headerName: 'Last Activity',
+        flex: 8
     }]
 
 
 
-    const columnDefDeletedGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name' }, { field: 'description', headerName: 'Description' }, {
+    const columnDefDeletedGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', wrapText: true, autoHeight: true }, { field: 'description', headerName: 'Description', wrapText: true, autoHeight: true }, {
         field: 'visibility',
         headerName: 'Visibility'
     }, {
