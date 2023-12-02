@@ -120,15 +120,17 @@ export const Groups = () => {
 
                     <GroupsList columnDefs={columnDefGroups} height='25rem' width='100%' groups={groups} isLoading={isLoadingGroups} />
 
-                    <GroupsList columnDefs={columnDefDeletedGroups} height='25rem' width='60%' groups={deletedGroups} isLoading={isLoadingGroups} />
+                    
 
                     <div
                         style={{
                             display: 'flex',
-                            flexDirection: 'column',
                         }}
                     >
-                        <div>
+                        <GroupsList columnDefs={columnDefDeletedGroups} height='25rem' width='60vw' groups={deletedGroups} isLoading={isLoadingGroups} />
+                        <div style={{
+                            width: '20vw'
+                        }}>
                             <PieData
                                 title="Groups per Connection"
                                 data={pieData}
@@ -136,7 +138,9 @@ export const Groups = () => {
                                 fills={['#8bd4eb', '#808080']}
                             />
                         </div>
-                        <div>
+                        <div style={{
+                            width: '20vw'
+                        }}>
                             <PieData
                                 title="Groups per Visibility"
                                 data={pieData}
