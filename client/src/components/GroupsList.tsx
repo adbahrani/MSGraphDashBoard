@@ -42,7 +42,6 @@ export const GroupsList = ({ groups, height, width, columnDefs, isLoading = fals
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
                 onRowClicked={onRowClicked}
-                defaultColDef={{resizable: true, wrapText: false}}
                 
             ></AgGridReact>}
         </div>

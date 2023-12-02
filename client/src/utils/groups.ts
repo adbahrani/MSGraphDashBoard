@@ -64,14 +64,14 @@ function getGroupAggregationKey(group: Group): GroupAggKey[] {
   
     const outputKeys = [
       ...group.groupTypes.filter((type) => keyMap.has(type)).map((type) => keyMap.get(type)),
-      ...([isMailEnabledWithoutSecurity && "distribution"]),
-      ...([isMailEnabled && "mailEnabled"]),
-      ...([hasDynamicMembership && 'dynamic']),
-      ...([hasNoDynamicMembership && 'security']),
-      ...(group.resourceProvisioningOptions.includes("Team") && ["teamConnected"] || []),
-      ...(visibilityMap.has(group.visibility!) && [visibilityMap.get(group.visibility!)] || []),
-      ...([group.owners?.length === 0 && "orphaned"]),
-      ...([new Date(group.createdDateTime) <= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && "active"]),
+      isMailEnabledWithoutSecurity && "distribution",
+      isMailEnabled && "mailEnabled",
+      hasDynamicMembership && 'dynamic',
+      hasNoDynamicMembership && 'security',
+      group.resourceProvisioningOptions.includes("Team") && "teamConnected",
+      visibilityMap.has(group.visibility!) && visibilityMap.get(group.visibility!),
+      group.owners?.length === 0 && "orphaned",
+      new Date(group.createdDateTime) <= new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) && "active",
     ].filter(val => val !== false);
   
     return outputKeys.length ? outputKeys as any[] : ["others"];
