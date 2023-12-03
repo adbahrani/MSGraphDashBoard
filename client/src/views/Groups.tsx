@@ -9,7 +9,9 @@ import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 
 export const Groups = () => {
     const [isLoadingGroups, setIsLoadingGroups] = useState(true)
+    const [isLoadingDeletedGroups, setIsLoadingDeletedGroups] = useState(true)
     const [groups, setGroups] = useState<Array<Group>>([])
+    const [deletedGroups, setDeletedGroups] = useState<Array<Group>>([])
     const [stats, setStats] = useState({})
     const [pieData, setPieData] = useState<Array<{ connection: string; visibility: string | null }>>([])
 
@@ -35,19 +37,26 @@ export const Groups = () => {
                 }))
             )
         } catch (e) {
-            console.log('error is', e);
+            console.log('error while loading groups data is', e);
+        }
+    }
+
+    async function setDeletedGroupData() {
+        try {
+            setDeletedGroups(await GroupsService.getAllDeletedGroups())
+            setIsLoadingDeletedGroups(false)
+        } catch (e) {
+            console.log('error while loading deleting groups is', e);
         }
     }
     useEffect(() => {
         setGroupData()
+        setDeletedGroupData()
     }, [])
 
-    const deletedGroups = useMemo(() => {
-        return groups.filter(group => group.deletedDateTime)
-    }, [groups])
+    
 
-    const columnDefGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', width: 200, wrapText: true,
-    autoHeight: true}, { field: 'description', headerName: 'Description', flex: 10, wrapText: true, autoHeight: true }, 
+    const columnDefGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', width: 200}, { field: 'description', headerName: 'Description', flex: 12 }, 
     {
         field: 'owners', valueFormatter: params => {
             return params.value.length
@@ -93,15 +102,18 @@ export const Groups = () => {
 
 
 
-    const columnDefDeletedGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', wrapText: true, autoHeight: true }, { field: 'description', headerName: 'Description', wrapText: true, autoHeight: true }, {
+    const columnDefDeletedGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', width: 180}, { field: 'description', headerName: 'Description', flex: 10 }, {
         field: 'visibility',
-        headerName: 'Visibility'
+        headerName: 'Visibility',
+        flex: 4
     }, {
         field: 'deletedDateTime',
-        headerName: 'Deleted At'
+        headerName: 'Deleted At',
+        flex: 6
     }, {
         field: 'expirationDateTime',
-        headerName: 'Expiration Time'
+        headerName: 'Expiration Time',
+        flex: 6
     }]
 
 
@@ -127,7 +139,7 @@ export const Groups = () => {
                             display: 'flex',
                         }}
                     >
-                        <GroupsList columnDefs={columnDefDeletedGroups} height='25rem' width='60vw' groups={deletedGroups} isLoading={isLoadingGroups} />
+                        <GroupsList columnDefs={columnDefDeletedGroups} height='25rem' width='60vw' groups={deletedGroups} isLoading={isLoadingDeletedGroups} />
                         <div style={{
                             width: '20vw'
                         }}>

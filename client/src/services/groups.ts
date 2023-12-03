@@ -39,6 +39,19 @@ export class GroupsService extends BaseService {
         return value
     }
 
+    public static async getAllDeletedGroups(): Promise<Array<Group>> {
+        const fields: Array<keyof Group> = [
+            'id',
+            'displayName',
+            'description',
+            'visibility',
+            'deletedDateTime',
+            'expirationDateTime'
+        ]
+        const { value } = await this.httpGet(`${graphLinks.deletedGroups}?$select=${fields.join(',')}`)
+        return value
+    }
+
     public static async getAllGroupByOwnersAndMembers(): Promise<Array<Group>> {
         const allGroups = await this.getAll()
 
