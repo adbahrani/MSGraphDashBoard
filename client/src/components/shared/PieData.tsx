@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Block } from './Block'
 import { Pie } from './Pie'
 import { countByProperty } from '../../utils/aggregate'
+import { SxProps, Theme } from '@mui/material'
 
 interface PieDataProps<T extends object> {
     title: string
@@ -9,8 +10,9 @@ interface PieDataProps<T extends object> {
     property: string
     fills?: string[],
     height?: number,
+    additionalBlockStyles?: SxProps<Theme>
 }
-export function PieData<T extends object>({ title, property, data, fills, height }: PieDataProps<T>) {
+export function PieData<T extends object>({ title, property, data, fills, height, additionalBlockStyles }: PieDataProps<T>) {
     const [dataPerProperty, setDataPerProperty] = useState<Array<{ label: string; value: number }>>([])
 
     useEffect(() => {
@@ -20,7 +22,7 @@ export function PieData<T extends object>({ title, property, data, fills, height
     }, [data, property])
 
     return (
-        <Block title={title}>
+        <Block additionalStyles={additionalBlockStyles} title={title}>
             <Pie height={height} data={dataPerProperty} fills={fills} />
         </Block>
     )

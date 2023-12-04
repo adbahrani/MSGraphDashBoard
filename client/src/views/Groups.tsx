@@ -160,6 +160,10 @@ export const Groups = () => {
                             height: '25rem'
                         }}>
                             <PieData
+                                additionalBlockStyles={{
+                                    height: '100%',
+                                    boxSizing: 'border-box'
+                                }}
                                 height={300}
                                 title="Groups per Connection"
                                 data={pieData}
@@ -173,6 +177,10 @@ export const Groups = () => {
                         }}>
                             <PieData
                                 height={300}
+                                additionalBlockStyles={{
+                                    height: '100%',
+                                    boxSizing: 'border-box'
+                                }}
                                 title="Groups per Visibility"
                                 data={pieData}
                                 property="visibility"
