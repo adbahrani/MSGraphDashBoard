@@ -7,9 +7,10 @@ interface PieDataProps<T extends object> {
     title: string
     data: Array<T>
     property: string
-    fills?: string[]
+    fills?: string[],
+    height?: number,
 }
-export function PieData<T extends object>({ title, property, data, fills }: PieDataProps<T>) {
+export function PieData<T extends object>({ title, property, data, fills, height }: PieDataProps<T>) {
     const [dataPerProperty, setDataPerProperty] = useState<Array<{ label: string; value: number }>>([])
 
     useEffect(() => {
@@ -20,7 +21,7 @@ export function PieData<T extends object>({ title, property, data, fills }: PieD
 
     return (
         <Block title={title}>
-            <Pie data={dataPerProperty} fills={fills} />
+            <Pie height={height} data={dataPerProperty} fills={fills} />
         </Block>
     )
 }

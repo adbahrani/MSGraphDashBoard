@@ -6,6 +6,7 @@ import { GroupAggKey, aggregateGroups, groupLabelDisplayMap } from '../utils/gro
 import { GroupsList } from '../components/GroupsList'
 import { ColDef } from 'ag-grid-community'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
+import { formatDate } from '../utils/date'
 
 export const Groups = () => {
     const [isLoadingGroups, setIsLoadingGroups] = useState(true)
@@ -74,7 +75,7 @@ export const Groups = () => {
         headerName: 'Guest', field: 'members', valueFormatter: params => {
             return params.value.filter((val: any) => val.userType === 'Guest').length
         },
-        flex: 3
+        flex: 4
     }, {
         field: 'visibility',
         headerName: 'Visibility',
@@ -85,19 +86,25 @@ export const Groups = () => {
         valueFormatter: params => {
             return params.value.includes("Team") ? "Team Connected" : ""
         },
-        flex: 6
+        flex: 4
     }, {
         field: 'membershipRule',
         headerName: 'Membership Rule',
-        flex: 6
+        flex: 4
     }, {
         field: 'createdDateTime',
+        valueFormatter: params => {
+            return params.value ? formatDate(params.value) : ''
+        },
         headerName: 'Created At',
-        flex: 8
+        flex: 4
     }, {
         field: 'renewedDateTime',
         headerName: 'Last Activity',
-        flex: 8
+        valueFormatter: params => {
+            return params.value ? formatDate(params.value) : ''
+        },
+        flex: 4
     }]
 
 
@@ -109,17 +116,23 @@ export const Groups = () => {
     }, {
         field: 'deletedDateTime',
         headerName: 'Deleted At',
-        flex: 6
+        valueFormatter: params => {
+            return params.value ? formatDate(params.value) : ''
+        },
+        flex: 4
     }, {
         field: 'expirationDateTime',
         headerName: 'Expiration Time',
-        flex: 6
+        valueFormatter: params => {
+            return params.value ? formatDate(params.value) : ''
+        },
+        flex: 4
     }]
 
 
     return (
         <>
-            <div style={{ padding: '80px 64px 0' }}>
+            <div style={{ padding: '5rem 4rem 0' }}>
                 {isLoadingGroups ? <div style={{ display: 'flex', gap: '0.5rem' }}>
                     <BoxLoader numberOfBoxes={10} boxHeight='8rem' boxWidth="18%" />
                 </div> : <Stats stats={stats} />}
@@ -127,6 +140,8 @@ export const Groups = () => {
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
+                        gap: '1rem',
+                        marginTop: '2rem'
                     }}
                 >
 
@@ -141,9 +156,11 @@ export const Groups = () => {
                     >
                         <GroupsList columnDefs={columnDefDeletedGroups} height='25rem' width='60vw' groups={deletedGroups} isLoading={isLoadingDeletedGroups} />
                         <div style={{
-                            width: '20vw'
+                            width: '20vw',
+                            height: '25rem'
                         }}>
                             <PieData
+                                height={300}
                                 title="Groups per Connection"
                                 data={pieData}
                                 property="connection"
@@ -151,9 +168,11 @@ export const Groups = () => {
                             />
                         </div>
                         <div style={{
-                            width: '20vw'
+                            width: '20vw',
+                            height: '25rem'
                         }}>
                             <PieData
+                                height={300}
                                 title="Groups per Visibility"
                                 data={pieData}
                                 property="visibility"
