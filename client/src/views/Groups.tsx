@@ -6,7 +6,6 @@ import { GroupAggKey, aggregateGroups, groupLabelDisplayMap } from '../utils/gro
 import { GroupsList } from '../components/GroupsList'
 import { ColDef } from 'ag-grid-community'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
-import { formatDate } from '../utils/date'
 
 export const Groups = () => {
     const [isLoadingGroups, setIsLoadingGroups] = useState(true)
@@ -94,7 +93,7 @@ export const Groups = () => {
     }, {
         field: 'createdDateTime',
         valueFormatter: params => {
-            return params.value ? formatDate(params.value) : ''
+            return params.value ? new Date(params.value).toLocaleString() : ''
         },
         headerName: 'Created At',
         flex: 4
@@ -102,7 +101,7 @@ export const Groups = () => {
         field: 'renewedDateTime',
         headerName: 'Last Activity',
         valueFormatter: params => {
-            return params.value ? formatDate(params.value) : ''
+            return params.value ? new Date(params.value).toLocaleString() : ''
         },
         flex: 4
     }]
@@ -117,14 +116,14 @@ export const Groups = () => {
         field: 'deletedDateTime',
         headerName: 'Deleted At',
         valueFormatter: params => {
-            return params.value ? formatDate(params.value) : ''
+            return params.value ? new Date(params.value).toLocaleString() : ''
         },
         flex: 4
     }, {
         field: 'expirationDateTime',
         headerName: 'Expiration Time',
         valueFormatter: params => {
-            return params.value ? formatDate(params.value) : ''
+            return params.value ? new Date(params.value).toLocaleString() : ''
         },
         flex: 4
     }]
