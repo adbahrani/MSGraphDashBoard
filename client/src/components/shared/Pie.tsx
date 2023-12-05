@@ -5,13 +5,15 @@ import { AgChartOptions } from 'ag-charts-community';
 interface PieProps  {
     data: Array<{label: string, value: number}>,
     fills?: string[],
+    height?: number
 }
-export const Pie = ({data, fills}: PieProps) => {
+export const Pie = ({data, fills, height}: PieProps) => {
   const [options, setOptions] = useState<AgChartOptions>({});
 
   useEffect(() => {
     setOptions({
         data,
+        ...(height && {height}),
         series: [
           {
             type: 'pie',
