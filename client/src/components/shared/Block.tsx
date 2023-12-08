@@ -17,9 +17,10 @@ export const Block = ({ title, titlePosition, onClick, children, additionalStyle
             sx={{
                 m: 1,
                 p: 2,
-                border: '1px solid grey',
+                border: '0.5px solid grey',
                 flex: 1,
-                borderRadius: '8px',
+                borderRadius: 2,
+                boxShadow: 3,
                 '&:hover': onClick
                     ? {
                           bgcolor: 'rgba(0,0,0,0.1)',
