@@ -20,6 +20,7 @@ export const graphLinks = {
     driveOneUserActivity: (period: 30 | 90) =>
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getOneDriveActivityUserDetail(period='D${period}')?$format=application/json`,
     deletedUsers: 'https://graph.microsoft.com/beta/directory/deletedItems/microsoft.graph.user',
+    fileCount: (period: 30 | 90) => `https://graph.microsoft.com/beta/reports/microsoft.graph.getSharePointActivityFileCounts(period='D${period}')?$format=application/json`,
     token: '/token',
     report: '/report',
 }

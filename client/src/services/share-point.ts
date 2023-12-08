@@ -49,4 +49,10 @@ export class SharePointService extends BaseService {
 
         return value
     }
+
+    public static async getFileCount(period: 30 | 90): Promise<Array<SiteActivity>> {
+        const { value } = await this.httpGet(graphLinks.fileCount(period))
+
+        return value
+    }
 }

@@ -3,12 +3,14 @@ import Box from '@mui/material/Box'
 import { Block } from './Block'
 
 interface StatsProps {
-    stats: { [key: string]: number }
+    stats: { [key: string]: number | string },
+    width?: string,
+    numberOfColumns?: number
 }
 
-export const Stats = ({ stats }: PropsWithChildren<StatsProps>) => {
+export const Stats = ({ stats, width = "100%", numberOfColumns = 5 }: PropsWithChildren<StatsProps>) => {
     return (
-        <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '1rem' }}>
+        <Box component="div" sx={{ display: 'grid', width, gridTemplateColumns: `repeat(${numberOfColumns}, 1fr)`, gap: '1rem' }}>
             {Object.entries(stats).map(([label, value]) => (
                 <Block title={label} key={label}>
                     <Box
