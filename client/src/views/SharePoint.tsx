@@ -1,65 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Menu } from '../components/Menu'
-import { Block } from '../components/shared/Block'
-import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
+import { useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
 import { SharePointService, Site, SiteActivity } from '../services/share-point'
-import { SitesList } from '../components/SitesList'
 import { Stats } from '../components/shared/Stats'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
-import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
-import { useNavigate } from 'react-router-dom'
-import { AgGridReact } from 'ag-grid-react'
-import { TableLoader } from '../components/shared/Loaders/TableLoader'
+import { ColDef } from 'ag-grid-community'
 import { formatBytes } from '../utils/helpers'
-
-interface SharePointSitesListProps {
-    sites: Array<any>
-    width: string,
-    height: string,
-    columnDefs: ColDef[],
-    isLoading?: boolean
-}
-
-const SharePointSitesList = ({ sites, height, width, columnDefs, isLoading = false }: SharePointSitesListProps) => {
-    const gridRef = useRef<AgGridReact>(null)
-
-
-    const getRowId = useMemo<GetRowIdFunc>(() => {
-        return (params: GetRowIdParams) => params.data.siteId
-    }, [])
-
-    const onFirstDataRendered = useCallback(() => {
-        gridRef?.current?.api.sizeColumnsToFit()
-    }, [])
-
-    const onRowClicked = useCallback((params: { data: SiteActivity }) => {
-        // navigate(`/group?id=${params.data.id}`)
-    }, [])
-
-    console.log('sites in table are', sites)
-
-    return (
-        <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
-            {isLoading ? <TableLoader width={width} height={height} headers={columnDefs.map((columDef) => columDef.headerName || '')} rowsNum={6} /> : <AgGridReact
-                ref={gridRef}
-                rowData={sites}
-                columnDefs={columnDefs}
-                getRowId={getRowId}
-
-                // onFirstDataRendered={onFirstDataRendered}
-                onRowClicked={onRowClicked}
-                defaultColDef={{ resizable: true, sortable: true }}
-            ></AgGridReact>}
-        </div>
-    )
-}
+import { SharePointSitesList } from '../components/SharePointSitesList'
 
 export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
     const [sites, setSites] = useState<Array<Site>>([])
+    const [selectedSite, setSelectedSite] = useState<SiteActivity | null>(null)
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
     const [sitesCount, setSitesCount] = useState({
         guestEnabled: 0,
@@ -68,7 +20,7 @@ export const SharePoint = () => {
         activeSites: 0
     })
 
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    
     const periods = [
         { label: 'Last 30 days', value: 30 },
         { label: 'Last 90 days', value: 90 },
@@ -138,6 +90,15 @@ export const SharePoint = () => {
         // TODO: fix denied access to sites/getAllSites
         SharePointService.getAll().then(() => setSites([]))
     }, [])
+
+    useEffect(() => {
+        if(!selectedSite) return;
+
+        (async function(){
+            const siteAnalyticsData = await SharePointService.getSiteAnalytics(selectedSite.siteId)
+            console.log('data is', siteAnalyticsData);
+        }())
+    }, [selectedSite])
 
     async function setActivityData() {
         const sitesActivity = await SharePointService.getActivity(selectedPeriod)
@@ -251,7 +212,10 @@ export const SharePoint = () => {
                         "Communications Sites Count": sitesCount.communicationSites,
                     }} />}
                 </div>
-                <SharePointSitesList height="14rem" isLoading={isLoadingSiteActivities} width='80%' columnDefs={columnDefTopSites} sites={topSitesByPageView} />
+                <SharePointSitesList handleRowClick={site => {
+                    setSelectedSite(site)
+                }} height="14rem" isLoading={isLoadingSiteActivities} width='80%' columnDefs={columnDefTopSites} sites={topSitesByPageView} />
+                
                 <div style={{display: 'flex', gap: '2rem', marginLeft: '40vw'}}>
                     <AgChartsReact options={{ ...activityByGeoLocationOptions, width: 400, data: activityByGeoLocation }} />
                 <AgChartsReact options={{ ...topSitesByPageViewOptions, width: 400, data: topSitesByPageView }} />

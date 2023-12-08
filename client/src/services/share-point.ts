@@ -55,4 +55,12 @@ export class SharePointService extends BaseService {
 
         return value
     }
+
+    public static async getSiteAnalytics(siteId: string): Promise<Array<SiteActivity>> {
+        const { value } = await this.httpGet(graphLinks.siteAnalytics(siteId))
+
+        return value
+    }
+
+    
 }

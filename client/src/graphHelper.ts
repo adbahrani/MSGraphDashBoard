@@ -21,6 +21,7 @@ export const graphLinks = {
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getOneDriveActivityUserDetail(period='D${period}')?$format=application/json`,
     deletedUsers: 'https://graph.microsoft.com/beta/directory/deletedItems/microsoft.graph.user',
     fileCount: (period: 30 | 90) => `https://graph.microsoft.com/beta/reports/microsoft.graph.getSharePointActivityFileCounts(period='D${period}')?$format=application/json`,
+    siteAnalytics: (siteId: string) => `https://graph.microsoft.com/v1.0/sites/${siteId}/analytics/allTime`,
     token: '/token',
     report: '/report',
 }
