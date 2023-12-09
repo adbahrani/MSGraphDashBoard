@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
-import { SharePointService, Site, SiteActivity } from '../services/share-point'
+import { SharePointService, Site, SiteActivityWithSites } from '../services/share-point'
 import { Stats } from '../components/shared/Stats'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 import { ColDef } from 'ag-grid-community'
@@ -11,8 +11,8 @@ import { SharePointSitesList } from '../components/SharePointSitesList'
 export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
     const [sites, setSites] = useState<Array<Site>>([])
-    const [selectedSite, setSelectedSite] = useState<SiteActivity | null>(null)
-    const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
+    const [selectedSite, setSelectedSite] = useState<any | null>(null)
+    const [sitesActivity, setSitesActivity] = useState<Array<SiteActivityWithSites>>([])
     const [sitesCount, setSitesCount] = useState({
         guestEnabled: 0,
         groupConnected: 0,
@@ -66,7 +66,7 @@ export const SharePoint = () => {
 
     const topSitesByPageView = useMemo(() => {
 
-        const sortedData = [...sitesActivity]
+        const sortedData = sitesActivity.filter((dt: SiteActivityWithSites) => dt.pageViewCount !== undefined)
         sortedData.sort((a1, a2) => a2.pageViewCount - a1.pageViewCount)
 
         return sortedData.slice(0, 5)
@@ -88,20 +88,22 @@ export const SharePoint = () => {
 
     useEffect(() => {
         // TODO: fix denied access to sites/getAllSites
-        SharePointService.getAll().then(() => setSites([]))
+        //SharePointService.getAll().then(() => setSites([]))
     }, [])
 
     useEffect(() => {
         if(!selectedSite) return;
 
         (async function(){
-            const siteAnalyticsData = await SharePointService.getSiteAnalytics(selectedSite.siteId)
-            console.log('data is', siteAnalyticsData);
+            const siteAnalyticsData = await SharePointService.getSiteAnalytics(selectedSite.id)
+            const lists = await SharePointService.getSiteList(selectedSite.id)
+            
+            // console.log('data is', siteAnalyticsData, lists);
         }())
     }, [selectedSite])
 
     async function setActivityData() {
-        const sitesActivity = await SharePointService.getActivity(selectedPeriod)
+        const sitesActivity = await SharePointService.getSiteWithActivity(selectedPeriod)
         setSitesActivity([...sitesActivity])
         setIsLoadingSiteActivities(false)
 
@@ -115,6 +117,7 @@ export const SharePoint = () => {
         const activityByGeo = []
         const geoLocIndex: { [geolocation: string]: number } = {}
         for (const { geolocation, lastActivityDate, rootWebTemplate, secureLinkForGuestCount } of sitesActivity) {
+            if(!geolocation) continue;
             if (geoLocIndex[geolocation] === undefined) {
                 geoLocIndex[geolocation] = activityByGeo.length
                 activityByGeo.push({ geolocation, active: 0, inactive: 0 })
@@ -158,8 +161,8 @@ export const SharePoint = () => {
 
     const activeSitesCount = sitesCount.activeSites
 
-    const columnDefTopSites: ColDef[] = [{ field: 'siteUrl', headerName: 'Site URL' },
-    { field: 'ownerDisplayName', headerName: 'Site Name', flex: 10 }, {
+    const columnDefTopSites: ColDef[] = [{ field: 'webUrl', headerName: 'Site URL' },
+    { field: 'displayName', headerName: 'Site Name', flex: 10 }, {
         field: 'pageViewCount',
         headerName: 'Page Views Count',
         flex: 4
@@ -168,7 +171,7 @@ export const SharePoint = () => {
         field: 'storageUsedInBytes',
         headerName: 'Storage Used',
         valueFormatter: (params) => {
-            return formatBytes(params.value)
+            return params.value ? formatBytes(params.value): ''
         },
         flex: 4
     }
@@ -181,6 +184,7 @@ export const SharePoint = () => {
         headerName: 'Engaged Users'
     }
     ]
+
     return (
         <>
             <div style={{ padding: '80px 64px 0' }}>

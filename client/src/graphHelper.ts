@@ -22,6 +22,7 @@ export const graphLinks = {
     deletedUsers: 'https://graph.microsoft.com/beta/directory/deletedItems/microsoft.graph.user',
     fileCount: (period: 30 | 90) => `https://graph.microsoft.com/beta/reports/microsoft.graph.getSharePointActivityFileCounts(period='D${period}')?$format=application/json`,
     siteAnalytics: (siteId: string) => `https://graph.microsoft.com/v1.0/sites/${siteId}/analytics/allTime`,
+    siteList: (siteId: string) => `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`,
     token: '/token',
     report: '/report',
 }

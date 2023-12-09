@@ -1,31 +1,29 @@
 import { ColDef, GetRowIdFunc, GetRowIdParams } from "ag-grid-community"
 import { AgGridReact } from "ag-grid-react"
 import { useCallback, useMemo, useRef } from "react"
-import { SiteActivity } from "../services/share-point"
 import { TableLoader } from "./shared/Loaders/TableLoader"
 
-interface SharePointSitesListProps {
-    sites: Array<any>
+
+export const SharePointSitesList  = <T extends unknown>({ sites, height, width, columnDefs, isLoading = false, handleRowClick }: {
+    sites: Array<T>
     width: string,
     height: string,
     columnDefs: ColDef[],
     isLoading?: boolean,
-    handleRowClick: (site: SiteActivity) => void
-}
-
-export const SharePointSitesList = ({ sites, height, width, columnDefs, isLoading = false, handleRowClick }: SharePointSitesListProps) => {
+    handleRowClick: (site: T) => void
+}) => {
     const gridRef = useRef<AgGridReact>(null)
 
 
     const getRowId = useMemo<GetRowIdFunc>(() => {
-        return (params: GetRowIdParams) => params.data.siteId
+        return (params: GetRowIdParams) => params.data.id
     }, [])
 
     const onFirstDataRendered = useCallback(() => {
         gridRef?.current?.api.sizeColumnsToFit()
     }, [])
 
-    const onRowClicked = useCallback(({ data }: { data: SiteActivity }) => {
+    const onRowClicked = useCallback(({ data }: { data: T }) => {
         handleRowClick(data)
     }, [])
 
