@@ -112,8 +112,8 @@ export const Menu = () => {
                                     {link.children.map(subLink => (
                                         <MenuItem
                                             selected={activeLinks.has(subLink.to)}
-                                            component="a"
-                                            href={subLink.to}
+                                            component={Link}
+                                            to={subLink.to}
                                             style={linkStyle}
                                             onClick={handleClose}
                                             key={subLink.title}
