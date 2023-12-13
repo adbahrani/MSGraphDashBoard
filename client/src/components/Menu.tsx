@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -68,88 +68,86 @@ export const Menu = () => {
     }, [location])
 
     return (
-        <>
-            <div
-                style={{
-                    height: '60px',
-                    width: 'calc(90vw - 64px)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    margin: '10px 5vw',
-                    padding: '0 32px',
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    borderRadius: '16px',
-                    backgroundColor: 'rgba(0,0,0,0.03)',
-                    position: 'absolute',
-                }}
-            >
-                <div style={{ fontSize: '22px' }}>
-                    <Link to="/" style={linkStyle}>
-                        M365 Pulse
-                    </Link>
-                </div>
-                <div>
-                    <ul
-                        style={{
-                            listStyleType: 'none',
-                            padding: 0,
-                            display: 'flex',
-                            gap: '16px',
-                        }}
-                    >
-                        {links
-                            .filter(
-                                link =>
-                                    (link.title !== 'Login' &&
-                                        link.title !== 'Logout' &&
-                                        link.title !== 'Data Analytics') ||
-                                    (link.title === 'Logout' && isSignedIn() === true) ||
-                                    (link.title === 'Login' && isSignedIn() === false) ||
-                                    (link.title === 'Data Analytics' && isSignedIn() === true)
-                            )
-                            .map(link => (
-                                <li key={link.title}>
-                                    <Link
-                                        to={link.to}
-                                        style={
-                                            link.title !== 'Logout' && activeLinks.has(link.to)
-                                                ? activeLinkStyle
-                                                : linkStyle
-                                        }
-                                        onClick={link.title === 'Logout' ? logout : e => handleClick(link, e)}
-                                    >
-                                        {link.title}
-                                    </Link>
-                                    {link.children ? (
-                                        <MuiMenu
-                                            id="basic-menu"
-                                            anchorEl={anchorEl}
-                                            open={open}
-                                            onClose={handleClose}
-                                            MenuListProps={{
-                                                'aria-labelledby': 'basic-button',
-                                            }}
-                                        >
-                                            {link.children.map(subLink => (
-                                                <MenuItem selected={activeLinks.has(subLink.to)} onClick={handleClose}>
-                                                    <Link
-                                                        to={subLink.to}
-                                                        style={linkStyle}
-                                                        onClick={e => handleClick(link, e)}
-                                                    >
-                                                        {subLink.title}
-                                                    </Link>
-                                                </MenuItem>
-                                            ))}
-                                        </MuiMenu>
-                                    ) : null}
-                                </li>
-                            ))}
-                    </ul>
-                </div>
+        <div
+            style={{
+                height: '60px',
+                width: 'calc(90vw - 64px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                margin: '10px 5vw',
+                padding: '0 32px',
+                fontSize: '16px',
+                fontWeight: 600,
+                borderRadius: '16px',
+                backgroundColor: 'rgba(0,0,0,0.03)',
+                position: 'absolute',
+            }}
+        >
+            <div style={{ fontSize: '22px' }}>
+                <Link to="/" style={linkStyle}>
+                    M365 Pulse
+                </Link>
             </div>
-        </>
+            <div>
+                <ul
+                    style={{
+                        listStyleType: 'none',
+                        padding: 0,
+                        display: 'flex',
+                        gap: '16px',
+                    }}
+                >
+                    {links
+                        .filter(
+                            link =>
+                                (link.title !== 'Login' &&
+                                    link.title !== 'Logout' &&
+                                    link.title !== 'Data Analytics') ||
+                                (link.title === 'Logout' && isSignedIn() === true) ||
+                                (link.title === 'Login' && isSignedIn() === false) ||
+                                (link.title === 'Data Analytics' && isSignedIn() === true)
+                        )
+                        .map(link => (
+                            <li key={link.title}>
+                                <Link
+                                    to={link.to}
+                                    style={
+                                        link.title !== 'Logout' && activeLinks.has(link.to)
+                                            ? activeLinkStyle
+                                            : linkStyle
+                                    }
+                                    onClick={link.title === 'Logout' ? logout : e => handleClick(link, e)}
+                                >
+                                    {link.title}
+                                </Link>
+                                {link.children ? (
+                                    <MuiMenu
+                                        id="basic-menu"
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'basic-button',
+                                        }}
+                                    >
+                                        {link.children.map(subLink => (
+                                            <MenuItem selected={activeLinks.has(subLink.to)} onClick={handleClose}>
+                                                <Link
+                                                    to={subLink.to}
+                                                    style={linkStyle}
+                                                    onClick={e => handleClick(link, e)}
+                                                >
+                                                    {subLink.title}
+                                                </Link>
+                                            </MenuItem>
+                                        ))}
+                                    </MuiMenu>
+                                ) : null}
+                            </li>
+                        ))}
+                </ul>
+            </div>
+        </div>
     )
 }
