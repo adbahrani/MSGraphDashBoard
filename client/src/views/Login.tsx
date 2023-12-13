@@ -18,9 +18,6 @@ export const Login = () => {
     })
     const [showPassword, setShowPassword] = useState(false)
     const handleClickShowPassword = () => setShowPassword(show => !show)
-    const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault()
-    }
     const [password, setPassword] = useState('')
     const handleOnChangePassword = (event: any) => {
         setPassword(event.target.value)
@@ -72,7 +69,6 @@ export const Login = () => {
                                         <IconButton
                                             aria-label="toggle password visibility"
                                             onClick={handleClickShowPassword}
-                                            onMouseDown={handleMouseDownPassword}
                                             edge="end"
                                         >
                                             {showPassword ? <VisibilityOff /> : <Visibility />}
