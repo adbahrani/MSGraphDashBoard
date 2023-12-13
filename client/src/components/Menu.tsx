@@ -24,7 +24,7 @@ const links = [
     },
     { title: 'Contact', to: '/#contact', activeSet: new Set(['/#contact']) },
     { title: 'Login', to: '/login', activeSet: new Set(['/login']) },
-    { title: 'Logout', to: '/login', activeSet: new Set(['/login']) },
+    { title: 'Logout', to: '/', activeSet: new Set(['/']) },
 ]
 
 export const Menu = () => {

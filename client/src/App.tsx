@@ -26,7 +26,7 @@ export default function App() {
                 <Route path="/sharepoint" element={<SharePoint />} />
                 <Route path="/reports" element={<Reports />} />
                 <Route path="/onedrive" element={<OneDrive />} />
-                <Route path="/Login" element={<Login />} />
+                <Route path="/login" element={<Login />} />
             </Routes>
         </Router>
     )
