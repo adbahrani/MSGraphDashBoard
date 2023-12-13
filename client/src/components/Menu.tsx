@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -43,6 +43,11 @@ export const Menu = () => {
         setAnchorEl(null)
     }
     const isSignedIn = () => (localStorage.getItem('email') ? true : false)
+
+    const logout = () => {
+        localStorage.removeItem('email')
+        localStorage.removeItem('password')
+    }
 
     useEffect(() => {
         const pathHash = `${location.pathname}${location.hash}`
@@ -97,16 +102,23 @@ export const Menu = () => {
                         {links
                             .filter(
                                 link =>
-                                    (link.title !== 'Login' && link.title !== 'Logout') ||
+                                    (link.title !== 'Login' &&
+                                        link.title !== 'Logout' &&
+                                        link.title !== 'Data Analytics') ||
                                     (link.title === 'Logout' && isSignedIn() === true) ||
-                                    (link.title === 'Login' && isSignedIn() === false)
+                                    (link.title === 'Login' && isSignedIn() === false) ||
+                                    (link.title === 'Data Analytics' && isSignedIn() === true)
                             )
                             .map(link => (
                                 <li key={link.title}>
                                     <Link
                                         to={link.to}
-                                        style={activeLinks.has(link.to) ? activeLinkStyle : linkStyle}
-                                        onClick={e => handleClick(link, e)}
+                                        style={
+                                            link.title !== 'Logout' && activeLinks.has(link.to)
+                                                ? activeLinkStyle
+                                                : linkStyle
+                                        }
+                                        onClick={link.title === 'Logout' ? logout : e => handleClick(link, e)}
                                     >
                                         {link.title}
                                     </Link>
