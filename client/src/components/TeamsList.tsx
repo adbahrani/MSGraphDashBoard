@@ -5,6 +5,7 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { Team, TeamActivity } from '../services/teams'
 import { useNavigate } from 'react-router-dom'
+import { defaultColDef } from '../utils/agGridSettings'
 
 interface TeamsListProps {
     teams: Array<Team & TeamActivity>
@@ -63,6 +64,7 @@ export const TeamsList = ({ teams }: TeamsListProps) => {
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
                 onRowClicked={onRowClicked}
+                defaultColDef={defaultColDef} 
             ></AgGridReact>
         </div>
     )

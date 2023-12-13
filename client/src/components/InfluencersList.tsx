@@ -3,6 +3,7 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
+import { defaultColDef } from '../utils/agGridSettings'
 
 interface InfluencersListProps {
     users: Array<{ userName: string; messages: number; calls: number; meetings: number }>
@@ -36,6 +37,7 @@ export const InfluencersList = ({ users }: InfluencersListProps) => {
                 columnDefs={columnDefs}
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
+                defaultColDef={defaultColDef} 
             ></AgGridReact>
         </div>
     )
