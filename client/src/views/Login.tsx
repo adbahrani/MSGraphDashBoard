@@ -58,12 +58,7 @@ export const Login = () => {
                     <div>
                         <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                             <InputLabel htmlFor="email">Email</InputLabel>
-                            <OutlinedInput
-                                id="email"
-                                type={'text'}
-                                label="Email"
-                                onChange={handleOnChangeEmail.bind(this)}
-                            />
+                            <OutlinedInput id="email" type={'text'} label="Email" onChange={handleOnChangeEmail} />
                         </FormControl>
                     </div>
                     <div>
@@ -85,7 +80,7 @@ export const Login = () => {
                                     </InputAdornment>
                                 }
                                 label="Password"
-                                onChange={handleOnChangePassword.bind(this)}
+                                onChange={handleOnChangePassword}
                             />
                         </FormControl>
                         <div>
