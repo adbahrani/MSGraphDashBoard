@@ -5,15 +5,21 @@ import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { Group } from '../services/groups'
 import { useNavigate } from 'react-router-dom'
+import { TableLoader } from './shared/Loaders/TableLoader'
+import { defaultColDef } from '../utils/agGridSettings'
 
 interface GroupsListProps {
     groups: Array<Group>
+    width: string,
+    height: string,
+    columnDefs: ColDef[],
+    isLoading?: boolean
 }
 
-export const GroupsList = ({ groups }: GroupsListProps) => {
+export const GroupsList = ({ groups, height, width, columnDefs, isLoading = false}: GroupsListProps) => {
     const navigate = useNavigate()
     const gridRef = useRef<AgGridReact>(null)
-    const columnDefs: ColDef[] = [{ field: 'displayName' }, { field: 'description' }]
+    
 
     const getRowId = useMemo<GetRowIdFunc>(() => {
         return (params: GetRowIdParams) => params.data.id
@@ -27,16 +33,18 @@ export const GroupsList = ({ groups }: GroupsListProps) => {
         navigate(`/group?id=${params.data.id}`)
     }, [])
 
+    
     return (
-        <div className="ag-theme-alpine" style={{ margin: '8px' }}>
-            <AgGridReact
+        <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
+            {isLoading ? <TableLoader width={width} height={height} headers={columnDefs.map((columDef) => columDef.headerName || '')} rowsNum={6} />: <AgGridReact
                 ref={gridRef}
                 rowData={groups}
                 columnDefs={columnDefs}
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
                 onRowClicked={onRowClicked}
-            ></AgGridReact>
+                defaultColDef={defaultColDef}
+            ></AgGridReact>}
         </div>
     )
 }

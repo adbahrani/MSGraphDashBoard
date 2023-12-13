@@ -4,6 +4,7 @@ export const graphLinks = {
     groups: 'https://graph.microsoft.com/v1.0/groups',
     groupMembers: (id: string) => `https://graph.microsoft.com/v1.0/groups/${id}/members`,
     groupOwners: (id: string) => `https://graph.microsoft.com/v1.0/groups/${id}/owners`,
+    deletedGroups: 'https://graph.microsoft.com/v1.0/directory/deletedItems/microsoft.graph.group',
     users: 'https://graph.microsoft.com/v1.0/users',
     usersActivity: (period: 30 | 90) =>
         `https://graph.microsoft.com/beta/reports/microsoft.graph.getTeamsUserActivityUserDetail(period='D${period}')?$format=application/json`,

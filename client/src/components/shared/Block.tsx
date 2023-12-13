@@ -1,14 +1,16 @@
 import { PropsWithChildren } from 'react'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import { SxProps, Theme } from '@mui/material'
 
 interface BlockProps {
     title: string
     titlePosition?: 'center' | 'left'
-    onClick?: () => void
+    onClick?: () => void,
+    additionalStyles?: SxProps<Theme>
 }
 
-export const Block = ({ title, titlePosition, onClick, children }: PropsWithChildren<BlockProps>) => {
+export const Block = ({ title, titlePosition, onClick, children, additionalStyles = {} }: PropsWithChildren<BlockProps>) => {
     return (
         <Box
             component="div"
@@ -24,6 +26,7 @@ export const Block = ({ title, titlePosition, onClick, children }: PropsWithChil
                           cursor: 'pointer',
                       }
                     : {},
+                ...additionalStyles,
             }}
             onClick={onClick}
         >
