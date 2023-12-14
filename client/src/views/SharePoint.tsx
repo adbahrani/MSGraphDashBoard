@@ -85,7 +85,7 @@ export const SharePoint = () => {
             minDate.setDate(minDate.getDate() - selectedPeriod)
 
             let activeSites = 0
-            const activityByGeo = []
+            const activityByGeo: any[] = []
             const geoLocIndex: { [geolocation: string]: number } = {}
             for (const { geolocation, lastActivityDate } of sitesActivity) {
                 if (geoLocIndex[geolocation] === undefined) {

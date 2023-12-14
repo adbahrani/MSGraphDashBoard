@@ -37,7 +37,6 @@ export const Login = () => {
     }
 
     return (
-        <>
             <ThemeProvider theme={theme}>
                 <div
                     id="home"
@@ -87,6 +86,5 @@ export const Login = () => {
                     </div>
                 </div>
             </ThemeProvider>
-        </>
     )
 }
