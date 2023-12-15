@@ -53,10 +53,7 @@ export const TeamsList = ({ teams }: TeamsListProps) => {
     }, [])
 
     return (
-        <div
-            className="ag-theme-alpine"
-            style={{ margin: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 16px)' }}
-        >
+        <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={teams}
@@ -64,7 +61,7 @@ export const TeamsList = ({ teams }: TeamsListProps) => {
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
                 onRowClicked={onRowClicked}
-                defaultColDef={defaultColDef} 
+                defaultColDef={defaultColDef}
             ></AgGridReact>
         </div>
     )
