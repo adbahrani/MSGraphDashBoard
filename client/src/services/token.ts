@@ -2,11 +2,12 @@ import { graphLinks } from '../graphHelper'
 
 //TODO: Make this context rather than class
 export class TokenService {
-    private static token = localStorage.getItem('token')  ?? ''
+    private static token = localStorage.getItem('token') ?? ''
     private static expirationDate = new Date(localStorage.getItem('expirationDate') as string) ?? new Date()
-    static timeToExpire: number = 60 * 60 * 1000  // 1 hour
+    static timeToExpire: number = 60 * 60 * 1000 // 1 hour
 
     public static async getToken() {
+        // console.log("Valid Token", this.token && !this.token.includes('error'))
         if (!this.isTokenValid()) {
             this.token = await fetch(graphLinks.token, {
                 method: 'GET',
@@ -21,7 +22,10 @@ export class TokenService {
     }
 
     private static isTokenValid() {
-        console.log(this.token, this.expirationDate.getTime() > Date.now() + 5 * 60 * 1000)
-        return this.token && this.expirationDate.getTime() > Date.now() + 5 * 60 * 1000 && !this.token.includes('error')
+        return (
+            this.token &&
+            this.expirationDate.getTime() < Date.now() + this.timeToExpire &&
+            !this.token.includes('error')
+        )
     }
 }
