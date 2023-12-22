@@ -4,7 +4,7 @@ import { graphLinks } from '../graphHelper'
 export class TokenService {
     private static token = localStorage.getItem('token') ?? ''
     private static expirationDate = new Date(localStorage.getItem('expirationDate') as string) ?? new Date()
-    static timeToExpire: number = 60 * 60 * 1000 // 1 hour
+    static timeToExpire: number = (60 * 60 * 1000) -100// 1 hour - 100ms buffer
 
     public static async getToken() {
         // console.log("Valid Token", this.token && !this.token.includes('error'))
@@ -24,7 +24,7 @@ export class TokenService {
     private static isTokenValid() {
         return (
             this.token &&
-            this.expirationDate.getTime() < Date.now() + this.timeToExpire &&
+            this.expirationDate.getTime() > Date.now()&&
             !this.token.includes('error')
         )
     }
