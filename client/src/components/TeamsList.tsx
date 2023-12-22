@@ -3,9 +3,10 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
-import { Team, TeamActivity } from '../services/teams'
+import { TeamActivity } from '../services/teams'
 import { useNavigate } from 'react-router-dom'
 import { defaultColDef } from '../utils/agGridSettings'
+import { Team } from '@microsoft/microsoft-graph-types'
 
 interface TeamsListProps {
     teams: Array<Team & TeamActivity>

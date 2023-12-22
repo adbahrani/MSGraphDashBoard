@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Team, TeamActivity, TeamsService } from '../services/teams'
+import { TeamActivity, TeamsService } from '../services/teams'
 import { Block } from '../components/shared/Block'
 import Box from '@mui/material/Box'
 import { TeamsList } from '../components/TeamsList'
@@ -8,6 +8,7 @@ import { AgChartsReact } from 'ag-charts-react'
 import { UsersService } from '../services/users'
 import { InfluencersList } from '../components/InfluencersList'
 import { TeamsFilesList } from '../components/TeamsFilesList'
+import { Team } from '@microsoft/microsoft-graph-types'
 
 export const Teams = () => {
     const [teams, setTeams] = useState<Array<Team & TeamActivity>>([])

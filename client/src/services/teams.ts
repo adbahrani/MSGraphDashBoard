@@ -1,20 +1,6 @@
 import { graphLinks } from '../graphHelper'
 import { BaseService, graphClient } from './base'
-import { DriveItem } from '@microsoft/microsoft-graph-types'
-
-export interface Team {
-    id: string
-    displayName: string
-    description: string
-    mail: string
-    visibility: string
-    webUrl: string
-    summary: {
-        ownersCount: number
-        membersCount: number
-        guestsCount: number
-    }
-}
+import { ActivityType, DriveItem, Team } from '@microsoft/microsoft-graph-types'
 
 export interface TeamActivity {
     teamId: string
@@ -60,6 +46,8 @@ export class TeamsService extends BaseService {
     public static async getFileActivitiesByTeams(activityType: string = 'modify') {
         try {
             const teams = await graphClient.api('/teams').get()
+
+            //teams.value.map(team => console.log(team.displayName,team.id))
             const teamPromises = teams.value.map(team =>
                 graphClient.api(`/groups/${team.id}/drive/root/children`).get()
             )
@@ -70,7 +58,6 @@ export class TeamsService extends BaseService {
             for (let i = 0; i < teams.value.length; i++) {
                 const team = teams.value[i]
                 const driveItemsResult = teamResponses[i]
-             
 
                 let modifyCount = 0
                 let createCount = 0
@@ -78,7 +65,7 @@ export class TeamsService extends BaseService {
 
                 if (driveItemsResult.status === 'fulfilled') {
                     const driveItems = driveItemsResult.value
-                    // console.log(driveItems)
+                    //console.log(driveItems)
                     for (const item of driveItems.value) {
                         if (item.lastModifiedDateTime) {
                             modifyCount++
@@ -111,7 +98,7 @@ export class TeamsService extends BaseService {
             // for (let i = 0; i < numTeamsToShow; i++) {
             //     console.log(`${i + 1}. ${sortedTeams[i]} (${teamActivitiesMap[sortedTeams[i]].count} ${activityType} activities)`);
             // }
-            // console.log('teamActivitiesMap Inside', teamActivitiesMap)
+            //console.log('teamActivitiesMap Inside', teamActivitiesMap)
             return teamActivitiesMap
         } catch (error: any) {
             console.error('Error fetching file activities:', error.message)
@@ -122,7 +109,11 @@ export class TeamsService extends BaseService {
     // Call the function with activity type (e.g., 'file modifications')
 
     public static async getActivity(period: 30 | 90): Promise<Array<TeamActivity & Team>> {
-        const { value: teamsActivity } = await this.httpGet(graphLinks.teamsActivity(period))
+        const { value: teams }: { value: Team[] } = await graphClient.api('/teams').get()
+
+        let { value: teamsActivity } = await this.httpGet(graphLinks.teamsActivity(period))
+
+        teamsActivity = teamsActivity.filter(activity => teams.some(team => team.id === activity.teamId))
         await Promise.all(
             teamsActivity.map((activity: TeamActivity) => this.httpGet(graphLinks.team(activity.teamId)))
         ).then(teamsData =>
