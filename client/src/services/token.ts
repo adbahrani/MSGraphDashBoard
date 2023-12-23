@@ -4,10 +4,10 @@ import { graphLinks } from '../graphHelper'
 export class TokenService {
     private static token = localStorage.getItem('token') ?? ''
     private static expirationDate = new Date(localStorage.getItem('expirationDate') as string) ?? new Date()
-    static timeToExpire: number = (60 * 60 * 1000) -100// 1 hour - 100ms buffer
+    static timeToExpire: number = 60 * 60 * 1000 - 100 // 1 hour - 100ms buffer
 
     public static async getToken() {
-        // console.log("Valid Token", this.token && !this.token.includes('error'))
+        //console.log('Valid Token', this.expirationDate.getTime() > Date.now())
         if (!this.isTokenValid()) {
             this.token = await fetch(graphLinks.token, {
                 method: 'GET',
@@ -15,17 +15,13 @@ export class TokenService {
             this.expirationDate = new Date()
             this.expirationDate.setTime(this.expirationDate.getTime() + this.timeToExpire)
             localStorage.setItem('token', this.token)
-            localStorage.setItem('expirationDate', this.expirationDate.toDateString())
+            localStorage.setItem('expirationDate', this.expirationDate.toString())
         }
 
         return this.token
     }
 
     private static isTokenValid() {
-        return (
-            this.token &&
-            this.expirationDate.getTime() > Date.now()&&
-            !this.token.includes('error')
-        )
+        return this.token && this.expirationDate.getTime() > Date.now() && !this.token.includes('error')
     }
 }
