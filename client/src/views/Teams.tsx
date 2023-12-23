@@ -115,8 +115,7 @@ export const Teams = () => {
 
     const getFileActivitiesByTeams = useCallback(async () => {
         try {
-            const teams = await TeamsService.getFileActivitiesByTeams()
-            const data = Object.entries(teams).map(([teamName, value]: any) => ({ teamName, ...value }))
+            const data = await TeamsService.getFileActivitiesByTeams()
             setFilesActivies(data)
         } catch (error: any) {
             console.error('Error fetching file activities:', error.message)

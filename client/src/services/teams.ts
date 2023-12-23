@@ -43,63 +43,88 @@ export class TeamsService extends BaseService {
 
     // Fetch file activities for each team
     // Fetch file activities for each team
+    // Function to get activities for a specific drive
+    public static async getDriveActivities(driveId: string): Promise<any> {
+        try {
+            const activities = await graphClient.api(`/drives/${driveId}/activities`).get()
+            return activities.value
+        } catch (error: any) {
+            console.error(`Error fetching activities for drive ${driveId}:`, error.message)
+            return []
+        }
+    }
+
+    // Function to get drive IDs for a specific team
+    public static async getDriveIdsForTeam(teamId: string): Promise<string[]> {
+        try {
+            const drives = await graphClient.api(`/groups/${teamId}/drives`).get()
+            return drives.value.map(drive => drive.id)
+        } catch (error: any) {
+            console.error(`Error fetching drive IDs for team ${teamId}:`, error.message)
+            return []
+        }
+    }
+
+    // Function to count activities for a team
+    static async countActivitiesForTeam(team: any): Promise<any> {
+        const driveIds = await this.getDriveIdsForTeam(team.id)
+
+        let modifyCount = 0
+        let createCount = 0
+        let deleteCount = 0
+
+        // Iterate through all drives of the team
+        for (const driveId of driveIds) {
+            const activities = await this.getDriveActivities(driveId)
+
+            // eslint-disable-next-line no-loop-func
+            activities.forEach(activity => {
+                if (activity.action.edit) {
+                    modifyCount++
+                } else if (activity.action.create) {
+                    createCount++
+                } else if (activity.action.delete) {
+                    deleteCount++
+                }
+            })
+        }
+
+        return {
+            teamDisplayName: team.displayName,
+            teamId: team.id,
+            count: modifyCount + createCount + deleteCount,
+            modifyCount,
+            createCount,
+            deleteCount,
+        }
+    }
+
+    // Main function to get activities for all teams
     public static async getFileActivitiesByTeams(activityType: string = 'modify') {
         try {
             const teams = await graphClient.api('/teams').get()
 
-            //teams.value.map(team => console.log(team.displayName,team.id))
-            const teamPromises = teams.value.map(team =>
-                graphClient.api(`/groups/${team.id}/drive/root/children`).get()
-            )
-            const teamResponses = await Promise.allSettled(teamPromises)
+            const res = await this.countActivitiesForTeam({
+                id: '4b8dfa2a-a051-428f-993b-6e0979e65e60',
+                displayName: 'Retail',
+            })
 
-            const teamActivitiesMap: Record<string, any> = {}
+            // const res = await this.countActivitiesForTeam({
+            //     id: '4b8dfa2a-a051-428f-993b-6e0979e65e60',
+            //     displayName: 'Retail',
+            // })
 
-            for (let i = 0; i < teams.value.length; i++) {
-                const team = teams.value[i]
-                const driveItemsResult = teamResponses[i]
+            console.log('REs', res)
+            const teamPromises = teams.value.map(async team => this.countActivitiesForTeam(team))
 
-                let modifyCount = 0
-                let createCount = 0
-                let deleteCount = 0
+            const teamDriveActivities = await Promise.allSettled(teamPromises)
 
-                if (driveItemsResult.status === 'fulfilled') {
-                    const driveItems = driveItemsResult.value
-                    //console.log(driveItems)
-                    for (const item of driveItems.value) {
-                        if (item.lastModifiedDateTime) {
-                            modifyCount++
-                        }
-                        if (item.createdDateTime) {
-                            createCount++
-                        }
-                        if (item.deleted) {
-                            deleteCount++
-                        }
-                    }
-                }
-
-                teamActivitiesMap[team.displayName] = {
-                    activity: activityType,
-                    count: modifyCount + createCount + deleteCount,
-                    modifyCount,
-                    createCount,
-                    deleteCount,
-                }
-            }
-
-            const sortedTeams = Object.keys(teamActivitiesMap).sort(
-                (a, b) => teamActivitiesMap[b].count - teamActivitiesMap[a].count
+            // Flatten the array
+            const allDriveActivities = teamDriveActivities.flatMap(result =>
+                result.status === 'fulfilled' ? result.value : []
             )
 
-            // Print top teams
-            const numTeamsToShow = 10 // Change as needed
-            // console.log(`Top ${numTeamsToShow} Teams with Most ${activityType} Activities:`);
-            // for (let i = 0; i < numTeamsToShow; i++) {
-            //     console.log(`${i + 1}. ${sortedTeams[i]} (${teamActivitiesMap[sortedTeams[i]].count} ${activityType} activities)`);
-            // }
-            //console.log('teamActivitiesMap Inside', teamActivitiesMap)
-            return teamActivitiesMap
+            return allDriveActivities //allDriveActivities
         } catch (error: any) {
             console.error('Error fetching file activities:', error.message)
             return error.message

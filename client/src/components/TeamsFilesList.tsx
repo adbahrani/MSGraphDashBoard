@@ -19,7 +19,7 @@ export const TeamsFilesList = ({ FilesByTeams }: TeamsFilesListProps) => {
     }, [FilesByTeams])
 
     const columnDefs: ColDef[] = [
-        { field: 'teamName', headerName: 'Team Name' },
+        { field: 'teamDisplayName', headerName: 'Team Name' },
         { field: 'count', headerName: 'Total', sortIndex: 0, sort: 'desc' },
         { field: 'modifyCount', headerName: 'Modified' },
         { field: 'createCount', headerName: 'Created' },
