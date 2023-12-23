@@ -3,7 +3,6 @@ import { Stats } from '../components/shared/Stats'
 import { UsersList } from '../components/UsersList'
 import { User, UsersService } from '../services/users'
 import { PieData } from '../components/shared/PieData'
-import { Menu } from '../components/Menu'
 
 export const Users = () => {
     const [users, setUsers] = useState<Array<User>>([])

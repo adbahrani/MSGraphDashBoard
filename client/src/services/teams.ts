@@ -1,6 +1,6 @@
 import { graphLinks } from '../graphHelper'
 import { BaseService, graphClient } from './base'
-import { ActivityType, DriveItem, Team } from '@microsoft/microsoft-graph-types'
+import { Drive, Team } from '@microsoft/microsoft-graph-types'
 
 export interface TeamActivity {
     teamId: string
@@ -23,7 +23,7 @@ export interface TeamActivity {
             urgentMessages: number
             mentions: number
             guests: number
-        }
+        },
     ]
 }
 
@@ -57,8 +57,8 @@ export class TeamsService extends BaseService {
     // Function to get drive IDs for a specific team
     public static async getDriveIdsForTeam(teamId: string): Promise<string[]> {
         try {
-            const drives = await graphClient.api(`/groups/${teamId}/drives`).get()
-            return drives.value.map(drive => drive.id)
+            const { value: drives }: { value: Drive[] } = await graphClient.api(`/groups/${teamId}/drives`).get()
+            return drives.map(drive => drive.id).filter(id => id !== undefined) as string[]
         } catch (error: any) {
             console.error(`Error fetching drive IDs for team ${teamId}:`, error.message)
             return []
@@ -100,22 +100,11 @@ export class TeamsService extends BaseService {
     }
 
     // Main function to get activities for all teams
-    public static async getFileActivitiesByTeams(activityType: string = 'modify') {
+    public static async getFileActivitiesByTeams() {
         try {
-            const teams = await graphClient.api('/teams').get()
+            const { value: teams }: { value: Team[] } = await graphClient.api('/teams').get()
 
-            const res = await this.countActivitiesForTeam({
-                id: '4b8dfa2a-a051-428f-993b-6e0979e65e60',
-                displayName: 'Retail',
-            })
-
-            // const res = await this.countActivitiesForTeam({
-            //     id: '4b8dfa2a-a051-428f-993b-6e0979e65e60',
-            //     displayName: 'Retail',
-            // })
-
-            console.log('REs', res)
-            const teamPromises = teams.value.map(async team => this.countActivitiesForTeam(team))
+            const teamPromises = teams.map(async team => this.countActivitiesForTeam(team))
 
             const teamDriveActivities = await Promise.allSettled(teamPromises)
 
@@ -124,7 +113,7 @@ export class TeamsService extends BaseService {
                 result.status === 'fulfilled' ? result.value : []
             )
 
-            return allDriveActivities //allDriveActivities
+            return allDriveActivities
         } catch (error: any) {
             console.error('Error fetching file activities:', error.message)
             return error.message

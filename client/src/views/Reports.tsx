@@ -1,5 +1,4 @@
 import { useCallback } from 'react'
-import { Menu } from '../components/Menu'
 import { ReportType, ReportsService } from '../services/reports'
 import Stack from '@mui/material/Stack'
 import Card from '@mui/material/Card'

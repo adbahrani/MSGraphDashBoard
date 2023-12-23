@@ -1,12 +1,14 @@
 import path from 'path'
 
-const { default: axios } = require('axios')
-const express = require('express')
-const cors = require('cors')
-var compression = require('compression')
-require('dotenv').config()
+import { default as axios } from 'axios'
+import express from 'express'
+import cors from 'cors'
+import compression from 'compression'
+import dotenv from 'dotenv'
 
-const PORT = process.env.PORT || 5000
+dotenv.config()
+
+const PORT = process.env.PORT ?? 5000
 
 const app = express()
 
@@ -41,7 +43,12 @@ app.get('/token', async (_, res) => {
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     )
 
-    res.send(data.access_token)
+    res.cookie('access_token', data.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+    })
+        .status(200)
+        .send(data.access_token)
 })
 
 app.get('/report', async (req, res) => {

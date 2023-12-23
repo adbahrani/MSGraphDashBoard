@@ -1,5 +1,4 @@
 import { useEffect } from 'react'
-import { Menu } from '../components/Menu'
 import { useLocation } from 'react-router-dom'
 import { scrollToSection } from '../utils/scroll'
 

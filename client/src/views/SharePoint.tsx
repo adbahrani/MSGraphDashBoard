@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
-import { Menu } from '../components/Menu'
 import { Block } from '../components/shared/Block'
 import Box from '@mui/material/Box'
 import Drawer from '@mui/material/Drawer'
 import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
-import { SharePointService, Site, SiteActivity } from '../services/share-point'
+import { SharePointService, SiteActivity } from '../services/share-point'
 import { SitesList } from '../components/SitesList'
 
 export const SharePoint = () => {
-    const [sites, setSites] = useState<Array<Site>>([])
+    //const [sites, setSites] = useState<Array<Site>>([])
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
     const [activeSitesCount, setActiveSitesCount] = useState(0)
 
@@ -74,7 +73,7 @@ export const SharePoint = () => {
 
     useEffect(() => {
         // TODO: fix denied access to sites/getAllSites
-        SharePointService.getAll().then(() => setSites([]))
+        // SharePointService.getAll().then(() => setSites([]))
     }, [])
 
     useEffect(() => {
