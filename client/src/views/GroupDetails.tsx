@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Stats } from '../components/shared/Stats'
-import { Menu } from '../components/Menu'
 import { GroupsService } from '../services/groups'
 import { useSearchParams } from 'react-router-dom'
 import { UsersList } from '../components/UsersList'

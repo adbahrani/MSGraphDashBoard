@@ -10,24 +10,23 @@ import { SharePointSitesList } from '../components/SharePointSitesList'
 
 export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
-    const [sites, setSites] = useState<Array<Site>>([])
+    //const [sites, setSites] = useState<Array<Site>>([])
     const [selectedSite, setSelectedSite] = useState<any | null>(null)
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivityWithSites>>([])
     const [sitesCount, setSitesCount] = useState({
         guestEnabled: 0,
         groupConnected: 0,
         communicationSites: 0,
-        activeSites: 0
+        activeSites: 0,
     })
 
-    
     const periods = [
         { label: 'Last 30 days', value: 30 },
         { label: 'Last 90 days', value: 90 },
     ] as const
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
-    const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
+    //const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
 
     const [activityByGeoLocation, setActivityByGeoLocation] = useState<
         Array<{ geolocation: string; active: number; inactive: number }>
@@ -63,11 +62,9 @@ export const SharePoint = () => {
         ],
     }
 
-
     const topSitesByPageView = useMemo(() => {
-
         const sortedData = sitesActivity.filter((dt: SiteActivityWithSites) => dt.pageViewCount !== undefined)
-        sortedData.sort((a1, a2) => a2.pageViewCount - a1.pageViewCount)
+        //  sortedData.sort((a1, a2) => a2.pageViewCount - a1.pageViewCount)
 
         return sortedData.slice(0, 5)
     }, [sitesActivity])
@@ -92,14 +89,13 @@ export const SharePoint = () => {
     }, [])
 
     useEffect(() => {
-        if(!selectedSite) return;
-
-        (async function(){
+        if (!selectedSite) return
+        ;(async function () {
             const siteAnalyticsData = await SharePointService.getSiteAnalytics(selectedSite.id)
             const lists = await SharePointService.getSiteList(selectedSite.id)
-            
+
             // console.log('data is', siteAnalyticsData, lists);
-        }())
+        })()
     }, [selectedSite])
 
     async function setActivityData() {
@@ -114,10 +110,10 @@ export const SharePoint = () => {
         let groupConnected = 0
         let guestEnabled = 0
         let communicationSites = 0
-        const activityByGeo = []
+        const activityByGeo: any[] = []
         const geoLocIndex: { [geolocation: string]: number } = {}
         for (const { geolocation, lastActivityDate, rootWebTemplate, secureLinkForGuestCount } of sitesActivity) {
-            if(!geolocation) continue;
+            if (!geolocation) continue
             if (geoLocIndex[geolocation] === undefined) {
                 geoLocIndex[geolocation] = activityByGeo.length
                 activityByGeo.push({ geolocation, active: 0, inactive: 0 })
@@ -129,28 +125,24 @@ export const SharePoint = () => {
                 activityByGeo[geoLocIndex[geolocation]].inactive++
             }
 
-            if (rootWebTemplate === "Group") {
+            if (rootWebTemplate === 'Group') {
                 groupConnected++
             }
 
-            if (rootWebTemplate === "Communication Site") {
+            if (rootWebTemplate === 'Communication Site') {
                 communicationSites++
             }
 
             if (secureLinkForGuestCount) {
                 guestEnabled++
             }
-
-
-
-
         }
 
         setSitesCount({
             activeSites,
             guestEnabled,
             groupConnected,
-            communicationSites
+            communicationSites,
         })
         setActivityByGeoLocation(activityByGeo)
     }
@@ -161,34 +153,37 @@ export const SharePoint = () => {
 
     const activeSitesCount = sitesCount.activeSites
 
-    const columnDefTopSites: ColDef[] = [{ field: 'webUrl', headerName: 'Site URL' },
-    { field: 'displayName', headerName: 'Site Name', flex: 10 }, {
-        field: 'pageViewCount',
-        headerName: 'Page Views Count',
-        flex: 4
-    },
-    {
-        field: 'storageUsedInBytes',
-        headerName: 'Storage Used',
-        valueFormatter: (params) => {
-            return params.value ? formatBytes(params.value): ''
+    const columnDefTopSites: ColDef[] = [
+        { field: 'webUrl', headerName: 'Site URL' },
+        { field: 'displayName', headerName: 'Site Name', flex: 10 },
+        {
+            field: 'pageViewCount',
+            headerName: 'Page Views Count',
+            flex: 4,
         },
-        flex: 4
-    }
-        , {
-        field: 'fileCount',
-        headerName: 'Current Files',
-        flex: 4
-    }, {
-        field: 'secureLinkForMemberCount',
-        headerName: 'Engaged Users'
-    }
+        {
+            field: 'storageUsedInBytes',
+            headerName: 'Storage Used',
+            valueFormatter: params => {
+                return params.value ? formatBytes(params.value) : ''
+            },
+            flex: 4,
+        },
+        {
+            field: 'fileCount',
+            headerName: 'Current Files',
+            flex: 4,
+        },
+        {
+            field: 'secureLinkForMemberCount',
+            headerName: 'Engaged Users',
+        },
     ]
 
     return (
         <>
             <div style={{ padding: '80px 64px 0' }}>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'end' }}>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'end' }}>
                     {periods.map(period => (
                         <Chip
                             key={period.value}
@@ -202,29 +197,46 @@ export const SharePoint = () => {
                     ))}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                
-                    {isLoadingSiteActivities ? <div style={{ width: '80%', display: 'flex', gap: '0.5rem' }}>
-                        <BoxLoader numberOfBoxes={8} boxHeight='8rem' boxWidth="18%" />
-                    </div> : <Stats width='80%' numberOfColumns={4} stats={{
-                        "Sites Count": sitesActivity.length,
-                        "Active sites": activeSitesCount,
-                        "Inactive sites": `${sitesActivity.length - activeSitesCount} (
+                    {isLoadingSiteActivities ? (
+                        <div style={{ width: '80%', display: 'flex', gap: '0.5rem' }}>
+                            <BoxLoader numberOfBoxes={8} boxHeight="8rem" boxWidth="18%" />
+                        </div>
+                    ) : (
+                        <Stats
+                            width="80%"
+                            numberOfColumns={4}
+                            stats={{
+                                'Sites Count': sitesActivity.length,
+                                'Active sites': activeSitesCount,
+                                'Inactive sites': `${sitesActivity.length - activeSitesCount} (
                         ${100 - Math.round((100 * activeSitesCount) / sitesActivity.length)} %)`,
-                        "Active vs Total Sites": `${Math.round((100 * activeSitesCount) / sitesActivity.length)} %`,
-                        "Guest Enabled Sites Count": sitesCount.guestEnabled,
-                        "Group-Connected Sites Count": sitesCount.groupConnected,
-                        "Communications Sites Count": sitesCount.communicationSites,
-                    }} />}
+                                'Active vs Total Sites': `${Math.round(
+                                    (100 * activeSitesCount) / sitesActivity.length
+                                )} %`,
+                                'Guest Enabled Sites Count': sitesCount.guestEnabled,
+                                'Group-Connected Sites Count': sitesCount.groupConnected,
+                                'Communications Sites Count': sitesCount.communicationSites,
+                            }}
+                        />
+                    )}
                 </div>
-                <SharePointSitesList handleRowClick={site => {
-                    setSelectedSite(site)
-                }} height="14rem" isLoading={isLoadingSiteActivities} width='80%' columnDefs={columnDefTopSites} sites={topSitesByPageView} />
-                
-                <div style={{display: 'flex', gap: '2rem', marginLeft: '40vw'}}>
-                    <AgChartsReact options={{ ...activityByGeoLocationOptions, width: 400, data: activityByGeoLocation }} />
-                <AgChartsReact options={{ ...topSitesByPageViewOptions, width: 400, data: topSitesByPageView }} />
+                <SharePointSitesList
+                    handleRowClick={site => {
+                        setSelectedSite(site)
+                    }}
+                    height="14rem"
+                    isLoading={isLoadingSiteActivities}
+                    width="80%"
+                    columnDefs={columnDefTopSites}
+                    sites={topSitesByPageView}
+                />
+
+                <div style={{ display: 'flex', gap: '2rem', marginLeft: '40vw' }}>
+                    <AgChartsReact
+                        options={{ ...activityByGeoLocationOptions, width: 400, data: activityByGeoLocation }}
+                    />
+                    <AgChartsReact options={{ ...topSitesByPageViewOptions, width: 400, data: topSitesByPageView }} />
                 </div>
-                
             </div>
             {/* <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
                 <div style={{ width: '50vw', height: '100vh' }}>

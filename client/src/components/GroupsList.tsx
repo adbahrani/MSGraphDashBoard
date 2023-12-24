@@ -6,6 +6,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { Group } from '../services/groups'
 import { useNavigate } from 'react-router-dom'
 import { TableLoader } from './shared/Loaders/TableLoader'
+import { defaultColDef } from '../utils/agGridSettings'
 
 interface GroupsListProps {
     groups: Array<Group>
@@ -42,7 +43,7 @@ export const GroupsList = ({ groups, height, width, columnDefs, isLoading = fals
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
                 onRowClicked={onRowClicked}
-                defaultColDef={{resizable: true, sortable: true}}
+                defaultColDef={defaultColDef}
             ></AgGridReact>}
         </div>
     )

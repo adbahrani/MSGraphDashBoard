@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Stats } from '../components/shared/Stats'
 import { PieData } from '../components/shared/PieData'
 import { Group, GroupsService } from '../services/groups'
@@ -37,7 +37,7 @@ export const Groups = () => {
                 }))
             )
         } catch (e) {
-            console.log('error while loading groups data is', e);
+            console.log('error while loading groups data is', e)
         }
     }
 
@@ -46,7 +46,7 @@ export const Groups = () => {
             setDeletedGroups(await GroupsService.getAllDeletedGroups())
             setIsLoadingDeletedGroups(false)
         } catch (e) {
-            console.log('error while loading deleting groups is', e);
+            console.log('error while loading deleting groups is', e)
         }
     }
     useEffect(() => {
@@ -54,114 +54,143 @@ export const Groups = () => {
         setDeletedGroupData()
     }, [])
 
-    
+    const columnDefGroups: ColDef[] = [
+        { field: 'displayName', headerName: 'Display Name', width: 200 },
+        { field: 'description', headerName: 'Description', flex: 12 },
+        {
+            field: 'owners',
+            valueFormatter: params => {
+                return params.value.length
+            },
+            headerName: 'Owners',
+            flex: 4,
+        },
+        {
+            field: 'members',
+            valueFormatter: params => {
+                return params.value.length
+            },
+            headerName: 'Members',
+            flex: 4,
+        },
+        {
+            headerName: 'Guest',
+            field: 'members',
+            valueFormatter: params => {
+                return params.value.filter((val: any) => val.userType === 'Guest').length
+            },
+            flex: 4,
+        },
+        {
+            field: 'visibility',
+            headerName: 'Visibility',
+            flex: 4,
+        },
+        {
+            headerName: 'Team Status',
+            field: 'resourceProvisioningOptions',
+            valueFormatter: params => {
+                return params.value.includes('Team') ? 'Team Connected' : ''
+            },
+            flex: 4,
+        },
+        {
+            field: 'membershipRule',
+            headerName: 'Membership Rule',
+            flex: 4,
+        },
+        {
+            field: 'createdDateTime',
+            valueFormatter: params => {
+                return params.value ? new Date(params.value).toLocaleString() : ''
+            },
+            headerName: 'Created At',
+            flex: 4,
+        },
+        {
+            field: 'renewedDateTime',
+            headerName: 'Last Activity',
+            valueFormatter: params => {
+                return params.value ? new Date(params.value).toLocaleString() : ''
+            },
+            flex: 4,
+        },
+    ]
 
-    const columnDefGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', width: 200}, { field: 'description', headerName: 'Description', flex: 12 }, 
-    {
-        field: 'owners', valueFormatter: params => {
-            return params.value.length
+    const columnDefDeletedGroups: ColDef[] = [
+        { field: 'displayName', headerName: 'Display Name', width: 180 },
+        { field: 'description', headerName: 'Description', flex: 10 },
+        {
+            field: 'visibility',
+            headerName: 'Visibility',
+            flex: 4,
         },
-        headerName: 'Owners',
-        flex: 4
-    }, {
-        field: 'members', valueFormatter: params => {
-            return params.value.length
+        {
+            field: 'deletedDateTime',
+            headerName: 'Deleted At',
+            valueFormatter: params => {
+                return params.value ? new Date(params.value).toLocaleString() : ''
+            },
+            flex: 4,
         },
-        headerName: 'Members',
-        flex: 4
-
-    }, {
-        headerName: 'Guest', field: 'members', valueFormatter: params => {
-            return params.value.filter((val: any) => val.userType === 'Guest').length
+        {
+            field: 'expirationDateTime',
+            headerName: 'Expiration Time',
+            valueFormatter: params => {
+                return params.value ? new Date(params.value).toLocaleString() : ''
+            },
+            flex: 4,
         },
-        flex: 4
-    }, {
-        field: 'visibility',
-        headerName: 'Visibility',
-        flex: 4
-    }, {
-        headerName: 'Team Status',
-        field: 'resourceProvisioningOptions',
-        valueFormatter: params => {
-            return params.value.includes("Team") ? "Team Connected" : ""
-        },
-        flex: 4
-    }, {
-        field: 'membershipRule',
-        headerName: 'Membership Rule',
-        flex: 4
-    }, {
-        field: 'createdDateTime',
-        valueFormatter: params => {
-            return params.value ? new Date(params.value).toLocaleString() : ''
-        },
-        headerName: 'Created At',
-        flex: 4
-    }, {
-        field: 'renewedDateTime',
-        headerName: 'Last Activity',
-        valueFormatter: params => {
-            return params.value ? new Date(params.value).toLocaleString() : ''
-        },
-        flex: 4
-    }]
-
-
-
-    const columnDefDeletedGroups: ColDef[] = [{ field: 'displayName', headerName: 'Display Name', width: 180}, { field: 'description', headerName: 'Description', flex: 10 }, {
-        field: 'visibility',
-        headerName: 'Visibility',
-        flex: 4
-    }, {
-        field: 'deletedDateTime',
-        headerName: 'Deleted At',
-        valueFormatter: params => {
-            return params.value ? new Date(params.value).toLocaleString() : ''
-        },
-        flex: 4
-    }, {
-        field: 'expirationDateTime',
-        headerName: 'Expiration Time',
-        valueFormatter: params => {
-            return params.value ? new Date(params.value).toLocaleString() : ''
-        },
-        flex: 4
-    }]
-
+    ]
 
     return (
         <>
             <div style={{ padding: '5rem 4rem 0' }}>
-                {isLoadingGroups ? <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <BoxLoader numberOfBoxes={10} boxHeight='8rem' boxWidth="18%" />
-                </div> : <Stats stats={stats} />}
+                {isLoadingGroups ? (
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <BoxLoader numberOfBoxes={10} boxHeight="8rem" boxWidth="18%" />
+                    </div>
+                ) : (
+                    <Stats stats={stats} />
+                )}
                 <div
                     style={{
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '1rem',
-                        marginTop: '2rem'
+                        marginTop: '2rem',
                     }}
                 >
-
-                    <GroupsList columnDefs={columnDefGroups} height='25rem' width='100%' groups={groups} isLoading={isLoadingGroups} />
-
-                    
+                    <GroupsList
+                        columnDefs={columnDefGroups}
+                        height="25rem"
+                        width="100%"
+                        groups={groups}
+                        isLoading={isLoadingGroups}
+                    />
 
                     <div
                         style={{
                             display: 'flex',
                         }}
                     >
-                        <GroupsList columnDefs={columnDefDeletedGroups} height='25rem' width='60vw' groups={deletedGroups} isLoading={isLoadingDeletedGroups} />
-                        <div style={{
-                            width: '20vw',
-                            height: '25rem'
-                        }}>
+                        <GroupsList
+                            columnDefs={columnDefDeletedGroups}
+                            height="25rem"
+                            width="60vw"
+                            groups={deletedGroups}
+                            isLoading={isLoadingDeletedGroups}
+                        />
+                        <div
+                            style={{
+                                width: '20vw',
+                                height: '25rem',
+                            }}
+                        >
                             <PieData
                                 additionalBlockStyles={{
                                     height: '100%',
-                                    boxSizing: 'border-box'
+                                    boxSizing: 'border-box',
                                 }}
                                 height={300}
                                 title="Groups per Connection"
@@ -170,15 +199,17 @@ export const Groups = () => {
                                 fills={['#8bd4eb', '#808080']}
                             />
                         </div>
-                        <div style={{
-                            width: '20vw',
-                            height: '25rem'
-                        }}>
+                        <div
+                            style={{
+                                width: '20vw',
+                                height: '25rem',
+                            }}
+                        >
                             <PieData
                                 height={300}
                                 additionalBlockStyles={{
                                     height: '100%',
-                                    boxSizing: 'border-box'
+                                    boxSizing: 'border-box',
                                 }}
                                 title="Groups per Visibility"
                                 data={pieData}
@@ -187,7 +218,6 @@ export const Groups = () => {
                             />
                         </div>
                     </div>
-
                 </div>
             </div>
         </>

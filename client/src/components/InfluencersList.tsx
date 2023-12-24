@@ -3,6 +3,8 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
+import { defaultColDef } from '../utils/agGridSettings'
+import { Button } from '@mui/material'
 
 interface InfluencersListProps {
     users: Array<{ userName: string; messages: number; calls: number; meetings: number }>
@@ -28,14 +30,18 @@ export const InfluencersList = ({ users }: InfluencersListProps) => {
     return (
         <div
             className="ag-theme-alpine"
-            style={{ margin: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 16px)' }}
+            style={{ margin: '4px', width: 'calc(100% - 8px)', height: 'calc(100% - 40px)' }}
         >
+            <Button onClick={() => gridRef?.current?.api.exportDataAsCsv()} variant="contained" color="info" sx={{m:1}} size='small'>
+                Export To CSV
+            </Button>
             <AgGridReact
                 ref={gridRef}
                 rowData={users}
                 columnDefs={columnDefs}
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
+                defaultColDef={defaultColDef}
             ></AgGridReact>
         </div>
     )

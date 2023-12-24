@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { Team, TeamActivity, TeamsService } from '../services/teams'
+import { useCallback, useEffect, useState } from 'react'
+import { TeamActivity, TeamsService } from '../services/teams'
 import { Block } from '../components/shared/Block'
 import Box from '@mui/material/Box'
 import { TeamsList } from '../components/TeamsList'
@@ -7,9 +7,12 @@ import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
 import { UsersService } from '../services/users'
 import { InfluencersList } from '../components/InfluencersList'
+import { TeamsFilesList } from '../components/TeamsFilesList'
+import { Team } from '@microsoft/microsoft-graph-types'
 
 export const Teams = () => {
     const [teams, setTeams] = useState<Array<Team & TeamActivity>>([])
+    const [filesActivies, setFilesActivies] = useState<Array<any>>()
     const [teamsStats, setTeamsStats] = useState({
         total: 0,
         active: 0,
@@ -110,9 +113,20 @@ export const Teams = () => {
         ],
     }
 
+    const getFileActivitiesByTeams = useCallback(async () => {
+        try {
+            const data = await TeamsService.getFileActivitiesByTeams()
+            setFilesActivies(data)
+        } catch (error: any) {
+            console.error('Error fetching file activities:', error.message)
+        }
+    }, [])
+
+    // const FileActivitiesByTeamsWaited = async () => await
     useEffect(() => {
         const minDate = new Date()
         minDate.setDate(minDate.getDate() - selectedPeriod)
+        getFileActivitiesByTeams()
 
         TeamsService.getActivity(selectedPeriod).then(teams => {
             setTeams(teams)
@@ -132,7 +146,7 @@ export const Teams = () => {
                 stats.guestEnabled += guests ? 1 : 0
                 stats.messages += postMessages + replyMessages + urgentMessages + channelMessages
                 stats.meetings += meetingsOrganized
-                stats.orphaned += activity.summary.ownersCount === 0 ? 1 : 0
+                stats.orphaned += activity.summary?.ownersCount === 0 ? 1 : 0
             }
             setTeamsStats(currStats => ({
                 ...currStats,
@@ -261,7 +275,7 @@ export const Teams = () => {
 
             <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
                 <Block title="File collaboration">
-                    <div style={{ height: '280px' }}>Missing data</div>
+                    <TeamsFilesList FilesByTeams={filesActivies} />
                 </Block>
                 <Block title="Top influencers">
                     <div style={{ height: '280px' }}>

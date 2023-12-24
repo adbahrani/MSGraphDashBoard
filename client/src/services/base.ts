@@ -1,4 +1,5 @@
 import { TokenService } from './token'
+import { Client } from '@microsoft/microsoft-graph-client'
 
 export class BaseService {
     protected static async httpGet(url: string) {
@@ -12,3 +13,10 @@ export class BaseService {
         }).then(response => response.json())
     }
 }
+
+export const graphClient = Client.init({
+    authProvider: async done => {
+        const accessToken = await TokenService.getToken()
+        done(null, accessToken)
+    },
+})

@@ -3,8 +3,10 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
-import { Team, TeamActivity } from '../services/teams'
+import { TeamActivity } from '../services/teams'
 import { useNavigate } from 'react-router-dom'
+import { defaultColDef } from '../utils/agGridSettings'
+import { Team } from '@microsoft/microsoft-graph-types'
 
 interface TeamsListProps {
     teams: Array<Team & TeamActivity>
@@ -52,10 +54,7 @@ export const TeamsList = ({ teams }: TeamsListProps) => {
     }, [])
 
     return (
-        <div
-            className="ag-theme-alpine"
-            style={{ margin: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 16px)' }}
-        >
+        <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={teams}
@@ -63,6 +62,7 @@ export const TeamsList = ({ teams }: TeamsListProps) => {
                 getRowId={getRowId}
                 onFirstDataRendered={onFirstDataRendered}
                 onRowClicked={onRowClicked}
+                defaultColDef={defaultColDef}
             ></AgGridReact>
         </div>
     )

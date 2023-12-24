@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Menu } from '../components/Menu'
 import { Block } from '../components/shared/Block'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
