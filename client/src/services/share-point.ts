@@ -53,15 +53,15 @@ export class SharePointService extends BaseService {
     }
 
     public static async getSiteWithActivity(period: 30 | 90): Promise<Array<SiteActivityWithSites>> {
-        const sites = await this.getAll();
+        const sites = await this.getAll()
         const siteActivities = await this.getActivity(period)
-        
+
         const siteWithActivity = sites.map(site => {
             const [, siteActivityId] = site.id.split(',')
             const siteActivity = siteActivities.find(siteActivity => siteActivity.siteId === siteActivityId) || null
             return {
                 ...site,
-                ...siteActivity
+                ...siteActivity,
             }
         })
 
@@ -85,6 +85,4 @@ export class SharePointService extends BaseService {
 
         return value
     }
-
-    
 }

@@ -48,7 +48,7 @@ export const Users = () => {
 
     return (
         <>
-            <div style={{ padding: '80px 64px 0' }}>
+            <div style={{}}>
                 <Stats stats={stats} />
                 <div
                     style={{

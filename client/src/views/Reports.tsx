@@ -25,7 +25,7 @@ export const Reports = () => {
 
     return (
         <>
-            <div style={{ padding: '80px 64px 0' }}>
+            <div style={{  }}>
                 <Stack spacing={2}>
                     {Object.entries(reportTypes).map(([reportType, title]) => (
                         <Card key={reportType} sx={{ minWidth: 275 }}>
