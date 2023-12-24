@@ -238,7 +238,7 @@ export const Teams = () => {
     )
 
     return (
-        <div style={{ padding: '80px 64px 0' }}>
+        <div style={{}}>
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                 {periods.map(period => (
                     <Chip

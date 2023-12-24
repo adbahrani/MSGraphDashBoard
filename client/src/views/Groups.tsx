@@ -145,7 +145,7 @@ export const Groups = () => {
 
     return (
         <>
-            <div style={{ padding: '5rem 4rem 0' }}>
+            <div style={{ padding: 5}}>
                 {isLoadingGroups ? (
                     <div style={{ display: 'flex', gap: '0.5rem' }}>
                         <BoxLoader numberOfBoxes={10} boxHeight="8rem" boxWidth="18%" />

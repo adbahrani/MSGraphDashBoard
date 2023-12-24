@@ -37,6 +37,8 @@ export interface SiteActivity {
     reportPeriod: string
 }
 
+export type SiteActivityWithSites = Partial<SiteActivity & Site>
+
 export class SharePointService extends BaseService {
     public static async getAll(): Promise<Array<Site>> {
         const { value } = await this.httpGet(graphLinks.sites)
@@ -46,6 +48,40 @@ export class SharePointService extends BaseService {
 
     public static async getActivity(period: 30 | 90): Promise<Array<SiteActivity>> {
         const { value } = await this.httpGet(graphLinks.sitesActivity(period))
+
+        return value
+    }
+
+    public static async getSiteWithActivity(period: 30 | 90): Promise<Array<SiteActivityWithSites>> {
+        const sites = await this.getAll()
+        const siteActivities = await this.getActivity(period)
+
+        const siteWithActivity = sites.map(site => {
+            const [, siteActivityId] = site.id.split(',')
+            const siteActivity = siteActivities.find(siteActivity => siteActivity.siteId === siteActivityId) || null
+            return {
+                ...site,
+                ...siteActivity,
+            }
+        })
+
+        return siteWithActivity
+    }
+
+    public static async getFileCount(period: 30 | 90): Promise<Array<SiteActivity>> {
+        const { value } = await this.httpGet(graphLinks.fileCount(period))
+
+        return value
+    }
+
+    public static async getSiteAnalytics(siteId: string): Promise<Array<SiteActivity>> {
+        const { value } = await this.httpGet(graphLinks.siteAnalytics(siteId))
+
+        return value
+    }
+
+    public static async getSiteList(siteId: string): Promise<Array<SiteActivity>> {
+        const { value } = await this.httpGet(graphLinks.siteList(siteId))
 
         return value
     }

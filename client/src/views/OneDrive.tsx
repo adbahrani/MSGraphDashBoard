@@ -110,7 +110,7 @@ export const OneDrive = () => {
 
     return (
         <>
-            <div style={{ padding: '80px 64px 0' }}>
+            <div style={{  }}>
                 <Block title="Sites count">
                     <Box component="span" sx={boxStyle}>
                         {oneDriveActivity.length}

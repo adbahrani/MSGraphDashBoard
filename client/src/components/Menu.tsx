@@ -80,21 +80,17 @@ export const Menu = () => {
     return (
         <div
             style={{
-                height: '60px',
-                width: 'calc(90vw - 64px)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                margin: '10px 5vw',
-                padding: '0 32px',
-                fontSize: '16px',
+                margin: 20,
+                padding: 10,
                 fontWeight: 600,
                 borderRadius: '16px',
                 backgroundColor: 'rgba(0,0,0,0.03)',
-                position: 'absolute',
             }}
         >
-            <div style={{ fontSize: '22px' }}>
+            <div style={{ fontSize: '22', marginInline: 1 }}>
                 <Link to="/" style={linkStyle}>
                     M365 Pulse
                 </Link>

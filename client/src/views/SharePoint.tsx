@@ -1,25 +1,36 @@
-import { useEffect, useState } from 'react'
-import { Block } from '../components/shared/Block'
-import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
+import { useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
-import { SharePointService, SiteActivity } from '../services/share-point'
+import { SharePointService, Site, SiteActivityWithSites } from '../services/share-point'
+import { Stats } from '../components/shared/Stats'
+import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
+import { ColDef } from 'ag-grid-community'
+import { formatBytes } from '../utils/helpers'
+import { SharePointSitesList } from '../components/SharePointSitesList'
+import { columnDefTopSites } from '../columnsDef/sharePoint'
+import { Drawer } from '@mui/material'
 import { SitesList } from '../components/SitesList'
 
 export const SharePoint = () => {
-    //const [sites, setSites] = useState<Array<Site>>([])
-    const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
-    const [activeSitesCount, setActiveSitesCount] = useState(0)
-
+    const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
+    const [sites, setSites] = useState<Array<Site>>([])
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+    const [selectedSite, setSelectedSite] = useState<any | null>(null)
+    const [sitesActivity, setSitesActivity] = useState<Array<SiteActivityWithSites>>([])
+    const [sitesCount, setSitesCount] = useState({
+        guestEnabled: 0,
+        groupConnected: 0,
+        communicationSites: 0,
+        activeSites: 0,
+    })
+
     const periods = [
         { label: 'Last 30 days', value: 30 },
         { label: 'Last 90 days', value: 90 },
     ] as const
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
-    const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
+    //const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
 
     const [activityByGeoLocation, setActivityByGeoLocation] = useState<
         Array<{ geolocation: string; active: number; inactive: number }>
@@ -55,7 +66,12 @@ export const SharePoint = () => {
         ],
     }
 
-    const [topSitesByPageView, setTopSitesByPageView] = useState<Array<{ siteName: string; pageViewCount: number }>>([])
+    const topSitesByPageView = useMemo(() => {
+        const sortedData = sitesActivity.filter((dt: SiteActivityWithSites) => dt.pageViewCount !== undefined)
+        //  sortedData.sort((a1, a2) => a2.pageViewCount - a1.pageViewCount)
+
+        return sortedData.slice(0, 5)
+    }, [sitesActivity])
     const topSitesByPageViewOptions = {
         title: {
             text: 'Top 5 sites / views',
@@ -63,7 +79,7 @@ export const SharePoint = () => {
         series: [
             {
                 type: 'column' as const,
-                xKey: 'siteName',
+                xKey: 'ownerDisplayName',
                 yKey: 'pageViewCount',
                 yName: 'Page Views',
                 stacked: true,
@@ -73,84 +89,134 @@ export const SharePoint = () => {
 
     useEffect(() => {
         // TODO: fix denied access to sites/getAllSites
-        // SharePointService.getAll().then(() => setSites([]))
+        SharePointService.getAll().then(() => setSites([]))
     }, [])
 
     useEffect(() => {
-        SharePointService.getActivity(selectedPeriod).then(sitesActivity => {
-            setSitesActivity(sitesActivity)
+        if (!selectedSite) return
+        ;(async function () {
+            const siteAnalyticsData = await SharePointService.getSiteAnalytics(selectedSite.id)
+            const lists = await SharePointService.getSiteList(selectedSite.id)
 
-            const minDate = new Date()
-            minDate.setDate(minDate.getDate() - selectedPeriod)
+            // console.log('data is', siteAnalyticsData, lists);
+        })()
+    }, [selectedSite])
 
-            let activeSites = 0
-            const activityByGeo: any[] = []
-            const geoLocIndex: { [geolocation: string]: number } = {}
-            for (const { geolocation, lastActivityDate } of sitesActivity) {
-                if (geoLocIndex[geolocation] === undefined) {
-                    geoLocIndex[geolocation] = activityByGeo.length
-                    activityByGeo.push({ geolocation, active: 0, inactive: 0 })
-                }
-                if (lastActivityDate && new Date(lastActivityDate) >= minDate) {
-                    activeSites++
-                    activityByGeo[geoLocIndex[geolocation]].active++
-                } else {
-                    activityByGeo[geoLocIndex[geolocation]].inactive++
-                }
+    async function setActivityData() {
+        const sitesActivity = await SharePointService.getSiteWithActivity(selectedPeriod)
+        setSitesActivity([...sitesActivity])
+        setIsLoadingSiteActivities(false)
+
+        const minDate = new Date()
+        minDate.setDate(minDate.getDate() - selectedPeriod)
+
+        let activeSites = 0
+        let groupConnected = 0
+        let guestEnabled = 0
+        let communicationSites = 0
+        const activityByGeo: any[] = []
+        const geoLocIndex: { [geolocation: string]: number } = {}
+        for (const { geolocation, lastActivityDate, rootWebTemplate, secureLinkForGuestCount } of sitesActivity) {
+            if (!geolocation) continue
+            if (geoLocIndex[geolocation] === undefined) {
+                geoLocIndex[geolocation] = activityByGeo.length
+                activityByGeo.push({ geolocation, active: 0, inactive: 0 })
+            }
+            if (lastActivityDate && new Date(lastActivityDate) >= minDate) {
+                activeSites++
+                activityByGeo[geoLocIndex[geolocation]].active++
+            } else {
+                activityByGeo[geoLocIndex[geolocation]].inactive++
             }
 
-            setActiveSitesCount(activeSites)
-            setActivityByGeoLocation(activityByGeo)
-            setTopSitesByPageView([
-                ...sitesActivity
-                    .map(({ ownerDisplayName, pageViewCount }) => ({
-                        siteName: ownerDisplayName,
-                        pageViewCount,
-                    }))
-                    .sort((a1, a2) => a2.pageViewCount - a1.pageViewCount)
-                    .slice(0, 5),
-            ])
+            if (rootWebTemplate === 'Group') {
+                groupConnected++
+            }
+
+            if (rootWebTemplate === 'Communication Site') {
+                communicationSites++
+            }
+
+            if (secureLinkForGuestCount) {
+                guestEnabled++
+            }
+        }
+
+        setSitesCount({
+            activeSites,
+            guestEnabled,
+            groupConnected,
+            communicationSites,
         })
+        setActivityByGeoLocation(activityByGeo)
+    }
+
+    useEffect(() => {
+        setActivityData()
     }, [selectedPeriod])
+
+    const activeSitesCount = sitesCount.activeSites
 
     return (
         <>
-            <div style={{ padding: '80px 64px 0' }}>
-                <Block title="Sites count" onClick={() => setIsDrawerOpen(true)}>
-                    <Box component="span" sx={boxStyle}>
-                        {sitesActivity.length}
-                    </Box>
-                </Block>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    {periods.map(period => (
-                        <Chip
-                            key={period.value}
-                            label={period.label}
-                            variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
-                            onClick={() => setSelectedPeriod(period.value)}
-                        />
-                    ))}
+            <div style={{ display: 'flex', justifyContent: 'center', margin: 5 }}>
+                {periods.map(period => (
+                    <Chip
+                        key={period.value}
+                        sx={{ m: 1 }}
+                        label={period.label}
+                        variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
+                        onClick={() => {
+                            setIsLoadingSiteActivities(true)
+                            setSelectedPeriod(period.value)
+                        }}
+                    />
+                ))}
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                {isLoadingSiteActivities ? (
+                    <div style={{ width: '80%', display: 'flex', gap: '0.5rem' }}>
+                        <BoxLoader numberOfBoxes={8} boxHeight="8rem" boxWidth="18%" />
+                    </div>
+                ) : (
+                    <Stats
+                        numberOfColumns={4}
+                        stats={{
+                            'Sites Count': sitesActivity.length,
+                            'Active sites': activeSitesCount,
+                            'Inactive sites': `${sitesActivity.length - activeSitesCount} (
+                        ${100 - Math.round((100 * activeSitesCount) / sitesActivity.length)} %)`,
+                            'Active vs Total Sites': `${Math.round((100 * activeSitesCount) / sitesActivity.length)} %`,
+                            'Guest Enabled Sites Count': sitesCount.guestEnabled,
+                            'Group-Connected Sites Count': sitesCount.groupConnected,
+                            'Communications Sites Count': sitesCount.communicationSites,
+                        }}
+                    />
+                )}
+            </div>
+            <SharePointSitesList
+                handleRowClick={site => {
+                    setSelectedSite(site)
+                }}
+                height="14rem"
+                isLoading={isLoadingSiteActivities}
+                width="80%"
+                columnDefs={columnDefTopSites}
+                sites={topSitesByPageView}
+            />
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div>
+                    <AgChartsReact
+                        options={{ ...activityByGeoLocationOptions, width: 400, data: activityByGeoLocation }}
+                    />
                 </div>
-                <Box component="div" sx={{ display: 'flex', gap: '8px' }}>
-                    <Block title="Active sites">
-                        <Box component="span" sx={boxStyle}>
-                            {activeSitesCount} ({Math.round((100 * activeSitesCount) / sitesActivity.length)} %)
-                        </Box>
-                    </Block>
-                    <Block title="Inactive sites">
-                        <Box component="span" sx={boxStyle}>
-                            {sitesActivity.length - activeSitesCount} (
-                            {100 - Math.round((100 * activeSitesCount) / sitesActivity.length)} %)
-                        </Box>
-                    </Block>
-                </Box>
-                <AgChartsReact options={{ ...activityByGeoLocationOptions, data: activityByGeoLocation }} />
-                <AgChartsReact options={{ ...topSitesByPageViewOptions, data: topSitesByPageView }} />
+                <div>
+                    <AgChartsReact options={{ ...topSitesByPageViewOptions, width: 400, data: topSitesByPageView }} />
+                </div>
             </div>
             <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-                <div style={{ width: '50vw', height: '100vh' }}>
-                    <SitesList sites={sitesActivity} />
-                </div>
+                <div style={{ width: '50vw', height: '100vh' }}>{/* <SitesList sites={sitesActivity} /> */}</div>
             </Drawer>
         </>
     )
