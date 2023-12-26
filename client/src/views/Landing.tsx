@@ -46,7 +46,7 @@ export const Landing = () => {
                                 </Box>
                             </Grid>
                             <Grid item xs={12} lg={6}>
-                                <img src="/18383.jpg" alt="Hero" width="550" height="550" />
+                                <img src="/18383.jpg" alt="Hero" width="100%" />
                             </Grid>
                         </Grid>
                     </Container>
