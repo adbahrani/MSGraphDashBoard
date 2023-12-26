@@ -13,6 +13,7 @@ import { OneDrive } from './views/OneDrive'
 import { Login } from './views/Login'
 import { Menu } from './components/Menu'
 import Container from '@mui/material/Container'
+import Admin from './views/Admin'
 
 export default function App() {
     return (
@@ -22,6 +23,7 @@ export default function App() {
                 <Routes>
                     <Route path="/" element={<Landing />} />
                     <Route path="/users" element={<Users />} />
+                    <Route path="/admin" element={<Admin />} />
                     <Route path="/groups" element={<Groups />} />
                     <Route path="/group" element={<GroupDetails />} />
                     <Route path="/teams" element={<Teams />} />
