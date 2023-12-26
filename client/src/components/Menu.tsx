@@ -12,7 +12,7 @@ const isSignedIn = () => !!localStorage.getItem('email')
 let links: MenuLink[] = [
     { title: 'Home', to: '/', activeSet: new Set(['/']) },
     { title: 'About', to: '/#about', activeSet: new Set(['/#about']) },
-    { title: 'Services', to: '/#services', activeSet: new Set(['/#services']) },
+    { title: 'Admin', to: '/admin', activeSet: new Set(['/admin']) },
     {
         title: 'Data Analytics',
         to: '#',

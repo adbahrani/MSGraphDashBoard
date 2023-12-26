@@ -26,7 +26,7 @@ app.get('/token', async (_, res) => {
         grant_type: 'client_credentials',
     }
 
-    app.get('*', (req, res) => {
+    app.get('*', (_, res) => {
         res.sendFile(path.join(__dirname, '../client/build/index.html'))
     })
 
