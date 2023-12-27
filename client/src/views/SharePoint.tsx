@@ -1,14 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import { AgChartsReact } from 'ag-charts-react'
-import { SharePointService, Site, SiteActivityWithSites } from '../services/share-point'
+import { SharePointService, Site, SiteActivity, SiteActivityWithSites } from '../services/share-point'
 import { Stats } from '../components/shared/Stats'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 import { ColDef } from 'ag-grid-community'
 import { formatBytes } from '../utils/helpers'
 import { SharePointSitesList } from '../components/SharePointSitesList'
 import { columnDefTopSites } from '../columnsDef/sharePoint'
-import { Drawer } from '@mui/material'
+import { Box, Button, Drawer, Stack } from '@mui/material'
 import { SitesList } from '../components/SitesList'
 
 export const SharePoint = () => {
@@ -67,8 +67,8 @@ export const SharePoint = () => {
     }
 
     const topSitesByPageView = useMemo(() => {
-        const sortedData = sitesActivity.filter((dt: SiteActivityWithSites) => dt.pageViewCount !== undefined)
-        //  sortedData.sort((a1, a2) => a2.pageViewCount - a1.pageViewCount)
+        const sortedData  = sitesActivity.filter((dt: SiteActivityWithSites) => dt.pageViewCount !== undefined) as SiteActivity[]
+        sortedData.sort((a1, a2) =>  a2.pageViewCount - a1.pageViewCount)
 
         return sortedData.slice(0, 5)
     }, [sitesActivity])
@@ -175,7 +175,7 @@ export const SharePoint = () => {
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
                 {isLoadingSiteActivities ? (
-                    <div style={{ width: '80%', display: 'flex', gap: '0.5rem' }}>
+                    <div style={{ width: '100%', display: 'flex', gap: '0.5rem' }}>
                         <BoxLoader numberOfBoxes={8} boxHeight="8rem" boxWidth="18%" />
                     </div>
                 ) : (
@@ -194,6 +194,7 @@ export const SharePoint = () => {
                     />
                 )}
             </div>
+            <Stack direction="row" alignItems="center" spacing={1}>
             <SharePointSitesList
                 handleRowClick={site => {
                     setSelectedSite(site)
@@ -204,7 +205,10 @@ export const SharePoint = () => {
                 columnDefs={columnDefTopSites}
                 sites={topSitesByPageView}
             />
-
+            <Button variant="contained" color="info" size='medium'>
+                Click For Site Stats
+            </Button>
+            </Stack>
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <div>
                     <AgChartsReact
