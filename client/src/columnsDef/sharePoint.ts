@@ -28,3 +28,33 @@ export const columnDefTopSites: ColDef[] = [
         flex: 2
     },
 ]
+
+export const columnDefSiteAudience: ColDef[] = [
+    { field: 'name', headerName: 'Name/Email', flex: 6 },
+    { field: 'department', headerName: 'Department', flex: 2 },
+    {
+        field: 'country',
+        headerName: 'Country',
+        flex: 2,
+    },
+    {
+        field: 'city',
+        headerName: 'City',
+        flex: 3,
+    }
+]
+
+export const columnDefSelectedSitePages: ColDef[] = [
+    { field: 'webUrl', headerName: 'Page URL', flex: 6 },
+    { field: 'name', headerName: 'Page Name', flex: 2 },
+    {
+        field: 'views',
+        headerName: 'Views',
+        flex: 2,
+    },
+    {
+        field: 'unique',
+        headerName: 'Unique Viewers',
+        flex: 3,
+    }
+]
