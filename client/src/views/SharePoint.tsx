@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
-import { Site, List } from '@microsoft/microsoft-graph-types'
+import { Site, ItemActivityStat } from '@microsoft/microsoft-graph-types'
 import { AgChartsReact } from 'ag-charts-react'
 import { SharePointService, SiteActivity, SiteActivityWithSites } from '../services/share-point'
 import { Stats } from '../components/shared/Stats'
@@ -48,7 +48,7 @@ export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
     const [sites, setSites] = useState<Array<Site>>([])
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [selectedSitePages, setSelectedSitePages] = useState<Array<List>>([])
+    const [selectedSitePages, setSelectedSitePages] = useState<{[key: string]: ItemActivityStat & {hasError: boolean}}>({})
     const [selectedSite, setSelectedSite] = useState<any | null>(null)
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
     const [sitesWithActivity, setSitesWithActivity] = useState<Array<SiteActivityWithSites>>([])
@@ -98,13 +98,13 @@ export const SharePoint = () => {
     }, [])
 
     useEffect(() => {
-        if (!selectedSite) return;
         (async function () {
-            const siteAnalyticsData = await SharePointService.getSiteAnalytics(selectedSite.siteId)
-            const lists = await SharePointService.getSiteList(selectedSite.id)
-            setSelectedSitePages(lists)
+            // Considered data for all sites, if only top 5 sites needed we can use topSitesByPageView instead
+            const siteAnalyticsData = await SharePointService.getAllAnalytics(sitesWithActivity.map((site) => site.siteId!))
+            //const siteAnalyticsData = await SharePointService.getAllAnalytics(.map((site) => site.siteId))
+            setSelectedSitePages(siteAnalyticsData)
         })()
-    }, [selectedSite])
+    }, [sitesWithActivity])
 
     async function setActivityData() {
         const {
@@ -258,7 +258,12 @@ export const SharePoint = () => {
                     isLoading={isLoadingSiteActivities}
                     width="100%"
                     columnDefs={columnDefSelectedSitePages}
-                    sites={selectedSitePages}
+                    sites={sitesWithActivity.filter((site) => site.siteId && !selectedSitePages[site.siteId]?.hasError).map((site) => {
+                        return {
+                            ...site,
+                            ...selectedSitePages[site.siteId!]
+                        }
+                    })}
                 />
                 </Block>
             </Stack>

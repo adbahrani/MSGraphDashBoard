@@ -48,12 +48,12 @@ export const columnDefSelectedSitePages: ColDef[] = [
     { field: 'webUrl', headerName: 'Page URL', flex: 6 },
     { field: 'name', headerName: 'Page Name', flex: 2 },
     {
-        field: 'views',
+        field: 'access.actionCount',
         headerName: 'Views',
         flex: 2,
     },
     {
-        field: 'unique',
+        field: 'access.actorCount',
         headerName: 'Unique Viewers',
         flex: 3,
     }

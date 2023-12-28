@@ -1,4 +1,5 @@
-import { List, Site } from '@microsoft/microsoft-graph-types'
+import { List, Site, ItemActivityStat } from '@microsoft/microsoft-graph-types'
+import pAll from 'p-all';
 import { graphLinks } from '../graphHelper'
 import { BaseService, graphClient } from './base' 
 
@@ -69,13 +70,33 @@ export class SharePointService extends BaseService {
         return value
     }
 
-    public static async getSiteAnalytics(siteId: string): Promise<Array<SiteActivity>> {
-        const { value } = await graphClient.api(`sites/${siteId}/analytics/allTime`).get()
-        return value
+    public static async getSiteAnalytics(siteId: string): Promise<ItemActivityStat> {
+        return graphClient.api(`sites/${siteId}/analytics/allTime`).get()
     }
 
     public static async getSiteList(siteId: string): Promise<Array<List>> {
         const { value } = await graphClient.api(`sites/${siteId}/lists`).get()
         return value
+    }
+
+    public static async getAllAnalytics(siteIds: Array<string>): Promise<{[key: string]: ItemActivityStat & {hasError: boolean}}>{
+        const actions = siteIds.map((siteId) => async () => {
+            try{
+                const response = await this.getSiteAnalytics(siteId)
+                return {
+                    ...response,
+                    hasError: false
+                };
+            }catch(e){
+                return {hasError: true}
+            }   
+        })
+        const resp = await pAll(actions, {concurrency: 10})
+        return siteIds.reduce((acc, siteId, index) => {
+            return {
+                ...acc,
+            [siteId]: resp[index]
+            }
+        }, {})
     }
 }
