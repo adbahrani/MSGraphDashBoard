@@ -10,6 +10,7 @@ import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 import { SharePointSitesList } from '../components/SharePointSitesList'
 import { columnDefSelectedSitePages, columnDefSiteAudience, columnDefTopSites } from '../columnsDef/sharePoint'
 import { SitesList } from '../components/SitesList'
+import { Block } from '../components/shared/Block'
 
 const activityByGeoLocationOptions = {
     theme: {
@@ -184,6 +185,8 @@ export const SharePoint = () => {
                 ))}
             </Stack>
 
+            
+
             <Stack alignItems="center">
                 {isLoadingSiteActivities ? (
                     <Stack direction="row" gap="0.5rem" sx={{ width: '100%' }}>
@@ -206,6 +209,7 @@ export const SharePoint = () => {
                 )}
             </Stack>
             <Stack direction="row" alignItems="start" spacing={1}>
+            <Block title="Top Sites By Views">
                 <SharePointSitesList
                     handleRowClick={site => {
                         setSelectedSite(site)
@@ -213,10 +217,11 @@ export const SharePoint = () => {
                     }}
                     height="35rem"
                     isLoading={isLoadingSiteActivities}
-                    width="75%"
+                    width="100%"
                     columnDefs={columnDefTopSites}
                     sites={topSitesByPageView}
                 />
+                </Block>
                 <Stack>
                     <div>
                         <AgChartsReact
@@ -230,6 +235,7 @@ export const SharePoint = () => {
             </Stack>
 
             <Stack direction="row">
+            <Block title="Site Audience by: Department, Country, City">
                 <SharePointSitesList
                     handleRowClick={site => {
                         setSelectedSite(site)
@@ -237,10 +243,12 @@ export const SharePoint = () => {
                     }}
                     height="25rem"
                     isLoading={isLoadingSiteActivities}
-                    width="40%"
+                    width="100%"
                     columnDefs={columnDefSiteAudience}
                     sites={[]}
                 />
+                </Block>
+                <Block title="Selected Site Pages/Top Page By Views">
                 <SharePointSitesList
                     handleRowClick={site => {
                         setSelectedSite(site)
@@ -248,10 +256,11 @@ export const SharePoint = () => {
                     }}
                     height="25rem"
                     isLoading={isLoadingSiteActivities}
-                    width="60%"
+                    width="100%"
                     columnDefs={columnDefSelectedSitePages}
                     sites={selectedSitePages}
                 />
+                </Block>
             </Stack>
 
             <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
