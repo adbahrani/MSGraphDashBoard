@@ -1,4 +1,4 @@
-import { Site } from '@microsoft/microsoft-graph-types'
+import { List, Site } from '@microsoft/microsoft-graph-types'
 import { graphLinks } from '../graphHelper'
 import { BaseService, graphClient } from './base' 
 
@@ -74,7 +74,7 @@ export class SharePointService extends BaseService {
         return value
     }
 
-    public static async getSiteList(siteId: string): Promise<Array<Site>> {
+    public static async getSiteList(siteId: string): Promise<Array<List>> {
         const { value } = await graphClient.api(`sites/${siteId}/lists`).get()
         return value
     }

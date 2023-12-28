@@ -3,7 +3,7 @@ import { ColDef } from 'ag-grid-community'
 
 export const columnDefTopSites: ColDef[] = [
     { field: 'webUrl', headerName: 'Site URL', flex: 6 },
-    { field: 'displayName', headerName: 'Site Name', flex: 10 },
+    { field: 'displayName', headerName: 'Site Name', flex: 5 },
     {
         field: 'pageViewCount',
         headerName: 'Page Views Count',

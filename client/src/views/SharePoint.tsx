@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
-import { Site } from '@microsoft/microsoft-graph-types'
+import { Site, List } from '@microsoft/microsoft-graph-types'
 import { AgChartsReact } from 'ag-charts-react'
 import { SharePointService, SiteActivity, SiteActivityWithSites } from '../services/share-point'
 import { Stats } from '../components/shared/Stats'
@@ -47,7 +47,7 @@ export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
     const [sites, setSites] = useState<Array<Site>>([])
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [selectedSitePages, setSelectedSitePages] = useState<Array<Site>>([])
+    const [selectedSitePages, setSelectedSitePages] = useState<Array<List>>([])
     const [selectedSite, setSelectedSite] = useState<any | null>(null)
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
     const [sitesWithActivity, setSitesWithActivity] = useState<Array<SiteActivityWithSites>>([])

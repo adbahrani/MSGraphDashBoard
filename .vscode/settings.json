@@ -8,8 +8,5 @@
     "eslint.validate": [
         "javascript",
         "typescript"
-    ],
-    "[typescriptreact]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features"
-    }
+    ]
 }
