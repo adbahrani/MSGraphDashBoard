@@ -23,6 +23,7 @@
         "url": "https://github.com/adbahrani/MSGraphDashBoard/issues"
     },
     "devDependencies": {
+        "@microsoft/microsoft-graph-types-beta": "^0.42.0-preview",
         "@typescript-eslint/eslint-plugin": "^6.15.0",
         "@typescript-eslint/parser": "^6.15.0",
         "concurrently": "^8.2.2",
@@ -35,6 +36,7 @@
     "description": "",
     "dependencies": {
         "dotenv": "^16.3.1",
+        "p-all": "^5.0.0",
         "ts-node": "^10.9.2",
         "typescript": "^5.3.3"
     },

@@ -15,6 +15,8 @@ export class BaseService {
 }
 
 export const graphClient = Client.init({
+    // For supporting beta version
+    defaultVersion: 'beta',
     authProvider: async done => {
         const accessToken = await TokenService.getToken()
         done(null, accessToken)
