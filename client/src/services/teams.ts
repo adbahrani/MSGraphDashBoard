@@ -1,6 +1,6 @@
 import { graphLinks } from '../graphHelper'
 import { BaseService, graphClient } from './base'
-import { Drive, Team } from '@microsoft/microsoft-graph-types'
+import { Drive, Team } from '@microsoft/microsoft-graph-types-beta'
 
 export interface TeamActivity {
     teamId: string
@@ -23,7 +23,7 @@ export interface TeamActivity {
             urgentMessages: number
             mentions: number
             guests: number
-        },
+        }
     ]
 }
 

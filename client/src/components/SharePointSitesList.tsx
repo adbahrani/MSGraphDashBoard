@@ -3,8 +3,10 @@ import { AgGridReact } from 'ag-grid-react'
 import { useCallback, useMemo, useRef } from 'react'
 import { TableLoader } from './shared/Loaders/TableLoader'
 import { defaultColDef } from '../utils/agGridSettings'
+import { Block } from './shared/Block'
 
 export const SharePointSitesList = <T,>({
+    title,
     sites,
     height,
     width,
@@ -12,6 +14,7 @@ export const SharePointSitesList = <T,>({
     isLoading = false,
     handleRowClick,
 }: {
+    title?: string
     sites: Array<T>
     width: string
     height: string
@@ -34,27 +37,29 @@ export const SharePointSitesList = <T,>({
     }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
-            {isLoading ? (
-                <TableLoader
-                    width={width}
-                    height={height}
-                    headers={columnDefs.map(columDef => columDef.headerName || '')}
-                    rowsNum={6}
-                />
-            ) : (
-                <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
-                    <AgGridReact
-                        ref={gridRef}
-                        rowData={sites}
-                        columnDefs={columnDefs}
-                        getRowId={getRowId}
-                        onFirstDataRendered={onFirstDataRendered}
-                        onRowClicked={onRowClicked}
-                        defaultColDef={defaultColDef}
-                    ></AgGridReact>
-                </div>
-            )}
-        </div>
+        <Block title={title}>
+            <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
+                {isLoading ? (
+                    <TableLoader
+                        width={width}
+                        height={height}
+                        headers={columnDefs.map(columDef => columDef.headerName || '')}
+                        rowsNum={6}
+                    />
+                ) : (
+                    <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
+                        <AgGridReact
+                            ref={gridRef}
+                            rowData={sites}
+                            columnDefs={columnDefs}
+                            getRowId={getRowId}
+                            onFirstDataRendered={onFirstDataRendered}
+                            onRowClicked={onRowClicked}
+                            defaultColDef={defaultColDef}
+                        ></AgGridReact>
+                    </div>
+                )}
+            </div>
+        </Block>
     )
 }

@@ -6,7 +6,7 @@ import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { TeamActivity } from '../services/teams'
 import { useNavigate } from 'react-router-dom'
 import { defaultColDef } from '../utils/agGridSettings'
-import { Team } from '@microsoft/microsoft-graph-types'
+import { Team } from '@microsoft/microsoft-graph-types-beta'
 
 interface TeamsListProps {
     teams: Array<Team & TeamActivity>

@@ -2,12 +2,13 @@ import { formatBytes } from '../utils/helpers'
 import { ColDef } from 'ag-grid-community'
 
 export const columnDefTopSites: ColDef[] = [
-    { field: 'webUrl', headerName: 'Site URL', flex: 6 },
-    { field: 'displayName', headerName: 'Site Name', flex: 5 },
+    { field: 'webUrl', headerName: 'Site URL', flex: 5 },
+    { field: 'displayName', headerName: 'Site Name', flex: 3 },
     {
         field: 'pageViewCount',
         headerName: 'Page Views Count',
         flex: 2,
+        sort: 'desc',
     },
     {
         field: 'storageUsedInBytes',
@@ -25,7 +26,7 @@ export const columnDefTopSites: ColDef[] = [
     {
         field: 'secureLinkForMemberCount',
         headerName: 'Engaged Users',
-        flex: 2
+        flex: 2,
     },
 ]
 
@@ -41,7 +42,7 @@ export const columnDefSiteAudience: ColDef[] = [
         field: 'city',
         headerName: 'City',
         flex: 3,
-    }
+    },
 ]
 
 export const columnDefSelectedSitePages: ColDef[] = [
@@ -51,10 +52,11 @@ export const columnDefSelectedSitePages: ColDef[] = [
         field: 'access.actionCount',
         headerName: 'Views',
         flex: 2,
+        sort: 'desc',
     },
     {
         field: 'access.actorCount',
         headerName: 'Unique Viewers',
         flex: 3,
-    }
+    },
 ]

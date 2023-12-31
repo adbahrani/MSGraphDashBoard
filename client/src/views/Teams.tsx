@@ -8,7 +8,7 @@ import { AgChartsReact } from 'ag-charts-react'
 import { UsersService } from '../services/users'
 import { InfluencersList } from '../components/InfluencersList'
 import { TeamsFilesList } from '../components/TeamsFilesList'
-import { Team } from '@microsoft/microsoft-graph-types'
+import { Team } from '@microsoft/microsoft-graph-types-beta'
 
 export const Teams = () => {
     const [teams, setTeams] = useState<Array<Team & TeamActivity>>([])
