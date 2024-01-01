@@ -46,8 +46,8 @@ export const columnDefSiteAudience: ColDef[] = [
 ]
 
 export const columnDefSelectedSitePages: ColDef[] = [
-    { field: 'webUrl', headerName: 'Page URL', flex: 6 },
-    { field: 'name', headerName: 'Page Name', flex: 2 },
+    { field: 'webUrl', headerName: 'Site URL', flex: 6 },
+    { field: 'name', headerName: 'Site Name', flex: 2 },
     {
         field: 'access.actionCount',
         headerName: 'Views',

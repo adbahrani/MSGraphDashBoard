@@ -2,16 +2,15 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
-import { Site, ItemActivityStat } from '@microsoft/microsoft-graph-types-beta'
+
 import { AgChartsReact } from 'ag-charts-react'
 import {
     SharePointService,
     SiteActivity,
     SiteActivityExtended,
-    SiteActivityWithSites,
-    SitesActivity,
     calculateActivityData,
     SharePointSite,
+    SiteAnalytics,
 } from '../services/share-point'
 import { Stats } from '../components/shared/Stats'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
@@ -69,7 +68,7 @@ export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
     const [sites, setSites] = useState<SharePointSite[]>()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    // const [selectedSitePages, setSelectedSitePages] = useState<SitesActivity>({})
+    const [selectedSitePages, setSelectedSitePages] = useState<SiteAnalytics[]>([])
     const [selectedSite, setSelectedSite] = useState<any | null>(null)
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
     const [sitesActivityExtended, setSitesActivityExtended] = useState<SiteActivityExtended[]>([])
@@ -78,6 +77,8 @@ export const SharePoint = () => {
         groupConnected: 0,
         communicationSites: 0,
         activeSites: 0,
+        totalActionCount: 0,
+        totalActorCount: 0,
     })
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
@@ -89,7 +90,6 @@ export const SharePoint = () => {
     const Activities = useCallback(async selectedPeriod => {
         const _sitesActivity = await SharePointService.getSitesActivity(selectedPeriod)
         setSitesActivity(_sitesActivity)
-        console.log('Defined')
     }, [])
 
     useEffect(() => {
@@ -101,12 +101,17 @@ export const SharePoint = () => {
     }, [selectedPeriod])
 
     useEffect(() => {
+        TopSitesByWithUniqueView()
+    }, [sites])
+
+    useEffect(() => {
         console.log(sitesActivity.length, sites?.length)
 
         if (!sitesActivity.length || !sites?.length) return
         const res: SiteActivityExtended[] = SharePointService.getFullSitesDetails(sites, sitesActivity)
         console.log('res', res)
         setSitesActivityExtended(res)
+
         setIsLoadingSiteActivities(false)
     }, [sitesActivity, sites])
 
@@ -116,12 +121,7 @@ export const SharePoint = () => {
             selectedPeriod
         )
 
-        setSitesCount({
-            activeSites,
-            guestEnabled,
-            groupConnected,
-            communicationSites,
-        })
+        setSitesCount(p => ({ ...p, activeSites, guestEnabled, groupConnected, communicationSites }))
         setActivityByGeoLocation(activityByGeo)
     }, [sitesActivityExtended])
 
@@ -130,6 +130,24 @@ export const SharePoint = () => {
     const TopSitesByView = JSON.parse(
         JSON.stringify(sitesActivityExtended.filter(site => site.pageViewCount > 0))
     ).sort((a, b) => b.pageViewCount - a.pageViewCount)
+
+    const TopSitesByWithUniqueView = async () => {
+        if (!sites) return
+        const analytics = await SharePointService.getAllAnalytics(sites)
+        setSelectedSitePages(analytics)
+        console.log('analytics', analytics)
+        let totalActionCount = 0,
+            totalActorCount = 0
+        analytics.forEach(site => {
+            if (site.access) {
+                totalActionCount += site.access.actionCount || 0
+                totalActorCount += site.access.actorCount || 0
+                console.log(site.name, totalActionCount, totalActorCount)
+            }
+        })
+        console.log('totalActionCount', totalActionCount)
+        setSitesCount(p => ({ ...p, totalActionCount, totalActorCount }))
+    }
 
     return (
         <>
@@ -151,11 +169,11 @@ export const SharePoint = () => {
             <Stack alignItems="center">
                 {isLoadingSiteActivities ? (
                     <Stack direction="row" gap="0.5rem" sx={{ width: '100%' }}>
-                        <BoxLoader numberOfBoxes={8} boxHeight="8rem" boxWidth="18%" />
+                        <BoxLoader numberOfBoxes={10} boxHeight="8rem" boxWidth="18%" />
                     </Stack>
                 ) : (
                     <Stats
-                        numberOfColumns={4}
+                        numberOfColumns={5}
                         stats={{
                             'Sites Count': sitesActivityExtended.length,
                             'Active sites': activeSitesCount,
@@ -167,6 +185,9 @@ export const SharePoint = () => {
                             'Guest Enabled Sites Count': sitesCount.guestEnabled,
                             'Group-Connected Sites Count': sitesCount.groupConnected,
                             'Communications Sites Count': sitesCount.communicationSites,
+                            'Changed in View %': '0% - No Data',
+                            'Total Viewer': sitesCount.totalActorCount,
+                            'Total Pages Views': sitesCount.totalActionCount,
                         }}
                     />
                 )}
@@ -218,7 +239,7 @@ export const SharePoint = () => {
                 />
 
                 <SharePointSitesList
-                    title="Selected Site Pages/Top Page By Views"
+                    title="Site/Top Views by Pages all times"
                     handleRowClick={site => {
                         setSelectedSite(site)
                         setIsDrawerOpen(true)
@@ -227,7 +248,7 @@ export const SharePoint = () => {
                     isLoading={isLoadingSiteActivities}
                     width="90%"
                     columnDefs={columnDefSelectedSitePages}
-                    sites={[]}
+                    sites={selectedSitePages}
                 />
             </Stack>
 

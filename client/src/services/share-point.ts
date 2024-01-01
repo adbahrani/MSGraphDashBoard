@@ -1,4 +1,4 @@
-import { List, Site, ItemActivityStat, SiteCollection } from '@microsoft/microsoft-graph-types-beta'
+import { List, Site, ItemActivityStat, SiteCollection, ItemActionStat } from '@microsoft/microsoft-graph-types-beta'
 import { graphAPIUrls } from '../graphHelper'
 import { BaseService, graphClient } from './base'
 
@@ -37,16 +37,19 @@ export type SharePointSite = {
     siteCollection: SiteCollection
     webUrl: string
 }
+
+export interface SiteAnalytics extends SharePointSite {
+    access: ItemActionStat
+}
 export interface SiteActivityExtended extends SiteActivity, SharePointSite {}
 
-export type SiteActivityWithSites = Partial<SiteActivity & Site>
 export type SitesActivity = {
     [key: string]: ItemActivityStat
 }
 export class SharePointService extends BaseService {
     public static async getAll(): Promise<SharePointSite[]> {
         const { value } = await graphClient.api('sites').get()
-        return value
+        return this.stripExtraSitesId(value)
     }
 
     public static async getSitesActivity(period: 30 | 90): Promise<SiteActivity[]> {
@@ -56,10 +59,16 @@ export class SharePointService extends BaseService {
         return sites
     }
 
+    private static stripExtraSitesId(sites): SharePointSite[] {
+        return sites.map(site => {
+            const [, siteActivityId] = site.id.split(',')
+            return { ...site, id: siteActivityId }
+        })
+    }
+
     public static getFullSitesDetails(sites, sitesActivities): SiteActivityExtended[] {
         const siteActivityExtended = sites.map(site => {
-            const [, siteActivityId] = site.id.split(',')
-            const siteActivity = sitesActivities.find(siteActivity => siteActivity.siteId === siteActivityId) || null
+            const siteActivity = sitesActivities.find(siteActivity => siteActivity.siteId === site.id) || null
             return {
                 ...site,
                 ...siteActivity,
@@ -83,15 +92,21 @@ export class SharePointService extends BaseService {
         return value
     }
 
-    public static async getAllAnalytics(siteIds: string[]): Promise<SitesActivity> {
-        const getSiteAnalyticsPromises = siteIds.map(async siteId => this.getSiteAnalytics(siteId))
-        const promisesResults = await Promise.allSettled(getSiteAnalyticsPromises)
-        const results: SitesActivity = promisesResults.reduce((acc, result, index) => {
-            const siteId = siteIds[index]
-            acc[siteId] = result.status === 'fulfilled' ? result.value : null
-            return acc
-        }, {})
-        return results
+    public static async getAllAnalytics(sites: SharePointSite[]): Promise<SiteAnalytics[]> {
+        const getSiteAnalyticsPromises = sites.map(async site => {
+            const analytics = await this.getSiteAnalytics(site.id)
+            return {
+                ...site,
+                access: analytics.access,
+            }
+        })
+
+        const analyticsResults = await Promise.allSettled(getSiteAnalyticsPromises)
+        const siteAnalytics: SiteAnalytics[] = analyticsResults
+            .map(result => result.status === 'fulfilled' && result.value)
+            .filter(Boolean) as SiteAnalytics[]
+
+        return siteAnalytics.filter(site => site.access.actionCount && site.access.actionCount > 0)
     }
 }
 
