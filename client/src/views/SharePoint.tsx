@@ -101,17 +101,14 @@ export const SharePoint = () => {
     }, [selectedPeriod])
 
     useEffect(() => {
-        sitesActivity.length && setActivityData()
-    }, [sitesActivity])
+        console.log(sitesActivity.length, sites?.length)
 
-    async function setActivityData() {
-        console.log('setActivityData', sitesActivity.length, sites?.length)
         if (!sitesActivity.length || !sites?.length) return
-        const res: SiteActivityExtended[] = await SharePointService.getFullSitesDetails(sites, sitesActivity)
+        const res: SiteActivityExtended[] = SharePointService.getFullSitesDetails(sites, sitesActivity)
         console.log('res', res)
         setSitesActivityExtended(res)
         setIsLoadingSiteActivities(false)
-    }
+    }, [sitesActivity, sites])
 
     useEffect(() => {
         const { activeSites, guestEnabled, groupConnected, communicationSites, activityByGeo } = calculateActivityData(
