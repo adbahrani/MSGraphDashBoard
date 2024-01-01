@@ -1,5 +1,4 @@
-import { List, Site, ItemActivityStat } from '@microsoft/microsoft-graph-types-beta'
-import pAll from 'p-all'
+import { List, Site, ItemActivityStat, SiteCollection } from '@microsoft/microsoft-graph-types-beta'
 import { graphAPIUrls } from '../graphHelper'
 import { BaseService, graphClient } from './base'
 
@@ -28,43 +27,46 @@ export interface SiteActivity {
     rootWebTemplate: string
     reportPeriod: string
 }
+export type SharePointSite = {
+    createdDateTime: string
+    displayName: string
+    id: string
+    isPersonalSite: boolean
+    name: string
+    root: object // You might want to replace this with a more specific type
+    siteCollection: SiteCollection
+    webUrl: string
+}
+export interface SiteActivityExtended extends SiteActivity, SharePointSite {}
 
 export type SiteActivityWithSites = Partial<SiteActivity & Site>
-
+export type SitesActivity = {
+    [key: string]: ItemActivityStat
+}
 export class SharePointService extends BaseService {
-    public static async getAll(): Promise<Site[]> {
-        const { value } = await graphClient.api(graphAPIUrls.sites).get()
+    public static async getAll(): Promise<SharePointSite[]> {
+        const { value } = await graphClient.api('sites').get()
         return value
     }
 
-    public static async getActivity(period: 30 | 90): Promise<SiteActivity[]> {
-        const { value } = await graphClient.api(graphAPIUrls.sitesActivity(period)).get()
-        return value
+    public static async getSitesActivity(period: 30 | 90): Promise<SiteActivity[]> {
+        const { value: sites }: { value: SiteActivity[] } = await graphClient
+            .api(graphAPIUrls.sharePointSiteUsageDetail(period))
+            .get()
+        return sites
     }
 
-    public static async getSiteWithActivity(period: 30 | 90): Promise<{
-        siteWithActivity: SiteActivityWithSites[]
-        siteActivities: SiteActivity[]
-    }> {
-        const sites = await this.getAll()
-        console.log('sites', sites)
-        const siteActivities = await this.getActivity(period)
-        console.log('siteActivities', siteActivities)
-
-        const siteWithActivity = sites.map(site => {
-            if (!site.id) return site
+    public static getFullSitesDetails(sites, sitesActivities): SiteActivityExtended[] {
+        const siteActivityExtended = sites.map(site => {
             const [, siteActivityId] = site.id.split(',')
-            const siteActivity = siteActivities.find(siteActivity => siteActivity.siteId === siteActivityId) || null
+            const siteActivity = sitesActivities.find(siteActivity => siteActivity.siteId === siteActivityId) || null
             return {
                 ...site,
                 ...siteActivity,
-            }
+            } as SiteActivityExtended
         })
 
-        return {
-            siteWithActivity,
-            siteActivities,
-        }
+        return siteActivityExtended
     }
 
     public static async getFileCount(period: 30 | 90): Promise<SiteActivity[]> {
@@ -81,38 +83,19 @@ export class SharePointService extends BaseService {
         return value
     }
 
-    public static async getAllAnalytics(
-        siteIds: Array<string>
-    ): Promise<{ [key: string]: ItemActivityStat & { hasError: boolean } }> {
-        const actions = siteIds.map(siteId => async () => {
-            try {
-                const response = await this.getSiteAnalytics(siteId)
-                return {
-                    ...response,
-                    hasError: false,
-                }
-            } catch (e) {
-                return { hasError: true }
-            }
-        })
-        const resp = await pAll(actions, { concurrency: 10 })
-        return siteIds.reduce((acc, siteId, index) => {
-            return {
-                ...acc,
-                [siteId]: resp[index],
-            }
+    public static async getAllAnalytics(siteIds: string[]): Promise<SitesActivity> {
+        const getSiteAnalyticsPromises = siteIds.map(async siteId => this.getSiteAnalytics(siteId))
+        const promisesResults = await Promise.allSettled(getSiteAnalyticsPromises)
+        const results: SitesActivity = promisesResults.reduce((acc, result, index) => {
+            const siteId = siteIds[index]
+            acc[siteId] = result.status === 'fulfilled' ? result.value : null
+            return acc
         }, {})
+        return results
     }
 }
 
 // activityUtils.ts
-
-interface SiteDetails {
-    geolocation: string
-    lastActivityDate?: string
-    rootWebTemplate: string
-    secureLinkForGuestCount: number
-}
 
 interface ActivityResult {
     activeSites: number
@@ -122,10 +105,7 @@ interface ActivityResult {
     activityByGeo: { geolocation: string; active: number; inactive: number }[]
 }
 
-export function calculateActivityData(
-    siteWithActivity: Array<SiteActivityWithSites>,
-    selectedPeriod: number
-): ActivityResult {
+export function calculateActivityData(siteWithActivity: Array<SiteActivity>, selectedPeriod: number): ActivityResult {
     const minDate = new Date()
     minDate.setDate(minDate.getDate() - selectedPeriod)
 

@@ -29,6 +29,7 @@ export const graphLinks = {
 }
 
 export const graphAPIUrls = {
+    organization: '/organization',
     application: '/applications',
     groups: '/groups',
     groupMembers: (id: string) => `/groups/${id}/members`,
@@ -42,7 +43,7 @@ export const graphAPIUrls = {
     teamsActivity: (period: 30 | 90) =>
         `/reports/microsoft.graph.getTeamsTeamActivityDetail(period='D${period}')?$format=application/json`,
     sites: `/sites/getAllSites`,
-    sitesActivity: (period: 30 | 90) =>
+    sharePointSiteUsageDetail: (period: 30 | 90) =>
         `/reports/microsoft.graph.getSharePointSiteUsageDetail(period='D${period}')?$format=application/json`,
     driveOneActivity: (period: 30 | 90) =>
         `/reports/microsoft.graph.getOneDriveUsageAccountDetail(period='D${period}')?$format=application/json`,
@@ -53,6 +54,7 @@ export const graphAPIUrls = {
         `/reports/microsoft.graph.getSharePointActivityFileCounts(period='D${period}')?$format=application/json`,
     siteAnalytics: (siteId: string) => `/sites/${siteId}/analytics/allTime`,
     siteList: (siteId: string) => `/sites/${siteId}/lists`,
+    siteContentTypes: (siteId: string) => `/sites/${siteId}/contentTypes`,
     token: '/token',
     report: '/report',
 }

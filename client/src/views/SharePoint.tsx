@@ -1,10 +1,18 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Chip from '@mui/material/Chip'
 import Drawer from '@mui/material/Drawer'
 import Stack from '@mui/material/Stack'
 import { Site, ItemActivityStat } from '@microsoft/microsoft-graph-types-beta'
 import { AgChartsReact } from 'ag-charts-react'
-import { SharePointService, SiteActivity, SiteActivityWithSites, calculateActivityData } from '../services/share-point'
+import {
+    SharePointService,
+    SiteActivity,
+    SiteActivityExtended,
+    SiteActivityWithSites,
+    SitesActivity,
+    calculateActivityData,
+    SharePointSite,
+} from '../services/share-point'
 import { Stats } from '../components/shared/Stats'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 import { SharePointSitesList } from '../components/SharePointSitesList'
@@ -43,16 +51,28 @@ const activityByGeoLocationOptions = {
     ],
 }
 
+const topSitesByPageViewOptions = {
+    title: {
+        text: 'Top sites / views',
+    },
+    series: [
+        {
+            type: 'column' as const,
+            xKey: 'ownerDisplayName',
+            yKey: 'pageViewCount',
+            yName: 'Page Views',
+            stacked: true,
+        },
+    ],
+}
 export const SharePoint = () => {
     const [isLoadingSiteActivities, setIsLoadingSiteActivities] = useState(true)
-    const [sites, setSites] = useState<Array<Site>>([])
+    const [sites, setSites] = useState<SharePointSite[]>()
     const [isDrawerOpen, setIsDrawerOpen] = useState(false)
-    const [selectedSitePages, setSelectedSitePages] = useState<{
-        [key: string]: ItemActivityStat & { hasError: boolean }
-    }>({})
+    // const [selectedSitePages, setSelectedSitePages] = useState<SitesActivity>({})
     const [selectedSite, setSelectedSite] = useState<any | null>(null)
     const [sitesActivity, setSitesActivity] = useState<Array<SiteActivity>>([])
-    const [sitesWithActivity, setSitesWithActivity] = useState<Array<SiteActivityWithSites>>([])
+    const [sitesActivityExtended, setSitesActivityExtended] = useState<SiteActivityExtended[]>([])
     const [sitesCount, setSitesCount] = useState({
         guestEnabled: 0,
         groupConnected: 0,
@@ -66,47 +86,36 @@ export const SharePoint = () => {
         Array<{ geolocation: string; active: number; inactive: number }>
     >([])
 
-    const topSitesByPageView = useMemo(() => {
-        return sitesWithActivity.filter(
-            (dt: SiteActivityWithSites) => dt.pageViewCount !== undefined && dt.pageViewCount > 0
-        ) // as SiteActivity[]
-    }, [sitesWithActivity])
-    const topSitesByPageViewOptions = {
-        title: {
-            text: 'Top sites / views',
-        },
-        series: [
-            {
-                type: 'column' as const,
-                xKey: 'ownerDisplayName',
-                yKey: 'pageViewCount',
-                yName: 'Page Views',
-                stacked: true,
-            },
-        ],
+    const Activities = useCallback(async selectedPeriod => {
+        const _sitesActivity = await SharePointService.getSitesActivity(selectedPeriod)
+        setSitesActivity(_sitesActivity)
+        console.log('Defined')
+    }, [])
+
+    useEffect(() => {
+        SharePointService.getAll().then(res => setSites(res))
+    }, [])
+
+    useEffect(() => {
+        Activities(selectedPeriod)
+    }, [selectedPeriod])
+
+    useEffect(() => {
+        sitesActivity.length && setActivityData()
+    }, [sitesActivity])
+
+    async function setActivityData() {
+        console.log('setActivityData', sitesActivity.length, sites?.length)
+        if (!sitesActivity.length || !sites?.length) return
+        const res: SiteActivityExtended[] = await SharePointService.getFullSitesDetails(sites, sitesActivity)
+        console.log('res', res)
+        setSitesActivityExtended(res)
+        setIsLoadingSiteActivities(false)
     }
 
     useEffect(() => {
-        SharePointService.getAll().then(sites => setSites(sites))
-    }, [])
-
-    useMemo(() => {
-        const siteAnalyticsData = async () => {
-            const res = await SharePointService.getAllAnalytics(sitesWithActivity.map(site => site.siteId!))
-            console.log('siteAnalyticsData', res)
-            setSelectedSitePages(res)
-        }
-        siteAnalyticsData()
-    }, [sitesWithActivity])
-
-    async function setActivityData() {
-        const { siteWithActivity, siteActivities } = await SharePointService.getSiteWithActivity(selectedPeriod)
-        setSitesActivity([...siteActivities])
-        setSitesWithActivity([...siteWithActivity])
-        setIsLoadingSiteActivities(false)
-
         const { activeSites, guestEnabled, groupConnected, communicationSites, activityByGeo } = calculateActivityData(
-            siteWithActivity,
+            sitesActivityExtended,
             selectedPeriod
         )
 
@@ -117,13 +126,13 @@ export const SharePoint = () => {
             communicationSites,
         })
         setActivityByGeoLocation(activityByGeo)
-    }
-
-    useEffect(() => {
-        setActivityData()
-    }, [selectedPeriod])
+    }, [sitesActivityExtended])
 
     const activeSitesCount = sitesCount.activeSites
+
+    const TopSitesByView = JSON.parse(
+        JSON.stringify(sitesActivityExtended.filter(site => site.pageViewCount > 0))
+    ).sort((a, b) => b.pageViewCount - a.pageViewCount)
 
     return (
         <>
@@ -151,12 +160,12 @@ export const SharePoint = () => {
                     <Stats
                         numberOfColumns={4}
                         stats={{
-                            'Sites Count': sitesWithActivity.length,
+                            'Sites Count': sitesActivityExtended.length,
                             'Active sites': activeSitesCount,
-                            'Inactive sites': `${sitesWithActivity.length - activeSitesCount} (
-                        ${100 - Math.round((100 * activeSitesCount) / sitesWithActivity.length)} %)`,
+                            'Inactive sites': `${sitesActivityExtended.length - activeSitesCount} (
+                        ${100 - Math.round((100 * activeSitesCount) / sitesActivityExtended.length)} %)`,
                             'Active vs Total Sites': `${Math.round(
-                                (100 * activeSitesCount) / sitesWithActivity.length
+                                (100 * activeSitesCount) / sitesActivityExtended.length
                             )} %`,
                             'Guest Enabled Sites Count': sitesCount.guestEnabled,
                             'Group-Connected Sites Count': sitesCount.groupConnected,
@@ -176,7 +185,7 @@ export const SharePoint = () => {
                     isLoading={isLoadingSiteActivities}
                     width="100%"
                     columnDefs={columnDefTopSites}
-                    sites={topSitesByPageView}
+                    sites={TopSitesByView}
                 />
 
                 <Stack>
@@ -187,7 +196,11 @@ export const SharePoint = () => {
                     </div>
                     <div>
                         <AgChartsReact
-                            options={{ ...topSitesByPageViewOptions, width: 380, data: topSitesByPageView }}
+                            options={{
+                                ...topSitesByPageViewOptions,
+                                width: 380,
+                                data: TopSitesByView.slice(0, 5),
+                            }}
                         />
                     </div>
                 </Stack>
@@ -217,14 +230,7 @@ export const SharePoint = () => {
                     isLoading={isLoadingSiteActivities}
                     width="90%"
                     columnDefs={columnDefSelectedSitePages}
-                    sites={sitesWithActivity
-                        .filter(site => site.siteId && !selectedSitePages[site.siteId]?.hasError)
-                        .map(site => {
-                            return {
-                                ...site,
-                                ...selectedSitePages[site.siteId!],
-                            }
-                        })}
+                    sites={[]}
                 />
             </Stack>
 
