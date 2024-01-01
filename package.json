@@ -5,7 +5,8 @@
     "type": "module",
     "scripts": {
         "prod": "ts-node server/server.ts",
-        "start": "concurrently \"nodemon server/server.ts\" \"cd client && npm start\"",
+        "start": "concurrently \"ts-node server/server.ts\" \"cd client && npm start\"",
+        "watch": "concurrently \"nodemon server/server.ts\" \"cd client && npm start\"",
         "watch-be": "nodemon server/server.ts",
         "watch-fe": "cd client && npm start",
         "install": "concurrently \"cd server && npm i \" \"cd client && npm i\"",
