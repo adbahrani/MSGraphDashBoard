@@ -105,8 +105,6 @@ export const SharePoint = () => {
     }, [sites])
 
     useEffect(() => {
-        console.log(sitesActivity.length, sites?.length)
-
         if (!sitesActivity.length || !sites?.length) return
         const res: SiteActivityExtended[] = SharePointService.getFullSitesDetails(sites, sitesActivity)
         console.log('res', res)
@@ -135,17 +133,15 @@ export const SharePoint = () => {
         if (!sites) return
         const analytics = await SharePointService.getAllAnalytics(sites)
         setSelectedSitePages(analytics)
-        console.log('analytics', analytics)
         let totalActionCount = 0,
             totalActorCount = 0
         analytics.forEach(site => {
             if (site.access) {
                 totalActionCount += site.access.actionCount || 0
                 totalActorCount += site.access.actorCount || 0
-                console.log(site.name, totalActionCount, totalActorCount)
             }
         })
-        console.log('totalActionCount', totalActionCount)
+
         setSitesCount(p => ({ ...p, totalActionCount, totalActorCount }))
     }
 

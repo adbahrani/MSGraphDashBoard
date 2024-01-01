@@ -93,6 +93,7 @@ export class SharePointService extends BaseService {
     }
 
     public static async getAllAnalytics(sites: SharePointSite[]): Promise<SiteAnalytics[]> {
+        console.log('Analytics Call')
         const getSiteAnalyticsPromises = sites.map(async site => {
             const analytics = await this.getSiteAnalytics(site.id)
             return {
