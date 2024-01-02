@@ -21,8 +21,8 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
     const columnDefs: ColDef[] = [
         { field: 'siteId', hide: true },
         { field: 'siteUrl', flex: 3 },
-        { field: 'ownerDisplayName' },
-        { field: 'ownerPrincipalName' },
+        { field: 'ownerDisplayName', headerName: 'Owner Name' },
+        { field: 'ownerPrincipalName', headerName: 'Owner Email' },
     ]
 
     const getRowId = useMemo<GetRowIdFunc>(() => {
@@ -63,17 +63,11 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
-                                    <ListItemText
-                                        primary="Owner display name"
-                                        secondary={selectedDrive.ownerDisplayName}
-                                    />
+                                    <ListItemText primary="Owner Name" secondary={selectedDrive.ownerDisplayName} />
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
-                                    <ListItemText
-                                        primary="Owner principal name"
-                                        secondary={selectedDrive.ownerPrincipalName}
-                                    />
+                                    <ListItemText primary="Owner Email" secondary={selectedDrive.ownerPrincipalName} />
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
