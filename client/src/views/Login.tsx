@@ -7,15 +7,21 @@ import {
     Button,
     createTheme,
     ThemeProvider,
+    Grid,
+    Snackbar,
+    Alert,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { AuthService } from '../services/auth'
+import useSnackError from '../hooks/useSnackError'
 
 export const Login = () => {
     const theme = createTheme({
         spacing: 14,
     })
+    const { setErrorMessage, SnackErrorComponent } = useSnackError()
     const [showPassword, setShowPassword] = useState(false)
     const handleClickShowPassword = () => setShowPassword(show => !show)
     const [password, setPassword] = useState('')
@@ -27,22 +33,30 @@ export const Login = () => {
         setEmail(event.target.value)
     }
     const navigate = useNavigate()
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email || !password) {
             return
         }
         localStorage.setItem('email', email)
         localStorage.setItem('password', password)
-        navigate('/')
+        try {
+            await AuthService.login({ email, password })
+            navigate('/')
+        } catch (e: any) {
+            setErrorMessage(e.message || 'Unknown error')
+        }
     }
+
+
 
     return (
         <ThemeProvider theme={theme}>
+            <SnackErrorComponent />
             <div
                 id="home"
                 style={{
                     height: '100vh',
-                    backgroundColor: 'lightgreen',
+                    backgroundColor: 'lightgrey',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
@@ -57,7 +71,7 @@ export const Login = () => {
                         <OutlinedInput id="email" type={'text'} label="Email" onChange={handleOnChangeEmail} />
                     </FormControl>
                 </div>
-                <div>
+                <Grid item>
                     <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                         <InputLabel htmlFor="password">Password</InputLabel>
                         <OutlinedInput
@@ -77,13 +91,18 @@ export const Login = () => {
                             label="Password"
                             onChange={handleOnChangePassword}
                         />
-                    </FormControl>
-                    <div>
-                        <Button variant="contained" onClick={handleLogin} color="success">
+                        <Button sx={{ mt: '1rem' }} variant="contained" onClick={handleLogin} color="success">
                             Submit
                         </Button>
-                    </div>
-                </div>
+                    </FormControl>
+
+
+                    <Grid item >
+                        <Link to="/signup">
+                            {"Don't have an account? Sign Up"}
+                        </Link>
+                    </Grid>
+                </Grid>
             </div>
         </ThemeProvider>
     )

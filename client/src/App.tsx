@@ -14,6 +14,7 @@ import { Login } from './views/Login'
 import { Menu } from './components/Menu'
 import Container from '@mui/material/Container'
 import Admin from './views/Admin'
+import SignUp from './views/Signup'
 
 export default function App() {
     return (
@@ -31,6 +32,7 @@ export default function App() {
                     <Route path="/reports" element={<Reports />} />
                     <Route path="/onedrive" element={<OneDrive />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<SignUp />} />
                 </Routes>
             </Container>
         </Router>

@@ -26,6 +26,8 @@ export const graphLinks = {
     siteList: (siteId: string) => `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`,
     token: '/token',
     report: '/report',
+    login: '/login',
+    signup: '/signup'
 }
 
 export const graphAPIUrls = {
@@ -57,5 +59,5 @@ export const graphAPIUrls = {
     siteContentTypes: (siteId: string) => `/sites/${siteId}/contentTypes`,
     siteDetails: (siteId: string) => `/sites/${siteId}`,
     token: '/token',
-    report: '/report',
+    report: '/report'
 }
