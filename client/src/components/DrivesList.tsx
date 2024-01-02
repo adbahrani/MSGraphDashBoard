@@ -9,6 +9,7 @@ import ListItemText from '@mui/material/ListItemText/ListItemText'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
+import { defaultColDef } from '../utils/agGridSettings'
 
 interface DrivesListProps {
     drives: Array<OneDriveActivity>
@@ -18,9 +19,9 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
     const [selectedDrive, setSelectedDrive] = useState<OneDriveActivity | null>(null)
     const gridRef = useRef<AgGridReact>(null)
     const columnDefs: ColDef[] = [
-        { field: 'siteId', filter: 'agTextColumnFilter' },
-        { field: 'siteUrl', filter: 'agTextColumnFilter' },
-        { field: 'ownerDisplayName', filter: 'agTextColumnFilter' },
+        { field: 'siteId', hide: true },
+        { field: 'siteUrl', flex: 3 },
+        { field: 'ownerDisplayName' },
         { field: 'ownerPrincipalName' },
     ]
 
@@ -49,6 +50,7 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
                     getRowId={getRowId}
                     onFirstDataRendered={onFirstDataRendered}
                     onRowClicked={onRowClicked}
+                    defaultColDef={defaultColDef}
                 ></AgGridReact>
             </div>
             <Drawer anchor="right" open={!!selectedDrive} onClose={() => setSelectedDrive(null)}>

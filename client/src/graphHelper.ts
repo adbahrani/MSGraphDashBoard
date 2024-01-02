@@ -55,6 +55,7 @@ export const graphAPIUrls = {
     siteAnalytics: (siteId: string) => `/sites/${siteId}/analytics/allTime`,
     siteList: (siteId: string) => `/sites/${siteId}/lists`,
     siteContentTypes: (siteId: string) => `/sites/${siteId}/contentTypes`,
+    siteDetails: (siteId: string) => `/sites/${siteId}`,
     token: '/token',
     report: '/report',
 }

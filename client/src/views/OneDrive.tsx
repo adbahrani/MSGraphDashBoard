@@ -6,6 +6,7 @@ import { DriveOneService, OneDriveActivity } from '../services/one-drive'
 import { DrivesList } from '../components/DrivesList'
 import { Stats } from '../components/shared/Stats'
 import { AgChartsReact } from 'ag-charts-react'
+import { periods } from '../constants'
 
 export const OneDrive = () => {
     const [oneDriveActivity, setOneDriveActivity] = useState<Array<OneDriveActivity>>([])
@@ -16,11 +17,6 @@ export const OneDrive = () => {
         sharedExternally: 0,
         viewsEdits: 0,
     })
-
-    const periods = [
-        { label: 'Last 30 days', value: 30 },
-        { label: 'Last 90 days', value: 90 },
-    ] as const
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
     const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
@@ -110,7 +106,7 @@ export const OneDrive = () => {
 
     return (
         <>
-            <div style={{  }}>
+            <div style={{}}>
                 <Block title="Sites count">
                     <Box component="span" sx={boxStyle}>
                         {oneDriveActivity.length}
@@ -142,11 +138,11 @@ export const OneDrive = () => {
 
                 <Stats stats={userActivityStats} />
 
-                <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
-
                 <div style={{ width: 'calc(100vw - 128px)', height: '100vh' }}>
                     <DrivesList drives={oneDriveActivity} />
                 </div>
+
+                <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
             </div>
         </>
     )
