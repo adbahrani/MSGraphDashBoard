@@ -27,7 +27,8 @@ export const graphLinks = {
     token: '/token',
     report: '/report',
     login: '/login',
-    signup: '/signup'
+    signup: '/signup',
+    logout: '/logout',
 }
 
 export const graphAPIUrls = {
@@ -59,5 +60,5 @@ export const graphAPIUrls = {
     siteContentTypes: (siteId: string) => `/sites/${siteId}/contentTypes`,
     siteDetails: (siteId: string) => `/sites/${siteId}`,
     token: '/token',
-    report: '/report'
+    report: '/report',
 }

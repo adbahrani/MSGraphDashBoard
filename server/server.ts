@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import path from 'path'
 import compression from 'compression'
 import dotenv from 'dotenv'
 import cookieParser from 'cookie-parser'

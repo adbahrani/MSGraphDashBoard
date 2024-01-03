@@ -15,8 +15,10 @@ export class AuthService {
         })
 
         if (response.ok) {
-            await TokenService.getToken()
-            return
+            const jsonResponse: {
+                token: string
+            } = await response.json()
+            TokenService.setToken(jsonResponse.token)
         } else {
             const errorMessage = (await response.json())?.message || (await response.text())
             throw new Error(errorMessage)
@@ -47,11 +49,19 @@ export class AuthService {
             }),
         })
         if (response.ok) {
-            await TokenService.getToken()
-            return
+            const jsonResponse: {
+                token: string
+            } = await response.json()
+            TokenService.setToken(jsonResponse.token)
         } else {
             const errorMessage = (await response.json())?.message || (await response.text())
             throw new Error(errorMessage)
         }
+    }
+
+    public static async logout() {
+        await fetch(graphLinks.logout, {
+            method: 'DELETE',
+        })
     }
 }

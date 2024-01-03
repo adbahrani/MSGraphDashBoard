@@ -4,10 +4,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { MenuLink } from '../types/general'
+import { TokenService } from '../services/token'
+import { AuthService } from '../services/auth'
 
 const linkStyle = { color: '#343434', textDecoration: 'none' }
 const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
-const isSignedIn = () => !!localStorage.getItem('email')
+const isSignedIn = () => !!TokenService.getToken()
 
 let links: MenuLink[] = [
     { title: 'Home', to: '/', activeSet: new Set(['/']) },
@@ -46,9 +48,9 @@ export const Menu = () => {
         setAnchorEl(null)
     }
 
-    const logout = () => {
-        localStorage.removeItem('email')
-        localStorage.removeItem('password')
+    const logout = async () => {
+        await AuthService.logout()
+        TokenService.clearToken()
         navigator('/')
     }
 
