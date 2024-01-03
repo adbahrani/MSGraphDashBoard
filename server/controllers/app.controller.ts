@@ -1,24 +1,10 @@
-import {
-    All,
-    Body,
-    Controller,
-    Delete,
-    Get,
-    HttpCode,
-    HttpException,
-    HttpStatus,
-    Post,
-    Query,
-    Res,
-} from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Post, Query, Res } from '@nestjs/common'
 import axios from 'axios'
-import path from 'path'
 import { Response } from 'express'
 import { LoginDto, SignupDto } from '../dto/auth.dto'
 import { AppService } from '../services/app.service'
 import { fetchToken } from '../utils/token'
 
-const indexFile = path.join(__dirname, '../../client/build/index.html')
 @Controller()
 export class AppController {
     constructor(private readonly appService: AppService) {}
@@ -84,12 +70,5 @@ export class AppController {
     @Delete('logout')
     async logout(@Res({ passthrough: true }) response: Response) {
         response.clearCookie('access_token')
-    }
-
-    @Get('*')
-    async catchAll(@Res({ passthrough: true }) response: Response) {
-        console.log('catch all')
-        console.log('index file is', indexFile)
-        response.sendFile(indexFile)
     }
 }

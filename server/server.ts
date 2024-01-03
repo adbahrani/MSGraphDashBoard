@@ -17,6 +17,7 @@ async function bootstrap() {
     app.use(express.json())
     app.use(cors({ origin: '*' }))
     app.use(express.static('client/build'))
+    app.use('*', express.static('client/build/index.html'))
     await app.listen(PORT, function () {
         console.log(`server started on port http://localhost:${PORT}`)
         console.log('Express server listening on port %d', PORT)
