@@ -14,31 +14,30 @@ import { Link, useNavigate } from 'react-router-dom'
 import { SyntheticEvent, useState } from 'react'
 import { AuthService } from '../services/auth'
 import useSnackError from '../hooks/useSnackError'
+import { useAuthContext } from '../contexts/Auth'
 
 export const Login = () => {
     const theme = createTheme({
         spacing: 14,
     })
+    const { setAuthStates } = useAuthContext()
     const { setErrorMessage, SnackErrorComponent } = useSnackError()
     const [showPassword, setShowPassword] = useState(false)
     const handleClickShowPassword = () => setShowPassword(show => !show)
     const [password, setPassword] = useState('')
-    const handleOnChangePassword = (event: any) => {
+    const handleOnChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value)
     }
     const [email, setEmail] = useState('')
-    const handleOnChangeEmail = (event: any) => {
+    const handleOnChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value)
     }
     const navigate = useNavigate()
     const handleLogin = async (e: SyntheticEvent) => {
         e.preventDefault()
-        // Added ui side validation required to input fields so this case will never arise, this code can be removed
-        // if (!email || !password) {
-        //     return
-        // }
         try {
-            await AuthService.login({ email, password })
+            const token = await AuthService.login({ email, password })
+            setAuthStates?.(token)
             navigate('/')
         } catch (e: unknown) {
             setErrorMessage((e as Error).message || 'Unknown error')

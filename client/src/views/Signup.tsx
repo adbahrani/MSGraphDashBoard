@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles'
 import { AuthService } from '../services/auth'
 import { useNavigate } from 'react-router-dom'
 import useSnackError from '../hooks/useSnackError'
+import { useAuthContext } from '../contexts/Auth'
 
 function Copyright(props: any) {
     return (
@@ -32,6 +33,7 @@ const defaultTheme = createTheme()
 
 export default function SignUp() {
     const navigate = useNavigate()
+    const { setAuthStates } = useAuthContext()
     const { setErrorMessage, SnackErrorComponent } = useSnackError()
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -44,7 +46,8 @@ export default function SignUp() {
         }
 
         try {
-            await AuthService.signUp(payload)
+            const token = await AuthService.signUp(payload)
+            setAuthStates?.(token)
             navigate('/')
         } catch (e: unknown) {
             setErrorMessage((e as Error).message || 'Unknown error')

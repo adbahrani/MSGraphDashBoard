@@ -15,26 +15,86 @@ import { Menu } from './components/Menu'
 import Container from '@mui/material/Container'
 import Admin from './views/Admin'
 import SignUp from './views/Signup'
+import { AuthContextProvider } from './contexts/Auth'
+import ProtectedRoute from './components/shared/ProtectedRoute'
 
 export default function App() {
     return (
-        <Router>
-            <Menu />
-            <Container maxWidth="xl">
-                <Routes>
-                    <Route path="/" element={<Landing />} />
-                    <Route path="/users" element={<Users />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/groups" element={<Groups />} />
-                    <Route path="/group" element={<GroupDetails />} />
-                    <Route path="/teams" element={<Teams />} />
-                    <Route path="/sharepoint" element={<SharePoint />} />
-                    <Route path="/reports" element={<Reports />} />
-                    <Route path="/onedrive" element={<OneDrive />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/signup" element={<SignUp />} />
-                </Routes>
-            </Container>
-        </Router>
+        <AuthContextProvider>
+            <Router>
+                <Menu />
+                <Container maxWidth="xl">
+                    <Routes>
+                        <Route path="/" element={<Landing />} />
+                        <Route
+                            path="/users"
+                            element={
+                                <ProtectedRoute>
+                                    <Users />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/admin"
+                            element={
+                                <ProtectedRoute>
+                                    <Admin />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/groups"
+                            element={
+                                <ProtectedRoute>
+                                    <Groups />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/group"
+                            element={
+                                <ProtectedRoute>
+                                    <GroupDetails />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/teams"
+                            element={
+                                <ProtectedRoute>
+                                    <Teams />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/sharepoint"
+                            element={
+                                <ProtectedRoute>
+                                    <SharePoint />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/reports"
+                            element={
+                                <ProtectedRoute>
+                                    <Reports />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/onedrive"
+                            element={
+                                <ProtectedRoute>
+                                    <OneDrive />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/signup" element={<SignUp />} />
+                    </Routes>
+                </Container>
+            </Router>
+        </AuthContextProvider>
     )
 }

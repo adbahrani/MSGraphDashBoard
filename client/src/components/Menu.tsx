@@ -6,6 +6,7 @@ import MenuItem from '@mui/material/MenuItem'
 import { MenuLink } from '../types/general'
 import { TokenService } from '../services/token'
 import { AuthService } from '../services/auth'
+import { useAuthContext } from '../contexts/Auth'
 
 const linkStyle = { color: '#343434', textDecoration: 'none' }
 const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
@@ -32,6 +33,7 @@ let links: MenuLink[] = [
 
 export const Menu = () => {
     const location = useLocation()
+    const { clearAuthStates } = useAuthContext()
     const navigator = useNavigate()
     const [activeLinks, setActiveLinks] = useState(new Set())
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -51,6 +53,7 @@ export const Menu = () => {
     const logout = async () => {
         await AuthService.logout()
         TokenService.clearToken()
+        clearAuthStates?.()
         navigator('/')
     }
 

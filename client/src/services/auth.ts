@@ -19,6 +19,7 @@ export class AuthService {
                 token: string
             } = await response.json()
             TokenService.setToken(jsonResponse.token)
+            return jsonResponse.token
         } else {
             const errorMessage = (await response.json())?.message || (await response.text())
             throw new Error(errorMessage)
@@ -53,6 +54,7 @@ export class AuthService {
                 token: string
             } = await response.json()
             TokenService.setToken(jsonResponse.token)
+            return jsonResponse.token
         } else {
             const errorMessage = (await response.json())?.message || (await response.text())
             throw new Error(errorMessage)
