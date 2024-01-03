@@ -13,7 +13,7 @@ export class TokenMiddleware implements NestMiddleware {
                 const expDate = new Date(0)
                 expDate.setUTCSeconds(decodedToken.exp)
                 const isExpired = expDate <= new Date()
-                if (!isExpired) {
+                if (isExpired) {
                     const data = await fetchToken()
 
                     res.cookie('access_token', data.access_token, {
