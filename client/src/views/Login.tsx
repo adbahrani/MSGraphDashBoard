@@ -10,8 +10,8 @@ import {
     Grid,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import { Link, useNavigate } from 'react-router-dom'
-import { SyntheticEvent, useState } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import { AuthService } from '../services/auth'
 import useSnackError from '../hooks/useSnackError'
 import { useAuthContext } from '../contexts/Auth'
@@ -20,6 +20,8 @@ export const Login = () => {
     const theme = createTheme({
         spacing: 14,
     })
+    const [searchParams] = useSearchParams()
+    const location = useLocation()
     const { setAuthStates } = useAuthContext()
     const { setErrorMessage, SnackErrorComponent } = useSnackError()
     const [showPassword, setShowPassword] = useState(false)
@@ -38,11 +40,19 @@ export const Login = () => {
         try {
             const token = await AuthService.login({ email, password })
             setAuthStates?.(token)
-            navigate('/')
+
+            navigate(location.state.from || '/')
         } catch (e: unknown) {
             setErrorMessage((e as Error).message || 'Unknown error')
         }
     }
+
+    useEffect(() => {
+        const hasRedirectError = searchParams.get('redirectError')
+        if (hasRedirectError) {
+            setErrorMessage('You must login to access the requested page')
+        }
+    }, [])
 
     return (
         <ThemeProvider theme={theme}>
