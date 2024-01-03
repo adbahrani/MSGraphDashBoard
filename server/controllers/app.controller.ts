@@ -1,8 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Query, Req, Res } from '@nestjs/common'
-import { AppService } from '../services/app.service'
+import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, Post, Query, Res } from '@nestjs/common'
 import axios from 'axios'
 import { Response } from 'express'
-import { LoginDto, SignupDto } from './auth.dto'
+import { LoginDto, SignupDto } from '../dto/auth.dto'
+import { azureConfig } from '../config/azure'
+import { AppService } from '../services/app.service'
 
 @Controller()
 export class AppController {
@@ -23,7 +24,7 @@ export class AppController {
             .join('&')
 
         const { data } = await axios.post(
-            'https://login.microsoftonline.com/a6dfed0e-808d-4a2e-ae4f-9adac874f50d/oauth2/v2.0/token',
+            `https://login.microsoftonline.com/${azureConfig.AzureTenantId}/oauth2/v2.0/token`,
             formData,
             { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
         )
