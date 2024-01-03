@@ -1,10 +1,10 @@
-import * as express from 'express'
-import * as cors from 'cors'
-import * as compression from 'compression'
-import * as dotenv from 'dotenv'
-import * as cookieParser from 'cookie-parser';
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import express from 'express'
+import cors from 'cors'
+import compression from 'compression'
+import dotenv from 'dotenv'
+import cookieParser from 'cookie-parser'
+import { NestFactory } from '@nestjs/core'
+import { AppModule } from './modules/app.module'
 
 const PORT = process.env.PORT ?? 5000
 
@@ -21,6 +21,4 @@ async function bootstrap() {
         console.log('Express server listening on port %d', PORT)
     })
 }
-bootstrap();
-
-
+bootstrap()

@@ -1,1 +1,5 @@
-[{"email":"test@gmail.com","password":"test"},{"email":"abc@gmail.com","password":"abcd","firstName":"Test","lastName":"User"},{"email":"abc@gmail.com","password":"webmail12","firstName":"abc","lastName":"user"}]
+[
+    { "email": "test@gmail.com", "password": "test" },
+    { "email": "abc@gmail.com", "password": "abcd", "firstName": "Test", "lastName": "User" },
+    { "email": "abc@gmail.com", "password": "webmail12", "firstName": "abc", "lastName": "user" }
+]
