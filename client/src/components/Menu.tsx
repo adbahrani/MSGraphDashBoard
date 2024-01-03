@@ -10,7 +10,6 @@ import { useAuthContext } from '../contexts/Auth'
 
 const linkStyle = { color: '#343434', textDecoration: 'none' }
 const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
-const isSignedIn = () => !!TokenService.getToken()
 
 let links: MenuLink[] = [
     { title: 'Home', to: '/', activeSet: new Set(['/']) },
@@ -33,6 +32,7 @@ let links: MenuLink[] = [
 
 export const Menu = () => {
     const location = useLocation()
+    const { isLoggedIn } = useAuthContext()
     const { clearAuthStates } = useAuthContext()
     const navigator = useNavigate()
     const [activeLinks, setActiveLinks] = useState(new Set())
@@ -73,7 +73,7 @@ export const Menu = () => {
             .flat()
         document.title = `M365 Pulse ${location.pathname.replace('/', '').toLocaleUpperCase()}`
         setActiveLinks(new Set(activeLinks.map(link => link.to)))
-        if (!isSignedIn()) {
+        if (!isLoggedIn) {
             links = links.filter(link => link.title !== 'Login' && link.title !== 'Logout')
             links.push({ title: 'Login', to: '/login', activeSet: new Set(['/login']) })
         } else {
