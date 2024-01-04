@@ -9,3 +9,7 @@ export class SignupDto {
     firstName: string
     lastName: string
 }
+
+export class MsGraphProxy {
+    url: string
+}

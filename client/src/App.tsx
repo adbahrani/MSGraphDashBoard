@@ -1,7 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 
 import './App.css'
-
+import { useEffect } from 'react'
 import { Users } from './views/Users'
 import { Landing } from './views/Landing'
 import { Groups } from './views/Groups'
@@ -17,8 +17,12 @@ import Admin from './views/Admin'
 import SignUp from './views/Signup'
 import { AuthContextProvider } from './contexts/Auth'
 import ProtectedRoute from './components/shared/ProtectedRoute'
+import { fetchWrapper } from './utils/fetch'
 
 export default function App() {
+    useEffect(() => {
+        window.fetch = fetchWrapper(window.fetch)
+    }, [])
     return (
         <AuthContextProvider>
             <Router>

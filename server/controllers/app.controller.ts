@@ -1,15 +1,28 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Post, Query, Res } from '@nestjs/common'
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    HttpCode,
+    HttpException,
+    HttpStatus,
+    Post,
+    Query,
+    Req,
+    Res,
+} from '@nestjs/common'
 import axios from 'axios'
 import path from 'path'
 import { Response } from 'express'
-import { LoginDto, SignupDto } from '../dto/auth.dto'
+import { LoginDto, MsGraphProxy, SignupDto } from '../dto/auth.dto'
 import { AppService } from '../services/app.service'
 import { fetchToken } from '../utils/token'
+import { MsGraphBaseService } from '../services/msgraph-base.service'
 
 const buildIndexFile = path.join(__dirname, '../../client/build/index.html')
 @Controller()
 export class AppController {
-    constructor(private readonly appService: AppService) {}
+    constructor(private readonly appService: AppService, private readonly msGraphService: MsGraphBaseService) {}
     @Get('token')
     async sendToken(@Res({ passthrough: true }) response: Response) {
         const data = await fetchToken()
@@ -22,9 +35,21 @@ export class AppController {
         return data.access_token
     }
 
+    @Post('ms-graph-proxy')
+    async proxyMsGraph(@Req() request: { token: string }, @Body() body: MsGraphProxy) {
+        const { url } = body
+        const token = request.token
+        return this.msGraphService.httpGet(url, token)
+    }
+
     @Get('report')
-    async sendReport(@Query() query: { token: string; reportType: string; period: string }, @Res() response: Response) {
-        const { token, reportType, period } = query
+    async sendReport(
+        @Req() request: { token: string },
+        @Query() query: { reportType: string; period: string },
+        @Res() response: Response
+    ) {
+        const { token } = request
+        const { reportType, period } = query
 
         const { data } = await axios.get(
             `https://graph.microsoft.com/v1.0/reports/microsoft.graph.${reportType}(period='D${period}')`,
