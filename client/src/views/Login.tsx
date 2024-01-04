@@ -41,8 +41,7 @@ export const Login = () => {
             const token = await AuthService.login({ email, password })
             setAuthStates?.(token)
             navigate(location.state?.from ?? '/')
-        } catch (e: any) {
-            console.log('Error', e)
+        } catch (e: unknown) {
             setErrorMessage((e as Error).message || 'Unknown error')
         }
     }
