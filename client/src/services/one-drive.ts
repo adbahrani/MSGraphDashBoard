@@ -1,5 +1,5 @@
 import { graphAPIUrls } from '../graphHelper'
-import { graphClient } from './base'
+import { makeGraphAPICall } from './base'
 
 export interface OneDriveActivity {
     reportRefreshDate: string
@@ -32,9 +32,9 @@ export interface OneDriveUserActivity {
 
 export class DriveOneService {
     public static async getActivity(period: 30 | 90): Promise<Array<OneDriveActivity>> {
-        const { value: oneDriveActivities }: { value: OneDriveActivity[] } = await graphClient
-            .api(graphAPIUrls.driveOneActivity(period))
-            .get()
+        const { value: oneDriveActivities }: { value: OneDriveActivity[] } = await makeGraphAPICall(
+            graphAPIUrls.driveOneActivity(period)
+        )
 
         const sitesPromises = oneDriveActivities.map(async (activity: OneDriveActivity) => ({
             ...activity,
@@ -48,12 +48,12 @@ export class DriveOneService {
     }
 
     private static async getSiteUrl(siteId: string): Promise<string> {
-        const { webUrl } = await graphClient.api(graphAPIUrls.siteDetails(siteId)).get()
+        const { webUrl } = await makeGraphAPICall(graphAPIUrls.siteDetails(siteId))
         return webUrl
     }
 
     public static async getUserActivity(period: 30 | 90): Promise<Array<OneDriveUserActivity>> {
-        const { value } = await graphClient.api(graphAPIUrls.driveOneUserActivity(period)).get()
+        const { value } = await makeGraphAPICall(graphAPIUrls.driveOneUserActivity(period))
 
         return value
     }

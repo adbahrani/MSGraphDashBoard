@@ -5,8 +5,5 @@
         "**/.git": true,
         "**/.DS_Store": true
     },
-    "eslint.validate": [
-        "javascript",
-        "typescript"
-    ]
+    "eslint.validate": ["javascript", "typescript"]
 }

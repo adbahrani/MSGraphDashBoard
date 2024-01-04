@@ -26,6 +26,9 @@ export const graphLinks = {
     siteList: (siteId: string) => `https://graph.microsoft.com/v1.0/sites/${siteId}/lists`,
     token: '/token',
     report: '/report',
+    login: '/login',
+    signup: '/signup',
+    logout: '/logout',
 }
 
 export const graphAPIUrls = {

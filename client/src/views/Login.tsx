@@ -7,60 +7,80 @@ import {
     Button,
     createTheme,
     ThemeProvider,
+    Grid,
 } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
+import { SyntheticEvent, useEffect, useState } from 'react'
+import { AuthService } from '../services/auth'
+import useSnackError from '../hooks/useSnackError'
+import { useAuthContext } from '../contexts/Auth'
 
 export const Login = () => {
     const theme = createTheme({
         spacing: 14,
     })
+    const [searchParams] = useSearchParams()
+    const location = useLocation()
+    const { setAuthStates } = useAuthContext()
+    const { setErrorMessage, SnackErrorComponent } = useSnackError()
     const [showPassword, setShowPassword] = useState(false)
     const handleClickShowPassword = () => setShowPassword(show => !show)
     const [password, setPassword] = useState('')
-    const handleOnChangePassword = (event: any) => {
+    const handleOnChangePassword = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value)
     }
     const [email, setEmail] = useState('')
-    const handleOnChangeEmail = (event: any) => {
+    const handleOnChangeEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(event.target.value)
     }
     const navigate = useNavigate()
-    const handleLogin = () => {
-        if (!email || !password) {
-            return
+    const handleLogin = async (e: SyntheticEvent) => {
+        e.preventDefault()
+        try {
+            const token = await AuthService.login({ email, password })
+            setAuthStates?.(token)
+            navigate(location.state?.from ?? '/')
+        } catch (e: unknown) {
+            setErrorMessage((e as Error).message || 'Unknown error')
         }
-        localStorage.setItem('email', email)
-        localStorage.setItem('password', password)
-        navigate('/')
     }
+
+    useEffect(() => {
+        const hasRedirectError = searchParams.get('redirectError')
+        if (hasRedirectError) {
+            setErrorMessage('You must login to access the requested page')
+        }
+    }, [])
 
     return (
         <ThemeProvider theme={theme}>
-            <div
+            <SnackErrorComponent />
+            <form
                 id="home"
                 style={{
                     height: '100vh',
-                    backgroundColor: 'lightgreen',
+                    backgroundColor: 'lightgrey',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
                     textAlign: 'center',
                 }}
+                onSubmit={handleLogin}
             >
                 <h1>Login</h1>
                 <div>
                     <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                         <InputLabel htmlFor="email">Email</InputLabel>
-                        <OutlinedInput id="email" type={'text'} label="Email" onChange={handleOnChangeEmail} />
+                        <OutlinedInput required id="email" type={'text'} label="Email" onChange={handleOnChangeEmail} />
                     </FormControl>
                 </div>
-                <div>
+                <Grid item>
                     <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
                         <InputLabel htmlFor="password">Password</InputLabel>
                         <OutlinedInput
+                            required
                             id="password"
                             type={showPassword ? 'text' : 'password'}
                             endAdornment={
@@ -77,14 +97,16 @@ export const Login = () => {
                             label="Password"
                             onChange={handleOnChangePassword}
                         />
-                    </FormControl>
-                    <div>
-                        <Button variant="contained" onClick={handleLogin} color="success">
+                        <Button type="submit" sx={{ mt: '1rem' }} variant="contained" color="success">
                             Submit
                         </Button>
-                    </div>
-                </div>
-            </div>
+                    </FormControl>
+
+                    <Grid item>
+                        <Link to="/signup">{"Don't have an account? Sign Up"}</Link>
+                    </Grid>
+                </Grid>
+            </form>
         </ThemeProvider>
     )
 }

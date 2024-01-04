@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
 import { MenuLink } from '../types/general'
+import { TokenService } from '../services/token'
+import { AuthService } from '../services/auth'
+import { useAuthContext } from '../contexts/Auth'
 
 const linkStyle = { color: '#343434', textDecoration: 'none' }
 const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
-const isSignedIn = () => !!localStorage.getItem('email')
 
 let links: MenuLink[] = [
     { title: 'Home', to: '/', activeSet: new Set(['/']) },
@@ -30,6 +31,8 @@ let links: MenuLink[] = [
 
 export const Menu = () => {
     const location = useLocation()
+    const { isLoggedIn } = useAuthContext()
+    const { clearAuthStates } = useAuthContext()
     const navigator = useNavigate()
     const [activeLinks, setActiveLinks] = useState(new Set())
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -46,9 +49,10 @@ export const Menu = () => {
         setAnchorEl(null)
     }
 
-    const logout = () => {
-        localStorage.removeItem('email')
-        localStorage.removeItem('password')
+    const logout = async () => {
+        await AuthService.logout()
+        TokenService.clearToken()
+        clearAuthStates?.()
         navigator('/')
     }
 
@@ -68,7 +72,7 @@ export const Menu = () => {
             .flat()
         document.title = `M365 Pulse ${location.pathname.replace('/', '').toLocaleUpperCase()}`
         setActiveLinks(new Set(activeLinks.map(link => link.to)))
-        if (!isSignedIn()) {
+        if (!isLoggedIn) {
             links = links.filter(link => link.title !== 'Login' && link.title !== 'Logout')
             links.push({ title: 'Login', to: '/login', activeSet: new Set(['/login']) })
         } else {

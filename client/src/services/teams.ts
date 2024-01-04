@@ -1,5 +1,5 @@
 import { graphLinks } from '../graphHelper'
-import { BaseService, graphClient } from './base'
+import { BaseService, makeGraphAPICall } from './base'
 import { Drive, Team } from '@microsoft/microsoft-graph-types-beta'
 
 export interface TeamActivity {
@@ -30,9 +30,9 @@ export interface TeamActivity {
 export class TeamsService extends BaseService {
     public static async getFileChangesByTeams() {
         try {
-            const teams = await graphClient.api('/teams').get()
+            const teams = await makeGraphAPICall('/teams')
             for (const team of teams.value) {
-                const driveItems = await graphClient.api(`/groups/${team.id}/drive/root/children`).get()
+                const driveItems = await makeGraphAPICall(`/groups/${team.id}/drive/root/children`)
                 console.log(`Team: ${team.displayName}, File Count: ${driveItems.value.length}`)
                 console.log(driveItems)
             }
@@ -46,7 +46,7 @@ export class TeamsService extends BaseService {
     // Function to get activities for a specific drive
     public static async getDriveActivities(driveId: string): Promise<any> {
         try {
-            const activities = await graphClient.api(`/drives/${driveId}/activities`).get()
+            const activities = await makeGraphAPICall(`/drives/${driveId}/activities`)
             return activities.value
         } catch (error: any) {
             console.error(`Error fetching activities for drive ${driveId}:`, error.message)
@@ -57,7 +57,7 @@ export class TeamsService extends BaseService {
     // Function to get drive IDs for a specific team
     public static async getDriveIdsForTeam(teamId: string): Promise<string[]> {
         try {
-            const { value: drives }: { value: Drive[] } = await graphClient.api(`/groups/${teamId}/drives`).get()
+            const { value: drives }: { value: Drive[] } = await makeGraphAPICall(`/groups/${teamId}/drives`)
             return drives.map(drive => drive.id).filter(id => id !== undefined) as string[]
         } catch (error: any) {
             console.error(`Error fetching drive IDs for team ${teamId}:`, error.message)
@@ -102,7 +102,7 @@ export class TeamsService extends BaseService {
     // Main function to get activities for all teams
     public static async getFileActivitiesByTeams() {
         try {
-            const { value: teams }: { value: Team[] } = await graphClient.api('/teams').get()
+            const { value: teams }: { value: Team[] } = await makeGraphAPICall('/teams')
 
             const teamPromises = teams.map(async team => this.countActivitiesForTeam(team))
 
@@ -123,7 +123,7 @@ export class TeamsService extends BaseService {
     // Call the function with activity type (e.g., 'file modifications')
 
     public static async getActivity(period: 30 | 90): Promise<Array<TeamActivity & Team>> {
-        const { value: teams }: { value: Team[] } = await graphClient.api('/teams').get()
+        const { value: teams }: { value: Team[] } = await makeGraphAPICall('/teams')
 
         let { value: teamsActivity } = await this.httpGet(graphLinks.teamsActivity(period))
 

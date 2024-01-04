@@ -1,6 +1,6 @@
 import { List, Site, ItemActivityStat, SiteCollection, ItemActionStat } from '@microsoft/microsoft-graph-types-beta'
 import { graphAPIUrls } from '../graphHelper'
-import { BaseService, graphClient } from './base'
+import { BaseService, makeGraphAPICall } from './base'
 
 export interface SiteActivity {
     reportRefreshDate: string
@@ -48,14 +48,15 @@ export type SitesActivity = {
 }
 export class SharePointService extends BaseService {
     public static async getAll(): Promise<SharePointSite[]> {
-        const { value } = await graphClient.api('sites').get()
+        const { value } = await makeGraphAPICall('sites')
         return this.stripExtraSitesId(value)
     }
 
     public static async getSitesActivity(period: 30 | 90): Promise<SiteActivity[]> {
-        const { value: sites }: { value: SiteActivity[] } = await graphClient
-            .api(graphAPIUrls.sharePointSiteUsageDetail(period))
-            .get()
+        const { value: sites }: { value: SiteActivity[] } = await makeGraphAPICall(
+            graphAPIUrls.sharePointSiteUsageDetail(period)
+        )
+
         return sites
     }
 
@@ -79,16 +80,16 @@ export class SharePointService extends BaseService {
     }
 
     public static async getFileCount(period: 30 | 90): Promise<SiteActivity[]> {
-        const { value } = await graphClient.api(graphAPIUrls.fileCount(period)).get()
+        const { value } = await makeGraphAPICall(graphAPIUrls.fileCount(period))
         return value
     }
 
     public static async getSiteAnalytics(siteId: string): Promise<ItemActivityStat> {
-        return graphClient.api(graphAPIUrls.siteAnalytics(siteId)).get()
+        return makeGraphAPICall(graphAPIUrls.siteAnalytics(siteId))
     }
 
     public static async getSiteList(siteId: string): Promise<Array<List>> {
-        const { value } = await graphClient.api(graphAPIUrls.siteList(siteId)).get()
+        const { value } = await makeGraphAPICall(graphAPIUrls.siteList(siteId))
         return value
     }
 
