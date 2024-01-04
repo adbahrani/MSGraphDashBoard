@@ -40,8 +40,7 @@ export const Login = () => {
         try {
             const token = await AuthService.login({ email, password })
             setAuthStates?.(token)
-
-            navigate(location.state?.from || '/')
+            navigate(location.state?.from ?? '/')
         } catch (e: unknown) {
             setErrorMessage((e as Error).message || 'Unknown error')
         }
