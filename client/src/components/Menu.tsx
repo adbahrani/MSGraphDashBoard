@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -10,7 +10,7 @@ import { useAuthContext } from '../contexts/Auth'
 const linkStyle = { color: '#343434', textDecoration: 'none' }
 const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
 
-let links: MenuLink[] = [
+const links: MenuLink[] = [
     { title: 'Home', to: '/', activeSet: new Set(['/']) },
     { title: 'About', to: '/#about', activeSet: new Set(['/#about']) },
     { title: 'Admin', to: '/admin', activeSet: new Set(['/admin']), secure: true },
@@ -28,6 +28,8 @@ let links: MenuLink[] = [
         ],
     },
     { title: 'Contact', to: '/#contact', activeSet: new Set(['/#contact']) },
+    { title: 'Login', to: '/login', activeSet: new Set(['/login']) },
+    { title: 'Logout', to: '/', activeSet: new Set(['/']), secure: true },
 ]
 
 export const Menu = () => {
@@ -73,15 +75,12 @@ export const Menu = () => {
             .flat()
         document.title = `M365 Pulse ${location.pathname.replace('/', '').toLocaleUpperCase()}`
         setActiveLinks(new Set(activeLinks.map(link => link.to)))
-        if (!isLoggedIn) {
-            links = links.filter(link => link.title !== 'Login' && link.title !== 'Logout')
-            links.push({ title: 'Login', to: '/login', activeSet: new Set(['/login']) })
-        } else {
-            links = links.filter(link => link.title !== 'Login' && link.title !== 'Logout')
-            links.push({ title: 'Logout', to: '/', activeSet: new Set(['/']) })
-        }
     }, [location])
 
+    const shouldSkipAdding = useCallback(
+        link => (link.secure && !isLoggedIn) || (link.title === 'Login' && isLoggedIn),
+        [isLoggedIn]
+    )
     return (
         <div
             style={{
@@ -110,7 +109,7 @@ export const Menu = () => {
                     }}
                 >
                     {links.map(link => {
-                        if (link.secure && !isLoggedIn) return
+                        if (shouldSkipAdding(link)) return null
                         return (
                             <li key={link.title}>
                                 <Link
