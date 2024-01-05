@@ -17,10 +17,12 @@ import Admin from './views/Admin'
 import SignUp from './views/Signup'
 import { AuthContextProvider } from './contexts/Auth'
 import ProtectedRoute from './components/shared/ProtectedRoute'
+import { CssBaseline } from '@mui/material'
 
 export default function App() {
     return (
         <AuthContextProvider>
+            <CssBaseline />
             <Router>
                 <Menu />
                 <Container maxWidth="xl">
