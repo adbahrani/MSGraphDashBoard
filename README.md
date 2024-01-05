@@ -9,3 +9,4 @@ Currently hosted at: https://ms-dashboard-ccecc603061b.herokuapp.com/
 3. npm start would start local dev mode, watching only FE at this point, you can run watch-be if needed
 4. npm run prod would start prod mode, with build version of client
 5. to build client use npm build
+6. You can sign up for new account, or just use test/test

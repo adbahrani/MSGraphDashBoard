@@ -7,5 +7,5 @@
     { "email": "test3@gmail.com", "password": "test", "firstName": "Test", "lastName": "3" },
     { "email": "token12@gmail.com", "password": "test", "firstName": "Token", "lastName": "Test" },
     { "email": "web@12.com", "password": "webmail12", "firstName": "abcd@gmail.com", "lastName": "we" },
-    { "email": "test", "password": "test", "firstName": "abcd@gmail.com", "lastName": "we" }
+    { "email": "test", "password": "test", "firstName": "Test", "lastName": "test" }
 ]
