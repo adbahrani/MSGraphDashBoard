@@ -13,10 +13,11 @@ const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '
 let links: MenuLink[] = [
     { title: 'Home', to: '/', activeSet: new Set(['/']) },
     { title: 'About', to: '/#about', activeSet: new Set(['/#about']) },
-    { title: 'Admin', to: '/admin', activeSet: new Set(['/admin']) },
+    { title: 'Admin', to: '/admin', activeSet: new Set(['/admin']), secure: true },
     {
         title: 'Data Analytics',
         to: '#',
+        secure: true,
         children: [
             { title: 'Users', to: '/users', activeSet: new Set(['/users']) },
             { title: 'Groups', to: '/groups', activeSet: new Set(['/groups', '/group']) },
@@ -108,43 +109,48 @@ export const Menu = () => {
                         gap: '16px',
                     }}
                 >
-                    {links.map(link => (
-                        <li key={link.title}>
-                            <Link
-                                to={link.to}
-                                style={
-                                    link.title !== 'Logout' && activeLinks.has(link.to) ? activeLinkStyle : linkStyle
-                                }
-                                onClick={e => handleClick(link, e)}
-                            >
-                                {link.title}
-                            </Link>
-                            {link.children ? (
-                                <MuiMenu
-                                    id="basic-menu"
-                                    anchorEl={anchorEl}
-                                    open={open}
-                                    onClose={handleClose}
-                                    MenuListProps={{
-                                        'aria-labelledby': 'basic-button',
-                                    }}
+                    {links.map(link => {
+                        if (link.secure && !isLoggedIn) return
+                        return (
+                            <li key={link.title}>
+                                <Link
+                                    to={link.to}
+                                    style={
+                                        link.title !== 'Logout' && activeLinks.has(link.to)
+                                            ? activeLinkStyle
+                                            : linkStyle
+                                    }
+                                    onClick={e => handleClick(link, e)}
                                 >
-                                    {link.children.map(subLink => (
-                                        <MenuItem
-                                            selected={activeLinks.has(subLink.to)}
-                                            component={Link}
-                                            to={subLink.to}
-                                            style={linkStyle}
-                                            onClick={handleClose}
-                                            key={subLink.title}
-                                        >
-                                            {subLink.title}
-                                        </MenuItem>
-                                    ))}
-                                </MuiMenu>
-                            ) : null}
-                        </li>
-                    ))}
+                                    {link.title}
+                                </Link>
+                                {link.children ? (
+                                    <MuiMenu
+                                        id="basic-menu"
+                                        anchorEl={anchorEl}
+                                        open={open}
+                                        onClose={handleClose}
+                                        MenuListProps={{
+                                            'aria-labelledby': 'basic-button',
+                                        }}
+                                    >
+                                        {link.children.map(subLink => (
+                                            <MenuItem
+                                                selected={activeLinks.has(subLink.to)}
+                                                component={Link}
+                                                to={subLink.to}
+                                                style={linkStyle}
+                                                onClick={handleClose}
+                                                key={subLink.title}
+                                            >
+                                                {subLink.title}
+                                            </MenuItem>
+                                        ))}
+                                    </MuiMenu>
+                                ) : null}
+                            </li>
+                        )
+                    })}
                 </ul>
             </div>
         </div>
