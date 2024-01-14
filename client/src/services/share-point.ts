@@ -1,4 +1,4 @@
-import { List, Site, ItemActivityStat, SiteCollection, ItemActionStat } from '@microsoft/microsoft-graph-types-beta'
+import { List, ItemActivityStat, SiteCollection, ItemActionStat } from '@microsoft/microsoft-graph-types-beta'
 import { graphAPIUrls } from '../graphHelper'
 import { BaseService, makeGraphAPICall } from './base'
 

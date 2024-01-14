@@ -1,10 +1,9 @@
-import { AuthService } from './auth'
 import { TokenService } from './token'
 import { Client } from '@microsoft/microsoft-graph-client'
 
 //TODO Move away from this
 export class BaseService {
-    protected static async httpGet(url: string) {
+    protected static async httpGet(url: string, isRetried = false) {
         const token = await TokenService.getToken()
         const response = await fetch(url, {
             method: 'GET',
@@ -15,10 +14,12 @@ export class BaseService {
         })
 
         if (!response.ok) {
-            if (response.status === 401) {
-                baseLogOut(response)
+            if (!isRetried && response.status === 401) {
+                await refreshToken()
+                return this.httpGet(url, true)
+            } else {
+                throw new Error(`Request failed with status ${response.status}`)
             }
-            throw new Error(`Request failed with status ${response.status}`)
         }
 
         return response.json()
@@ -33,22 +34,34 @@ const graphClient = Client.init({
             const accessToken = await TokenService.getToken()
             done('Error', accessToken)
         } catch (error) {
-            await baseLogOut(error)
-            done(error, null)
+            const newToken = await refreshToken()
+            done(error, newToken)
         }
     },
 })
 
-const baseLogOut = async error => {
-    TokenService.clearToken()
-    await AuthService.logout()
-    window.location.href = '/login'
-    console.log(error)
+const refreshToken = async () => {
+    const newToken = await TokenService.fetcTokenFromApi()
+    TokenService.setToken(newToken)
+    console.log('new token set', newToken)
+    return newToken
 }
 
-export async function makeGraphAPICall(endpoint: string, method: string = 'GET', data?: any) {
+export async function makeGraphAPICall(
+    endpoint: string,
+    method: string = 'GET',
+    data?: any,
+    options: {
+        version?: 'v1' | 'beta'
+        isRetried?: boolean
+    } = {
+        version: 'beta',
+        isRetried: false,
+    }
+) {
+    const { version, isRetried } = options
     try {
-        const request = graphClient.api(endpoint)
+        const request = version === 'v1' ? graphClient.api(endpoint).version('v1.0') : graphClient.api(endpoint)
 
         if (method === 'GET') {
             return await request.get()
@@ -58,8 +71,9 @@ export async function makeGraphAPICall(endpoint: string, method: string = 'GET',
 
         // Handle other methods or edge cases if necessary
     } catch (error: any) {
-        if (error.statusCode === 401) {
-            baseLogOut(error)
+        if (!isRetried && error.statusCode === 401) {
+            await refreshToken()
+            return makeGraphAPICall(endpoint, method, data, options)
         } else {
             console.error('Error making Graph API call:', error)
         }

@@ -25,6 +25,7 @@ const links: MenuLink[] = [
             { title: 'SharePoint', to: '/sharepoint', activeSet: new Set(['/sharepoint']) },
             { title: 'OneDrive', to: '/onedrive', activeSet: new Set(['/onedrive']) },
             { title: 'Reports', to: '/reports', activeSet: new Set(['/reports']) },
+            { title: 'Exchanges', to: '/exchanges', activeSet: new Set(['/exchanges']) },
         ],
     },
     { title: 'Contact', to: '/#contact', activeSet: new Set(['/#contact']) },

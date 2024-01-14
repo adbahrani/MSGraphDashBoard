@@ -59,6 +59,19 @@ export const graphAPIUrls = {
     siteList: (siteId: string) => `/sites/${siteId}/lists`,
     siteContentTypes: (siteId: string) => `/sites/${siteId}/contentTypes`,
     siteDetails: (siteId: string) => `/sites/${siteId}`,
+    mailBoxUsageCounts: (period: 30 | 90) =>
+        `/reports/getMailboxUsageMailboxCounts(period='D${period}')?$format=application/json`,
+    emailUsageUserDetails: (period: 30 | 90) =>
+        `/reports/microsoft.graph.getEmailAppUsageUserDetail(period='D${period}')?$format=application/json`,
+    totalStorageUsed: (period: 30 | 90) =>
+        `/reports/getMailboxUsageStorage(period='D${period}')?$format=application/json`,
+    userMailBoxSettings: (userId: string) => `/users/${userId}/mailboxSettings`,
+    getEmailActivityUserDetail: (period: 30 | 90) =>
+        `/reports/getEmailActivityUserDetail(period='D${period}')?$format=application/json`,
+    getEmailAppUsageAppsUserCounts: (period: 30 | 90) =>
+        `/reports/getEmailAppUsageAppsUserCounts(period='D${period}')?$format=application/json`,
+    getMailboxUsageDetail: (period: 30 | 90) =>
+        `/reports/microsoft.graph.getMailboxUsageDetail(period='D${period}')?$format=application/json`,
     token: '/token',
     report: '/report',
 }

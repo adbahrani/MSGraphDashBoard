@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-
 import './App.css'
-
 import { Users } from './views/Users'
 import { Landing } from './views/Landing'
 import { Groups } from './views/Groups'
@@ -18,6 +16,7 @@ import SignUp from './views/Signup'
 import { AuthContextProvider } from './contexts/Auth'
 import ProtectedRoute from './components/shared/ProtectedRoute'
 import { CssBaseline } from '@mui/material'
+import { Exchange } from './views/Exchange'
 
 export default function App() {
     return (
@@ -89,6 +88,14 @@ export default function App() {
                             element={
                                 <ProtectedRoute>
                                     <OneDrive />
+                                </ProtectedRoute>
+                            }
+                        />
+                        <Route
+                            path="/exchanges"
+                            element={
+                                <ProtectedRoute>
+                                    <Exchange />
                                 </ProtectedRoute>
                             }
                         />
