@@ -8,6 +8,7 @@ import { formatBytestToGB } from '../utils/helpers'
 import { ExchangeList } from '../components/ExchangeList'
 import { PeriodValueInDays } from '../types/general'
 import { columnDefExchanges } from '../columnsDef/exchange'
+import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 
 interface TypeOfStatsData {
     totalMailboxesCount: string
@@ -56,7 +57,16 @@ export const Exchange = () => {
     const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
 
     const setPageData = async () => {
-        const promiseSettledResponse = await Promise.allSettled([
+        setIsLoading(true)
+        const [
+            mailBoxUsageCountResult,
+            emailUsageUserDetailsResult,
+            emailActivityUserDetailResult,
+            emailAppUserCountsResult,
+            totalStorageUsedResult,
+            mailboxUsageResult,
+            mailboxSettingsResult,
+        ] = await Promise.allSettled([
             ExchangeService.getTotalMailBoxUsageCounts(selectedPeriod),
             ExchangeService.getEmailUsageUserDetails(selectedPeriod),
             ExchangeService.getEmailActivityUserDetail(selectedPeriod),
@@ -68,18 +78,18 @@ export const Exchange = () => {
         setIsLoading(false)
 
         const emailUsageUserDetails =
-            promiseSettledResponse[1].status === 'fulfilled' ? promiseSettledResponse[1].value : []
+            emailUsageUserDetailsResult.status === 'fulfilled' ? emailUsageUserDetailsResult.value : []
 
-        const totalStorageUsed = promiseSettledResponse[4].status === 'fulfilled' ? promiseSettledResponse[4].value : []
+        const totalStorageUsed = totalStorageUsedResult.status === 'fulfilled' ? totalStorageUsedResult.value : []
 
         const emailActivityUserDetails =
-            promiseSettledResponse[2].status === 'fulfilled' ? promiseSettledResponse[2].value : []
+            emailActivityUserDetailResult.status === 'fulfilled' ? emailActivityUserDetailResult.value : []
 
-        const userUsageDetails = promiseSettledResponse[5].status === 'fulfilled' ? promiseSettledResponse[5].value : []
+        const userUsageDetails = mailboxUsageResult.status === 'fulfilled' ? mailboxUsageResult.value : []
 
         setActivityDetails(userUsageDetails)
 
-        const statsByDevice = promiseSettledResponse[3].status === 'fulfilled' ? promiseSettledResponse[3].value : []
+        const statsByDevice = emailAppUserCountsResult.status === 'fulfilled' ? emailAppUserCountsResult.value : []
         const groupByActivityCounts = emailUsageUserDetails.reduce(
             (acc, val) => {
                 if (val.lastActivityDate) {
@@ -108,6 +118,8 @@ export const Exchange = () => {
         const totalStorageUsedInBytes = totalStorageUsed.reduce((acc, val) => {
             return val.storageUsedInBytes + acc
         }, 0)
+
+        const mailSettingData = mailboxSettingsResult.status === 'fulfilled' ? mailboxSettingsResult.value : []
 
         const deviceData = statsByDevice.reduce(
             (acc, val) => {
@@ -139,6 +151,9 @@ export const Exchange = () => {
 
         setStatsDataFromApi(val => ({
             ...val,
+            sharedMailboxesCount: mailSettingData.filter(val => val.userPurpose === 'shared').length.toString(),
+            resourceMailboxesCount: mailSettingData.filter(val => val.userPurpose !== 'shared').length.toString(),
+            totalContactsCount: mailSettingData.length.toString(),
             emailReadsCount: emailActivityUserDetails.reduce((acc, val) => acc + val.readCount, 0).toString(),
             emailReceivedCount: emailActivityUserDetails.reduce((acc, val) => acc + val.receiveCount, 0).toString(),
             emailSentCount: emailActivityUserDetails.reduce((acc, val) => acc + val.sendCount, 0).toString(),
@@ -180,7 +195,7 @@ export const Exchange = () => {
     return (
         <>
             <div style={{}}>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginBottom: '1rem' }}>
                     {periods.map(period => (
                         <Chip
                             key={period.value}
@@ -190,22 +205,29 @@ export const Exchange = () => {
                         />
                     ))}
                 </div>
-                <Box
-                    component="div"
-                    sx={{
-                        display: 'grid',
-                        gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                        gap: '8px',
-                    }}
-                >
-                    {statsData.map(dt => (
-                        <Block key={dt.title} title={dt.title}>
-                            <Box component="span" sx={boxStyle}>
-                                {dt.value}
-                            </Box>
-                        </Block>
-                    ))}
-                </Box>
+                {isLoading ? (
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                        <BoxLoader numberOfBoxes={16} boxHeight="8rem" boxWidth="23%" />
+                    </div>
+                ) : (
+                    <Box
+                        component="div"
+                        sx={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr 1fr 1fr',
+                            gap: '8px',
+                        }}
+                    >
+                        {statsData.map(dt => (
+                            <Block key={dt.title} title={dt.title}>
+                                <Box component="span" sx={boxStyle}>
+                                    {dt.value}
+                                </Box>
+                            </Block>
+                        ))}
+                    </Box>
+                )}
+
                 <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)' }}>
                     <Block title="Mailbox logs">
                         <ExchangeList
