@@ -51,17 +51,14 @@ export async function makeGraphAPICall(
     endpoint: string,
     method: string = 'GET',
     data?: any,
-    options: {
-        version?: 'v1' | 'beta'
+    options?: {
+        version?: 'v1.0' | 'beta'
         isRetried?: boolean
-    } = {
-        version: 'beta',
-        isRetried: false,
     }
 ) {
-    const { version, isRetried } = options
+    const { version = 'beta', isRetried = false } = options || {}
     try {
-        const request = version === 'v1' ? graphClient.api(endpoint).version('v1.0') : graphClient.api(endpoint)
+        const request = graphClient.api(endpoint).version(version)
 
         if (method === 'GET') {
             return await request.get()
@@ -73,7 +70,10 @@ export async function makeGraphAPICall(
     } catch (error: any) {
         if (!isRetried && error.statusCode === 401) {
             await refreshToken()
-            return makeGraphAPICall(endpoint, method, data, options)
+            return makeGraphAPICall(endpoint, method, data, {
+                ...options,
+                isRetried: true,
+            })
         } else {
             console.error('Error making Graph API call:', error)
         }

@@ -6,20 +6,40 @@ import { periods } from '../constants'
 import { ExchangeService, MailBoxUsageDetail } from '../services/exchange'
 import { formatBytestToGB } from '../utils/helpers'
 import { ExchangeList } from '../components/ExchangeList'
-import { ColDef } from 'ag-grid-community'
+import { PeriodValueInDays } from '../types/general'
+import { columnDefExchanges } from '../columnsDef/exchange'
+
+interface TypeOfStatsData {
+    totalMailboxesCount: string
+    activeMailboxesCount: string
+    inactiveMailboxesCount: string
+    activeVersusTotalMailboxes: string
+    totalStorage: string
+    sharedMailboxesCount: string
+    resourceMailboxesCount: string
+    totalContactsCount: string
+    emailReadsCount: string
+    emailReceivedCount: string
+    emailSentCount: string
+    activeUsers: string
+    outlookMobile: string
+    outlookWindows: string
+    outlookWeb: string
+    outlookOther: string
+}
 
 export const Exchange = () => {
-    const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
+    const [selectedPeriod, setSelectedPeriod] = useState<PeriodValueInDays>(30)
 
     const [isLoading, setIsLoading] = useState(true)
 
     const [activityDetails, setActivityDetails] = useState<MailBoxUsageDetail[]>([])
 
-    const [statsDataFromApi, setStatsDataFromApi] = useState({
+    const [statsDataFromApi, setStatsDataFromApi] = useState<TypeOfStatsData>({
         totalMailboxesCount: '',
         activeMailboxesCount: '',
         inactiveMailboxesCount: '',
-        activevsTotalMailboxes: '',
+        activeVersusTotalMailboxes: '',
         totalStorage: '',
         sharedMailboxesCount: '',
         resourceMailboxesCount: '',
@@ -31,7 +51,7 @@ export const Exchange = () => {
         outlookMobile: '',
         outlookWindows: '',
         outlookWeb: '',
-        outlookother: '',
+        outlookOther: '',
     })
     const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
 
@@ -80,7 +100,7 @@ export const Exchange = () => {
         )
 
         const totalMailboxesCount = emailUsageUserDetails.length
-        const activevsTotalMailboxes = (
+        const activeVersusTotalMailboxes = (
             (groupByActivityCounts.activeMailboxesCount / totalMailboxesCount) *
             100
         ).toFixed(2)
@@ -126,10 +146,10 @@ export const Exchange = () => {
             inactiveMailboxesCount: groupByActivityCounts.inactiveMailboxesCount.toString(),
             activeMailboxesCount: groupByActivityCounts.activeMailboxesCount.toString(),
             totalMailboxesCount: totalMailboxesCount.toString(),
-            activevsTotalMailboxes: activevsTotalMailboxes.toString() + '%',
+            activeVersusTotalMailboxes: activeVersusTotalMailboxes.toString() + '%',
             activeUsers: emailActivityUserDetails.filter(val => val.lastActivityDate, 0).length.toString(),
             outlookMobile: deviceData.outlookMobile.toString(),
-            outlookother: deviceData.outlookOther.toString(),
+            outlookOther: deviceData.outlookOther.toString(),
             outlookWeb: deviceData.outlookWeb.toString(),
             outlookWindows: deviceData.outlookWindows.toString(),
         }))
@@ -142,7 +162,7 @@ export const Exchange = () => {
         { title: 'Total Mailboxes Count', value: statsDataFromApi.totalMailboxesCount },
         { title: 'Active Mailboxes Count', value: statsDataFromApi.activeMailboxesCount },
         { title: 'Inactive Mailboxes Count', value: statsDataFromApi.inactiveMailboxesCount },
-        { title: 'Active vs Total Mailboxes', value: statsDataFromApi.activevsTotalMailboxes },
+        { title: 'Active vs Total Mailboxes', value: statsDataFromApi.activeVersusTotalMailboxes },
         { title: 'Total Storage (GB)', value: statsDataFromApi.totalStorage },
         { title: 'Shared Mailboxes Count', value: statsDataFromApi.sharedMailboxesCount },
         { title: 'Resource Mailboxes Count', value: statsDataFromApi.resourceMailboxesCount },
@@ -154,66 +174,7 @@ export const Exchange = () => {
         { title: 'Outlook Mobile', value: statsDataFromApi.outlookMobile },
         { title: 'Outlook Windows', value: statsDataFromApi.outlookWindows },
         { title: 'Outlook Web', value: statsDataFromApi.outlookWeb },
-        { title: 'Outlook other', value: statsDataFromApi.outlookother },
-    ]
-
-    const columnDefGroups: ColDef[] = [
-        { field: 'userPrincipalName', headerName: 'User Email Address', flex: 10 },
-        { field: 'displayName', headerName: 'User Name', flex: 6 },
-        {
-            field: 'isDeleted',
-            editable: false,
-            headerName: 'Is Deleted',
-            flex: 4,
-        },
-        {
-            field: 'deletedDate',
-            headerName: 'Deleted Date',
-            flex: 4,
-        },
-        {
-            headerName: 'Created Date',
-            field: 'createdDate',
-            flex: 4,
-        },
-        {
-            field: 'lastActivityDate',
-            headerName: 'Last Activity Date',
-            flex: 4,
-        },
-        {
-            headerName: 'Item Count',
-            field: 'itemCount',
-            flex: 4,
-        },
-        {
-            field: 'storageUsedInBytes',
-            headerName: 'Storage Used (GB)',
-            valueFormatter: ({ value }) => formatBytestToGB(value, 3),
-            flex: 4,
-        },
-        {
-            field: 'hasArchive',
-            editable: false,
-            headerName: 'Has Archive',
-            flex: 4,
-        },
-        // {
-        //     field: 'renewedDateTime',
-        //     headerName: 'Read',
-        //     valueFormatter: params => {
-        //         return params.value ? new Date(params.value).toLocaleString() : ''
-        //     },
-        //     flex: 4,
-        // },
-        // {
-        //     field: 'renewedDateTime',
-        //     headerName: 'Received',
-        //     valueFormatter: params => {
-        //         return params.value ? new Date(params.value).toLocaleString() : ''
-        //     },
-        //     flex: 4,
-        // },
+        { title: 'Outlook other', value: statsDataFromApi.outlookOther },
     ]
 
     return (
@@ -248,7 +209,7 @@ export const Exchange = () => {
                 <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)' }}>
                     <Block title="Mailbox logs">
                         <ExchangeList
-                            columnDefs={columnDefGroups}
+                            columnDefs={columnDefExchanges}
                             height="25rem"
                             width="100%"
                             exchanges={activityDetails}

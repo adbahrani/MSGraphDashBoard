@@ -92,7 +92,7 @@ export default function App() {
                             }
                         />
                         <Route
-                            path="/exchanges"
+                            path="/exchange"
                             element={
                                 <ProtectedRoute>
                                     <Exchange />

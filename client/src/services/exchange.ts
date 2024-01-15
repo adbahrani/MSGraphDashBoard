@@ -2,6 +2,7 @@ import { Office365GroupsActivityFileCounts, Office365GroupsActivityDetail } from
 import { graphAPIUrls } from '../graphHelper'
 import { makeGraphAPICall } from './base'
 import { UsersService } from './users'
+import { PeriodValueInDays } from '../types/general'
 
 export interface MailBoxUsageDetail {
     reportRefreshDate: string
@@ -61,21 +62,21 @@ interface Storage {
     reportPeriod: string
 }
 export class ExchangeService {
-    public static async getTotalMailBoxUsageCounts(period: 30 | 90) {
+    public static async getTotalMailBoxUsageCounts(period: PeriodValueInDays) {
         const mailBoxUsages: {
             value: Office365GroupsActivityFileCounts[]
         } = await makeGraphAPICall(graphAPIUrls.mailBoxUsageCounts(period))
         return mailBoxUsages.value
     }
 
-    public static async getEmailUsageUserDetails(period: 30 | 90) {
+    public static async getEmailUsageUserDetails(period: PeriodValueInDays) {
         const mailBoxUsageDetails: {
             value: Office365GroupsActivityDetail[]
         } = await makeGraphAPICall(graphAPIUrls.emailUsageUserDetails(period))
         return mailBoxUsageDetails.value
     }
 
-    public static async getTotalStorageUsed(period: 30 | 90) {
+    public static async getTotalStorageUsed(period: PeriodValueInDays) {
         const storageUsed: {
             value: Storage[]
         } = await makeGraphAPICall(graphAPIUrls.totalStorageUsed(period))
@@ -86,26 +87,26 @@ export class ExchangeService {
         const allUsers = await UsersService.getAll()
         const ids = allUsers.map(user => user.id)
         const mailSettingData = await Promise.all(
-            ids.map(id => makeGraphAPICall(graphAPIUrls.userMailBoxSettings(id), 'GET', undefined, { version: 'v1' }))
+            ids.map(id => makeGraphAPICall(graphAPIUrls.userMailBoxSettings(id), 'GET'))
         )
         return mailSettingData.map(dt => dt.value)
     }
 
-    public static async getEmailActivityUserDetail(period: 30 | 90) {
+    public static async getEmailActivityUserDetail(period: PeriodValueInDays) {
         const emailActivity: {
             value: EmailActivityUserDetail[]
         } = await makeGraphAPICall(graphAPIUrls.getEmailActivityUserDetail(period))
         return emailActivity.value
     }
 
-    public static async getEmailAppUsageAppsUserCounts(period: 30 | 90) {
+    public static async getEmailAppUsageAppsUserCounts(period: PeriodValueInDays) {
         const appUserCounts: {
             value: EmailAppUserCount[]
         } = await makeGraphAPICall(graphAPIUrls.getEmailAppUsageAppsUserCounts(period))
         return appUserCounts.value
     }
 
-    public static async getMailboxUsageDetail(period: 30 | 90) {
+    public static async getMailboxUsageDetail(period: PeriodValueInDays) {
         const usage: {
             value: MailBoxUsageDetail[]
         } = await makeGraphAPICall(graphAPIUrls.getMailboxUsageDetail(period))
