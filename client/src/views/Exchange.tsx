@@ -10,16 +10,23 @@ import { PeriodValueInDays } from '../types/general'
 import { columnDefExchanges } from '../columnsDef/exchange'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
 
-class TypeOfStatsData {
-    public data: string
-    constructor() {
-        this.data = ''
-    }
-
-    setData(data: string | number) {
-        this.data = typeof data === 'number' ? data.toString() : data
-        return this
-    }
+class ExchangeStats {
+    totalMailboxesCount: number = 0
+    activeMailboxesCount: number = 0
+    inactiveMailboxesCount: number = 0
+    activeVersusTotalMailboxes: string = ''
+    totalStorage: string = ''
+    sharedMailboxesCount: number = 0
+    resourceMailboxesCount: number = 0
+    totalContactsCount: number = 0
+    emailReadsCount: number = 0
+    emailReceivedCount: number = 0
+    emailSentCount: number = 0
+    activeUsers: number = 0
+    outlookMobile: number = 0
+    outlookWindows: number = 0
+    outlookWeb: number = 0
+    outlookOther: number = 0
 }
 
 export const Exchange = () => {
@@ -29,24 +36,7 @@ export const Exchange = () => {
 
     const [activityDetails, setActivityDetails] = useState<MailBoxUsageDetail[]>([])
 
-    const [statsDataFromApi, setStatsDataFromApi] = useState({
-        totalMailboxesCount: new TypeOfStatsData(),
-        activeMailboxesCount: new TypeOfStatsData(),
-        inactiveMailboxesCount: new TypeOfStatsData(),
-        activeVersusTotalMailboxes: new TypeOfStatsData(),
-        totalStorage: new TypeOfStatsData(),
-        sharedMailboxesCount: new TypeOfStatsData(),
-        resourceMailboxesCount: new TypeOfStatsData(),
-        totalContactsCount: new TypeOfStatsData(),
-        emailReadsCount: new TypeOfStatsData(),
-        emailReceivedCount: new TypeOfStatsData(),
-        emailSentCount: new TypeOfStatsData(),
-        activeUsers: new TypeOfStatsData(),
-        outlookMobile: new TypeOfStatsData(),
-        outlookWindows: new TypeOfStatsData(),
-        outlookWeb: new TypeOfStatsData(),
-        outlookOther: new TypeOfStatsData(),
-    })
+    const [statsDataFromApi, setStatsDataFromApi] = useState<ExchangeStats>(new ExchangeStats())
     const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
 
     const setPageData = async () => {
@@ -67,34 +57,21 @@ export const Exchange = () => {
 
         setStatsDataFromApi(val => ({
             ...val,
-            sharedMailboxesCount: val.sharedMailboxesCount.setData(
-                mailSettingData.filter(val => val.userPurpose === 'shared').length
-            ),
-            resourceMailboxesCount: val.resourceMailboxesCount.setData(
-                mailSettingData.filter(val => val.userPurpose !== 'shared').length
-            ),
-            totalContactsCount: val.totalContactsCount.setData(mailSettingData.length),
-            emailReadsCount: val.emailReadsCount.setData(
-                emailActivityUserDetails.reduce((acc, val) => acc + val.readCount, 0)
-            ),
-            emailReceivedCount: val.emailReceivedCount.setData(
-                emailActivityUserDetails.reduce((acc, val) => acc + val.receiveCount, 0)
-            ),
-            emailSentCount: val.emailSentCount.setData(
-                emailActivityUserDetails.reduce((acc, val) => acc + val.sendCount, 0)
-            ),
-            totalStorage: val.totalStorage.setData(formatBytestToGB(totalStorageUsedInBytes, 1)),
-            inactiveMailboxesCount: val.inactiveMailboxesCount.setData(groupByActivityCounts.inactiveMailboxesCount),
-            activeMailboxesCount: val.activeMailboxesCount.setData(groupByActivityCounts.activeMailboxesCount),
-            totalMailboxesCount: val.totalMailboxesCount.setData(totalMailboxesCount),
-            activeVersusTotalMailboxes: val.activeVersusTotalMailboxes.setData(`${activeVersusTotalMailboxes} %`),
-            activeUsers: val.activeUsers.setData(
-                emailActivityUserDetails.filter(val => val.lastActivityDate, 0).length
-            ),
-            outlookMobile: val.outlookMobile.setData(deviceData.outlookMobile),
-            outlookOther: val.outlookOther.setData(deviceData.outlookOther),
-            outlookWeb: val.outlookWeb.setData(deviceData.outlookWeb),
-            outlookWindows: val.outlookWindows.setData(deviceData.outlookWindows),
+            resourceMailboxesCount: mailSettingData.filter(val => val.userPurpose !== 'shared').length,
+            totalContactsCount: mailSettingData.length,
+            emailReadsCount: emailActivityUserDetails.reduce((acc, val) => acc + val.readCount, 0),
+            emailReceivedCount: emailActivityUserDetails.reduce((acc, val) => acc + val.receiveCount, 0),
+            emailSentCount: emailActivityUserDetails.reduce((acc, val) => acc + val.sendCount, 0),
+            totalStorage: formatBytestToGB(totalStorageUsedInBytes, 1),
+            inactiveMailboxesCount: groupByActivityCounts.inactiveMailboxesCount,
+            activeMailboxesCount: groupByActivityCounts.activeMailboxesCount,
+            totalMailboxesCount: totalMailboxesCount,
+            activeVersusTotalMailboxes: activeVersusTotalMailboxes,
+            activeUsers: emailActivityUserDetails.filter(val => val.lastActivityDate, 0).length,
+            outlookOther: deviceData.outlookOther,
+            outlookWeb: deviceData.outlookWeb,
+            outlookWindows: deviceData.outlookWindows,
+            outlookMobile: deviceData.outlookMobile,
         }))
     }
     useEffect(() => {
@@ -102,22 +79,22 @@ export const Exchange = () => {
     }, [selectedPeriod])
 
     const statsData = [
-        { title: 'Total Mailboxes Count', value: statsDataFromApi.totalMailboxesCount.data },
-        { title: 'Active Mailboxes Count', value: statsDataFromApi.activeMailboxesCount.data },
-        { title: 'Inactive Mailboxes Count', value: statsDataFromApi.inactiveMailboxesCount.data },
-        { title: 'Active vs Total Mailboxes', value: statsDataFromApi.activeVersusTotalMailboxes.data },
-        { title: 'Total Storage (GB)', value: statsDataFromApi.totalStorage.data },
-        { title: 'Shared Mailboxes Count', value: statsDataFromApi.sharedMailboxesCount.data },
-        { title: 'Resource Mailboxes Count', value: statsDataFromApi.resourceMailboxesCount.data },
-        { title: 'Total Contacts Count', value: statsDataFromApi.totalContactsCount.data },
-        { title: 'Email Reads Count', value: statsDataFromApi.emailReadsCount.data },
-        { title: 'Email Received Count', value: statsDataFromApi.emailReceivedCount.data },
-        { title: 'Email Sent Count', value: statsDataFromApi.emailSentCount.data },
-        { title: 'Active Users', value: statsDataFromApi.activeUsers.data },
-        { title: 'Outlook Mobile', value: statsDataFromApi.outlookMobile.data },
-        { title: 'Outlook Windows', value: statsDataFromApi.outlookWindows.data },
-        { title: 'Outlook Web', value: statsDataFromApi.outlookWeb.data },
-        { title: 'Outlook other', value: statsDataFromApi.outlookOther.data },
+        { title: 'Total Mailboxes Count', value: statsDataFromApi.totalMailboxesCount },
+        { title: 'Active Mailboxes Count', value: statsDataFromApi.activeMailboxesCount },
+        { title: 'Inactive Mailboxes Count', value: statsDataFromApi.inactiveMailboxesCount },
+        { title: 'Active vs Total Mailboxes', value: statsDataFromApi.activeVersusTotalMailboxes },
+        { title: 'Total Storage (GB)', value: statsDataFromApi.totalStorage },
+        { title: 'Shared Mailboxes Count', value: statsDataFromApi.sharedMailboxesCount },
+        { title: 'Resource Mailboxes Count', value: statsDataFromApi.resourceMailboxesCount },
+        { title: 'Total Contacts Count', value: statsDataFromApi.totalContactsCount },
+        { title: 'Email Reads Count', value: statsDataFromApi.emailReadsCount },
+        { title: 'Email Received Count', value: statsDataFromApi.emailReceivedCount },
+        { title: 'Email Sent Count', value: statsDataFromApi.emailSentCount },
+        { title: 'Active Users', value: statsDataFromApi.activeUsers },
+        { title: 'Outlook Mobile', value: statsDataFromApi.outlookMobile },
+        { title: 'Outlook Windows', value: statsDataFromApi.outlookWindows },
+        { title: 'Outlook Web', value: statsDataFromApi.outlookWeb },
+        { title: 'Outlook other', value: statsDataFromApi.outlookOther },
     ]
 
     return (

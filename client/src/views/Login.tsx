@@ -73,6 +73,7 @@ export const Login = () => {
 
     return (
         <Container component="main" maxWidth="xs">
+            <SnackErrorComponent />
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Avatar sx={{ m: 1, bgColor: 'secondary.main' }}>
                     <LockOutlinedIcon />
@@ -121,7 +122,7 @@ export const Login = () => {
                     </Button>
                     <Grid container>
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link href="/signup" variant="body2">
                                 {"Don't have an account?"}
                             </Link>
                         </Grid>

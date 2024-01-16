@@ -211,10 +211,8 @@ export class ExchangeService {
         )
 
         const totalMailboxesCount = emailUsageUserDetails.length
-        const activeVersusTotalMailboxes = (
-            (groupByActivityCounts.activeMailboxesCount / totalMailboxesCount) *
-            100
-        ).toFixed(2)
+        const activeVersusTotalMailboxes = `${groupByActivityCounts.activeMailboxesCount}
+         / ${totalMailboxesCount}`
 
         const totalStorageUsedInBytes = totalStorageUsed.reduce((acc, val) => {
             return val.storageUsedInBytes + acc
