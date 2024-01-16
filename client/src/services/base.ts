@@ -4,7 +4,8 @@ import { Client } from '@microsoft/microsoft-graph-client'
 //TODO Move away from this
 export class BaseService {
     protected static async httpGet(url: string, isRetried = false) {
-        const token = await TokenService.getToken()
+        // get and sanitize token
+        const token = (await TokenService.getToken()).replace(/[^a-z0-9áéíóúñü_-\s.,]/gim, '').trim()
         const response = await fetch(url, {
             method: 'GET',
             headers: {
