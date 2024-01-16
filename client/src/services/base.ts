@@ -43,7 +43,6 @@ const graphClient = Client.init({
 const refreshToken = async () => {
     const newToken = await TokenService.fetcTokenFromApi()
     TokenService.setToken(newToken)
-    console.log('new token set', newToken)
     return newToken
 }
 

@@ -42,20 +42,4 @@ export const columnDefExchanges: ColDef[] = [
         headerName: 'Has Archive',
         flex: 4,
     },
-    // {
-    //     field: 'renewedDateTime',
-    //     headerName: 'Read',
-    //     valueFormatter: params => {
-    //         return params.value ? new Date(params.value).toLocaleString() : ''
-    //     },
-    //     flex: 4,
-    // },
-    // {
-    //     field: 'renewedDateTime',
-    //     headerName: 'Received',
-    //     valueFormatter: params => {
-    //         return params.value ? new Date(params.value).toLocaleString() : ''
-    //     },
-    //     flex: 4,
-    // },
 ]

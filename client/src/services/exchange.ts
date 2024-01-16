@@ -160,4 +160,105 @@ export class ExchangeService {
         } = await makeGraphAPICall(graphAPIUrls.getMailboxUsageDetail(period))
         return usage.value
     }
+
+    public static async exchangePageData({ selectedPeriod }: { selectedPeriod: PeriodValueInDays }) {
+        const [
+            mailBoxUsageCountResult,
+            emailUsageUserDetailsResult,
+            emailActivityUserDetailResult,
+            emailAppUserCountsResult,
+            totalStorageUsedResult,
+            mailboxUsageResult,
+            mailboxSettingsResult,
+        ] = await Promise.allSettled([
+            ExchangeService.getTotalMailBoxUsageCounts(selectedPeriod),
+            ExchangeService.getEmailUsageUserDetails(selectedPeriod),
+            ExchangeService.getEmailActivityUserDetail(selectedPeriod),
+            ExchangeService.getEmailAppUsageAppsUserCounts(selectedPeriod),
+            ExchangeService.getTotalStorageUsed(selectedPeriod),
+            ExchangeService.getMailboxUsageDetail(selectedPeriod),
+            ExchangeService.getMailboxSettings(),
+        ])
+
+        const emailUsageUserDetails =
+            emailUsageUserDetailsResult.status === 'fulfilled' ? emailUsageUserDetailsResult.value : []
+
+        const totalStorageUsed = totalStorageUsedResult.status === 'fulfilled' ? totalStorageUsedResult.value : []
+
+        const emailActivityUserDetails =
+            emailActivityUserDetailResult.status === 'fulfilled' ? emailActivityUserDetailResult.value : []
+
+        const userUsageDetails = mailboxUsageResult.status === 'fulfilled' ? mailboxUsageResult.value : []
+
+        const statsByDevice = emailAppUserCountsResult.status === 'fulfilled' ? emailAppUserCountsResult.value : []
+        const groupByActivityCounts = emailUsageUserDetails.reduce(
+            (acc, val) => {
+                if (val.lastActivityDate) {
+                    return {
+                        ...acc,
+                        activeMailboxesCount: acc.activeMailboxesCount + 1,
+                    }
+                }
+                return {
+                    ...acc,
+                    inactiveMailboxesCount: acc.inactiveMailboxesCount + 1,
+                }
+            },
+            {
+                activeMailboxesCount: 0,
+                inactiveMailboxesCount: 0,
+            }
+        )
+
+        const totalMailboxesCount = emailUsageUserDetails.length
+        const activeVersusTotalMailboxes = (
+            (groupByActivityCounts.activeMailboxesCount / totalMailboxesCount) *
+            100
+        ).toFixed(2)
+
+        const totalStorageUsedInBytes = totalStorageUsed.reduce((acc, val) => {
+            return val.storageUsedInBytes + acc
+        }, 0)
+
+        const mailSettingData = mailboxSettingsResult.status === 'fulfilled' ? mailboxSettingsResult.value : []
+
+        const deviceData = statsByDevice.reduce(
+            (acc, val) => {
+                const {
+                    outlookForMobile,
+                    outlookForWeb,
+                    outlookForWindows,
+                    pop3App,
+                    smtpApp,
+                    mailForMac,
+                    outlookForMac,
+                } = val
+                const others = (pop3App ?? 0) + (smtpApp ?? 0) + (mailForMac ?? 0) + (outlookForMac ?? 0)
+                return {
+                    ...acc,
+                    outlookMobile: acc.outlookMobile + (outlookForMobile ?? 0),
+                    outlookWeb: acc.outlookWeb + (outlookForWeb ?? 0),
+                    outlookWindows: acc.outlookWindows + (outlookForWindows ?? 0),
+                    outlookOther: others,
+                }
+            },
+            {
+                outlookMobile: 0,
+                outlookWeb: 0,
+                outlookWindows: 0,
+                outlookOther: 0,
+            }
+        )
+
+        return {
+            deviceData,
+            mailSettingData,
+            totalStorageUsedInBytes,
+            activeVersusTotalMailboxes,
+            userUsageDetails,
+            emailActivityUserDetails,
+            groupByActivityCounts,
+            totalMailboxesCount,
+        }
+    }
 }
