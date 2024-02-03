@@ -18,38 +18,40 @@ export const Block = ({
     additionalStyles = {},
 }: PropsWithChildren<BlockProps>) => {
     return (
-        <>
+        <Box
+            component="div"
+            sx={{
+                m: 1,
+                py: 2,
+                px: 1,
+                flex: 1,
+                borderRadius: 2,
+                boxShadow: '2px 2px 10px rgba(0,0,0,0.15)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                alignItems: 'space-between',
+                '&:hover': onClick
+                    ? {
+                          bgcolor: 'rgba(0,0,0,0.1)',
+                          cursor: 'pointer',
+                      }
+                    : {},
+                ...additionalStyles,
+            }}
+            onClick={onClick}
+        >
             {title && (
-                <Box
-                    component="div"
-                    sx={{
-                        m: 1,
-                        p: 2,
-                        border: '0.5px solid grey',
-                        flex: 1,
-                        borderRadius: 2,
-                        boxShadow: 3,
-                        '&:hover': onClick
-                            ? {
-                                  bgcolor: 'rgba(0,0,0,0.1)',
-                                  cursor: 'pointer',
-                              }
-                            : {},
-                        ...additionalStyles,
-                    }}
-                    onClick={onClick}
+                <Typography
+                    sx={{ fontSize: 14, fontWeight: 500, px: 1, textTransform: 'capitalize' }}
+                    color="text.secondary"
+                    gutterBottom
+                    align={titlePosition || 'left'}
                 >
-                    <Typography
-                        sx={{ fontSize: 14 }}
-                        color="text.secondary"
-                        gutterBottom
-                        align={titlePosition || 'left'}
-                    >
-                        {title}
-                    </Typography>
-                    {children}
-                </Box>
+                    {title}
+                </Typography>
             )}
-        </>
+            {children}
+        </Box>
     )
 }

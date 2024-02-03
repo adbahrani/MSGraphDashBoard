@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-material.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { TeamActivity } from '../services/teams'
 import { useNavigate } from 'react-router-dom'
@@ -54,7 +54,7 @@ export const TeamsList = ({ teams }: TeamsListProps) => {
     }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
+        <div className="ag-theme-material" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={teams}

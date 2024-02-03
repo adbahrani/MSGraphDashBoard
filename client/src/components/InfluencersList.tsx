@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-material.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { defaultColDef } from '../utils/agGridSettings'
 import { Button } from '@mui/material'
@@ -29,10 +29,16 @@ export const InfluencersList = ({ users }: InfluencersListProps) => {
 
     return (
         <div
-            className="ag-theme-alpine"
+            className="ag-theme-material"
             style={{ margin: '4px', width: 'calc(100% - 8px)', height: 'calc(100% - 40px)' }}
         >
-            <Button onClick={() => gridRef?.current?.api.exportDataAsCsv()} variant="contained" color="info" sx={{m:1}} size='small'>
+            <Button
+                onClick={() => gridRef?.current?.api.exportDataAsCsv()}
+                variant="contained"
+                color="info"
+                sx={{ m: 1 }}
+                size="small"
+            >
                 Export To CSV
             </Button>
             <AgGridReact

@@ -1,0 +1,130 @@
+.About {
+    float: left;
+    width: 100%;
+}
+
+.AboutBlock {
+    float: left;
+    width: 100%;
+    display: flex;
+    padding: 100px 40px 0px 40px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/*
+* AboutBlock
+*/
+
+.AboutBlock {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 120px;
+}
+.AboutBlock .Landing-heading {
+    text-align: center;
+    justify-content: center;
+}
+.AboutBlock .Landing-description {
+    text-align: center;
+    max-width: 800px;
+}
+
+.AboutBlock-content {
+    display: flex;
+    width: 100%;
+    gap: 50px;
+    padding-top: 100px;
+}
+
+.AboutBlock-image {
+    display: flex;
+    justify-content: end;
+    flex: 1;
+    position: relative;
+}
+.AboutBlock-image img {
+    /* height: 120%; */
+    max-width: 600px;
+    /* position: absolute; */
+    /* margin-top: -5%; */
+}
+
+.AboutBlock-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.AboutBlock-detailsBox {
+    display: flex;
+    width: 100%;
+}
+.AboutBlock-detailsBox-icon {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    height: 100%;
+    width: 60px;
+}
+.AboutBlock-detailsBox-textContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+.AboutBlock-detailsBox-textBig {
+    font-size: 26px;
+}
+.AboutBlock-detailsBox-textSmall {
+    font-size: 16px;
+    color: #444;
+}
+
+/*
+* 
+*   RESPONSIVE CODE
+*
+*/
+
+@media (min-width: 1921px) {
+    /* Styles for extra-large screens (xl) */
+}
+
+@media (min-width: 1100px) and (max-width: 1919px) {
+    /* Styles for large screens (lg) */
+}
+
+@media (min-width: 800px) and (max-width: 1099px) {
+    /* Styles for medium screens (md) */
+    .AboutBlock-image {
+        justify-content: end;
+    }
+    .AboutBlock-image img {
+        height: 120%;
+        max-width: 600px;
+        position: absolute;
+        margin-top: -5%;
+    }
+}
+
+@media (max-width: 800px) {
+    .AboutBlock {
+        padding-top: 100px;
+    }
+
+    .AboutBlock-content {
+        flex-direction: column;
+    }
+
+    .AboutBlock-image {
+        justify-content: center;
+    }
+    .AboutBlock-image img {
+        height: auto;
+        max-width: 500px;
+        position: relative;
+    }
+}

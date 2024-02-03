@@ -13,6 +13,7 @@ export const SharePointSitesList = <T,>({
     columnDefs,
     isLoading = false,
     handleRowClick,
+    additionalStyles,
 }: {
     title?: string
     sites: Array<T>
@@ -21,6 +22,7 @@ export const SharePointSitesList = <T,>({
     columnDefs: ColDef[]
     isLoading?: boolean
     handleRowClick: (site: T) => void
+    additionalStyles?: any
 }) => {
     const gridRef = useRef<AgGridReact>(null)
 
@@ -37,8 +39,8 @@ export const SharePointSitesList = <T,>({
     }, [])
 
     return (
-        <Block title={title}>
-            <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
+        <Block title={title} additionalStyles={additionalStyles}>
+            <div className="ag-theme-material" style={{ height, width, margin: '8px' }}>
                 {isLoading ? (
                     <TableLoader
                         width={width}
@@ -47,7 +49,7 @@ export const SharePointSitesList = <T,>({
                         rowsNum={6}
                     />
                 ) : (
-                    <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
+                    <div className="ag-theme-material" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
                         <AgGridReact
                             ref={gridRef}
                             rowData={sites}

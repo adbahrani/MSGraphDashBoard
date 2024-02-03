@@ -1,0 +1,41 @@
+.GroupBottomContainer {
+    display: flex;
+    height: 25rem;
+}
+.GroupBottomChart {
+    width: 25vw;
+    height: 100%;
+    padding-bottom: 15px;
+}
+.GroupBottomTable {
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 900px) {
+    .GroupBottomContainer {
+        display: grid;
+        height: 50rem;
+        grid-template-rows: auto auto; /* Adjust the height as needed */
+        grid-template-columns: 'repeat(2, 1fr)';
+        grid-template-areas:
+            'a .'
+            'b c';
+    }
+    .GroupBottomTable {
+        grid-area: a;
+        grid-column: span 2;
+        height: 25rem;
+        margin-bottom: 20px;
+    }
+    .GroupBottomChart {
+        width: calc(50vw - 7.5px);
+        height: 25rem;
+    }
+    .GroupBottomChart:nth-child(2) {
+        grid-area: b;
+    }
+    .GroupBottomChart:nth-child(3) {
+        grid-area: c;
+    }
+}

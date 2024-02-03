@@ -9,4 +9,5 @@ export const defaultColDef: ColDef = {
     autoHeaderHeight: true,
     // make every column use 'text' filter by default
     filter: 'agTextColumnFilter',
+    minWidth: 110,
 }

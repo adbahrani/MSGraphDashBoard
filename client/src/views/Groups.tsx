@@ -6,6 +6,9 @@ import { GroupAggKey, aggregateGroups, groupLabelDisplayMap } from '../utils/gro
 import { GroupsList } from '../components/GroupsList'
 import { ColDef } from 'ag-grid-community'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
+import { Block } from '../components/shared/Block'
+import './Groups.css'
+import { Box, Container } from '@mui/material'
 
 export const Groups = () => {
     const [isLoadingGroups, setIsLoadingGroups] = useState(true)
@@ -56,7 +59,7 @@ export const Groups = () => {
 
     const columnDefGroups: ColDef[] = [
         { field: 'displayName', headerName: 'Display Name', width: 200 },
-        { field: 'description', headerName: 'Description', flex: 12 },
+        { field: 'description', headerName: 'Description', flex: 12, minWidth: 300 },
         {
             field: 'owners',
             valueFormatter: params => {
@@ -64,6 +67,7 @@ export const Groups = () => {
             },
             headerName: 'Owners',
             flex: 4,
+            minWidth: 120,
         },
         {
             field: 'members',
@@ -72,6 +76,7 @@ export const Groups = () => {
             },
             headerName: 'Members',
             flex: 4,
+            minWidth: 130,
         },
         {
             headerName: 'Guest',
@@ -80,11 +85,13 @@ export const Groups = () => {
                 return params.value.filter((val: any) => val.userType === 'Guest').length
             },
             flex: 4,
+            minWidth: 110,
         },
         {
             field: 'visibility',
             headerName: 'Visibility',
             flex: 4,
+            minWidth: 120,
         },
         {
             headerName: 'Team Status',
@@ -93,11 +100,13 @@ export const Groups = () => {
                 return params.value.includes('Team') ? 'Team Connected' : ''
             },
             flex: 4,
+            minWidth: 130,
         },
         {
             field: 'membershipRule',
             headerName: 'Membership Rule',
             flex: 4,
+            minWidth: 130,
         },
         {
             field: 'createdDateTime',
@@ -106,6 +115,7 @@ export const Groups = () => {
             },
             headerName: 'Created At',
             flex: 4,
+            minWidth: 120,
         },
         {
             field: 'renewedDateTime',
@@ -114,15 +124,17 @@ export const Groups = () => {
                 return params.value ? new Date(params.value).toLocaleString() : ''
             },
             flex: 4,
+            minWidth: 120,
         },
     ]
 
     const columnDefDeletedGroups: ColDef[] = [
         { field: 'displayName', headerName: 'Display Name', width: 180 },
-        { field: 'description', headerName: 'Description', flex: 10 },
+        { field: 'description', headerName: 'Description', flex: 10, minWidth: 150 },
         {
             field: 'visibility',
             headerName: 'Visibility',
+            minWidth: 120,
             flex: 4,
         },
         {
@@ -131,6 +143,7 @@ export const Groups = () => {
             valueFormatter: params => {
                 return params.value ? new Date(params.value).toLocaleString() : ''
             },
+            minWidth: 120,
             flex: 4,
         },
         {
@@ -139,28 +152,29 @@ export const Groups = () => {
             valueFormatter: params => {
                 return params.value ? new Date(params.value).toLocaleString() : ''
             },
+            minWidth: 120,
             flex: 4,
         },
     ]
 
     return (
-        <>
-            <div style={{ padding: 5}}>
-                {isLoadingGroups ? (
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <BoxLoader numberOfBoxes={10} boxHeight="8rem" boxWidth="18%" />
-                    </div>
-                ) : (
-                    <Stats stats={stats} />
-                )}
-                <div
-                    style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1rem',
-                        marginTop: '2rem',
-                    }}
-                >
+        <Container sx={{ padding: 5 }} maxWidth="xl">
+            {isLoadingGroups ? (
+                <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+                    <BoxLoader numberOfBoxes={10} boxHeight="8rem" boxWidth="18%" />
+                </Box>
+            ) : (
+                <Stats stats={stats} />
+            )}
+            <Box
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '1rem',
+                    marginTop: '2rem',
+                }}
+            >
+                <Block additionalStyles={{ pt: 0 }}>
                     <GroupsList
                         columnDefs={columnDefGroups}
                         height="25rem"
@@ -168,58 +182,47 @@ export const Groups = () => {
                         groups={groups}
                         isLoading={isLoadingGroups}
                     />
-
-                    <div
-                        style={{
-                            display: 'flex',
-                        }}
-                    >
-                        <GroupsList
-                            columnDefs={columnDefDeletedGroups}
-                            height="25rem"
-                            width="60vw"
-                            groups={deletedGroups}
-                            isLoading={isLoadingDeletedGroups}
+                </Block>
+                <Box className="GroupBottomContainer">
+                    <Box className="GroupBottomTable">
+                        <Block additionalStyles={{ pt: 0, flex: 1, height: '100%' }}>
+                            <GroupsList
+                                columnDefs={columnDefDeletedGroups}
+                                height="100%"
+                                width="100%"
+                                groups={deletedGroups}
+                                isLoading={isLoadingDeletedGroups}
+                            />
+                        </Block>
+                    </Box>
+                    <Box className="GroupBottomChart">
+                        <PieData
+                            additionalBlockStyles={{
+                                height: '100%',
+                                boxSizing: 'border-box',
+                            }}
+                            height={300}
+                            title="Groups per Connection"
+                            data={pieData}
+                            property="connection"
+                            fills={['#8bd4eb', '#808080']}
                         />
-                        <div
-                            style={{
-                                width: '20vw',
-                                height: '25rem',
+                    </Box>
+                    <Box className="GroupBottomChart">
+                        <PieData
+                            height={300}
+                            additionalBlockStyles={{
+                                height: '100%',
+                                boxSizing: 'border-box',
                             }}
-                        >
-                            <PieData
-                                additionalBlockStyles={{
-                                    height: '100%',
-                                    boxSizing: 'border-box',
-                                }}
-                                height={300}
-                                title="Groups per Connection"
-                                data={pieData}
-                                property="connection"
-                                fills={['#8bd4eb', '#808080']}
-                            />
-                        </div>
-                        <div
-                            style={{
-                                width: '20vw',
-                                height: '25rem',
-                            }}
-                        >
-                            <PieData
-                                height={300}
-                                additionalBlockStyles={{
-                                    height: '100%',
-                                    boxSizing: 'border-box',
-                                }}
-                                title="Groups per Visibility"
-                                data={pieData}
-                                property="visibility"
-                                fills={['#fb8281', '#5f6b6d', '#4bc5bc']}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </>
+                            title="Groups per Visibility"
+                            data={pieData}
+                            property="visibility"
+                            fills={['#fb8281', '#5f6b6d', '#4bc5bc']}
+                        />
+                    </Box>
+                </Box>
+            </Box>
+        </Container>
     )
 }

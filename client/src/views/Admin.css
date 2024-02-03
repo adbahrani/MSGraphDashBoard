@@ -1,0 +1,13 @@
+.AdminContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 0 20px 85px 20px;
+}
+
+.AdminForm {
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 10px 10px 60px rgba(0, 0, 0, 0.2);
+}

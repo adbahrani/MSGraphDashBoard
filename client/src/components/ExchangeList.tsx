@@ -31,7 +31,7 @@ export const ExchangeList = ({ exchanges, height, width, columnDefs, isLoading =
     }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ height, width, margin: '8px' }}>
+        <div className="ag-theme-material" style={{ height, width, margin: '8px' }}>
             {isLoading ? (
                 <TableLoader
                     width={width}

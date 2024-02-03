@@ -1,0 +1,195 @@
+.Static {
+    float: left;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.StaticTop,
+.StaticMid {
+    float: left;
+    width: 100%;
+    display: flex;
+    padding: 100px 40px 0px 40px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.StaticTop-words,
+.StaticTop-image {
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    height: 100%;
+}
+
+.StaticTop-words {
+    align-items: start;
+    flex-direction: column;
+    max-width: 450px;
+}
+.StaticTop-buttons {
+    display: flex;
+    margin-top: 40px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.StaticTop-image {
+    align-items: center;
+    justify-content: start;
+}
+.StaticTop-image img {
+    width: 200%;
+    max-width: 600px;
+}
+
+/*
+* Common
+*/
+
+.Static-heading {
+    font-size: 60px;
+}
+.Static-description {
+    margin-top: 10px;
+    font-size: 22px;
+}
+.Static-image {
+    width: 100%;
+    padding: 0 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.Static-image img {
+    width: 100%;
+}
+
+/*
+* Landing Mid
+*/
+
+.StaticMid {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 120px;
+}
+.StaticMid .Static-heading {
+    text-align: center;
+    justify-content: center;
+}
+.StaticMid .Static-description {
+    text-align: center;
+    max-width: 800px;
+}
+
+.StaticMid-content {
+    display: flex;
+    width: 100%;
+    gap: 50px;
+    padding-top: 100px;
+}
+
+.StaticMid-image {
+    display: flex;
+    justify-content: end;
+    flex: 1;
+    position: relative;
+}
+.StaticMid-image img {
+    /* height: 120%; */
+    max-width: 600px;
+    /* position: absolute; */
+    /* margin-top: -5%; */
+}
+
+.StaticMid-details {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+.StaticMid-detailsBox {
+    display: flex;
+    width: 100%;
+}
+.StaticMid-detailsBox-icon {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    height: 100%;
+    width: 60px;
+}
+.StaticMid-detailsBox-textContainer {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+.StaticMid-detailsBox-textBig {
+    font-size: 26px;
+}
+.StaticMid-detailsBox-textSmall {
+    font-size: 16px;
+    color: #444;
+}
+
+/*
+* 
+*   RESPONSIVE CODE
+*
+*/
+
+@media (min-width: 1921px) {
+    /* Styles for extra-large screens (xl) */
+}
+
+@media (min-width: 1100px) and (max-width: 1919px) {
+    /* Styles for large screens (lg) */
+}
+
+@media (min-width: 800px) and (max-width: 1099px) {
+    /* Styles for medium screens (md) */
+    .StaticMid-image {
+        justify-content: end;
+    }
+    .StaticMid-image img {
+        height: 120%;
+        max-width: 600px;
+        position: absolute;
+        margin-top: -5%;
+    }
+}
+
+@media (max-width: 800px) {
+    /* Styles for small screens (sm) */
+    .StaticTop {
+        flex-direction: column;
+    }
+    .StaticTop-words {
+        max-width: 1000px;
+    }
+    .StaticTop-image img {
+        width: 100%;
+        max-width: 600px;
+    }
+    .StaticMid {
+        padding-top: 100px;
+    }
+
+    .StaticMid-content {
+        flex-direction: column;
+    }
+
+    .StaticMid-image {
+        justify-content: center;
+    }
+    .StaticMid-image img {
+        height: auto;
+        max-width: 500px;
+        position: relative;
+    }
+}
