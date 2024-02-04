@@ -3,6 +3,9 @@ import { Stats } from '../components/shared/Stats'
 import { UsersList } from '../components/UsersList'
 import { User, UsersService } from '../services/users'
 import { PieData } from '../components/shared/PieData'
+import { Container } from '@mui/material'
+import { Block } from '../components/shared/Block'
+import './Users.css'
 
 export const Users = () => {
     const [users, setUsers] = useState<Array<User>>([])
@@ -48,20 +51,10 @@ export const Users = () => {
 
     return (
         <>
-            <div style={{}}>
-                <Stats stats={stats} />
-                <div
-                    style={{
-                        display: 'grid',
-                        gridTemplateColumns: '60% 40%',
-                    }}
-                >
-                    <div
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: '50% 50%',
-                        }}
-                    >
+            <Container maxWidth="xl">
+                <Stats stats={stats} numberOfColumns={Object.keys(stats || {}).length} />
+                <div className="UsersContainer">
+                    <div className="UsersContainer-Charts">
                         <div>
                             <PieData
                                 title="Users per Type"
@@ -117,9 +110,11 @@ export const Users = () => {
                             />
                         </div>
                     </div>
-                    <UsersList users={users} />
+                    <Block additionalStyles={{ pt: 0 }}>
+                        <UsersList users={users} />
+                    </Block>
                 </div>
-            </div>
+            </Container>
         </>
     )
 }

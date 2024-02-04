@@ -4,6 +4,7 @@ export type MenuLink = {
     activeSet?: Set<string>
     children?: MenuLink[]
     secure?: boolean
+    isButton?: boolean
 }
 
 export type Period = {

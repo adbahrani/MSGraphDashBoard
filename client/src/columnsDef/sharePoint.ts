@@ -9,10 +9,12 @@ export const columnDefTopSites: ColDef[] = [
         headerName: 'Page Views Count',
         flex: 2,
         sort: 'desc',
+        minWidth: 130,
     },
     {
         field: 'storageUsedInBytes',
         headerName: 'Storage Used',
+        minWidth: 130,
         valueFormatter: params => {
             return params.value ? formatBytes(params.value) : ''
         },
@@ -21,11 +23,13 @@ export const columnDefTopSites: ColDef[] = [
     {
         field: 'fileCount',
         headerName: 'Current Files',
+        minWidth: 130,
         flex: 2,
     },
     {
         field: 'secureLinkForMemberCount',
         headerName: 'Engaged Users',
+        minWidth: 130,
         flex: 2,
     },
 ]

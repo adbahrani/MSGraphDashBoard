@@ -18,6 +18,8 @@ import { SharePointSitesList } from '../components/SharePointSitesList'
 import { columnDefSelectedSitePages, columnDefSiteAudience, columnDefTopSites } from '../columnsDef/sharePoint'
 import { SitesList } from '../components/SitesList'
 import { periods } from '../constants'
+import { Block } from '../components/shared/Block'
+import { Box, Container } from '@mui/material'
 
 const activityByGeoLocationOptions = {
     theme: {
@@ -145,8 +147,10 @@ export const SharePoint = () => {
         setSitesCount(p => ({ ...p, totalActionCount, totalActorCount }))
     }
 
+    const getResponsiveValue = (intial, responsive) => (window.innerWidth >= 900 ? intial : responsive)
+
     return (
-        <>
+        <Container maxWidth="xl">
             <Stack direction="row" alignItems="center" justifyContent="center" sx={{ margin: 2 }}>
                 {periods.map(period => (
                     <Chip
@@ -173,8 +177,9 @@ export const SharePoint = () => {
                         stats={{
                             'Sites Count': sitesActivityExtended.length,
                             'Active sites': activeSitesCount,
-                            'Inactive sites': `${sitesActivityExtended.length - activeSitesCount} (
-                        ${100 - Math.round((100 * activeSitesCount) / sitesActivityExtended.length)} %)`,
+                            'Inactive sites': `${sitesActivityExtended.length - activeSitesCount} (${
+                                100 - Math.round((100 * activeSitesCount) / sitesActivityExtended.length)
+                            }%)`,
                             'Active vs Total Sites': `${Math.round(
                                 (100 * activeSitesCount) / sitesActivityExtended.length
                             )} %`,
@@ -188,39 +193,50 @@ export const SharePoint = () => {
                     />
                 )}
             </Stack>
-            <Stack direction="row" alignItems="start" spacing={1}>
-                <SharePointSitesList
-                    title="Top Sites By Views"
-                    handleRowClick={site => {
-                        setSelectedSite(site)
-                        setIsDrawerOpen(true)
-                    }}
-                    height="31rem"
-                    isLoading={isLoadingSiteActivities}
-                    width="100%"
-                    columnDefs={columnDefTopSites}
-                    sites={TopSitesByView}
-                />
+            <Stack
+                direction={getResponsiveValue('row', 'column')}
+                alignItems="start"
+                sx={{ width: '100%' }}
+                spacing={1}
+            >
+                <Box sx={{ width: '100%' }}>
+                    <SharePointSitesList
+                        title="Top Sites By Views"
+                        handleRowClick={site => {
+                            setSelectedSite(site)
+                            setIsDrawerOpen(true)
+                        }}
+                        height={getResponsiveValue('38rem', '15rem')}
+                        isLoading={isLoadingSiteActivities}
+                        width="100%"
+                        columnDefs={columnDefTopSites}
+                        sites={TopSitesByView}
+                    />
+                </Box>
 
-                <Stack>
-                    <div>
+                <Stack direction={getResponsiveValue('column', 'row')}>
+                    <Block>
                         <AgChartsReact
-                            options={{ ...activityByGeoLocationOptions, width: 380, data: activityByGeoLocation }}
+                            options={{
+                                ...activityByGeoLocationOptions,
+                                width: getResponsiveValue(380, window.innerWidth / 2 - 35),
+                                data: activityByGeoLocation,
+                            }}
                         />
-                    </div>
-                    <div>
+                    </Block>
+                    <Block>
                         <AgChartsReact
                             options={{
                                 ...topSitesByPageViewOptions,
-                                width: 380,
+                                width: getResponsiveValue(380, window.innerWidth / 2 - 35),
                                 data: TopSitesByView.slice(0, 5),
                             }}
                         />
-                    </div>
+                    </Block>
                 </Stack>
             </Stack>
 
-            <Stack direction="row">
+            <Stack direction={getResponsiveValue('row', 'column')}>
                 <SharePointSitesList
                     title="Site Audience by: Department, Country, City"
                     handleRowClick={site => {
@@ -249,7 +265,7 @@ export const SharePoint = () => {
             </Stack>
 
             <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-                <div style={{ width: '50vw', height: '100vh' }}>
+                <Box sx={{ width: '50vw', height: '100vh' }}>
                     {
                         <SitesList
                             sites={
@@ -261,8 +277,8 @@ export const SharePoint = () => {
                             }
                         />
                     }
-                </div>
+                </Box>
             </Drawer>
-        </>
+        </Container>
     )
 }

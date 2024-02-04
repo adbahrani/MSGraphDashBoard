@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-material.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { SiteActivity } from '../services/share-point'
 
@@ -27,7 +27,7 @@ export const SitesList = ({ sites }: SitesListProps) => {
 
     return (
         <div
-            className="ag-theme-alpine"
+            className="ag-theme-material"
             style={{ margin: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 16px)' }}
         >
             <AgGridReact

@@ -9,6 +9,9 @@ import { UsersService } from '../services/users'
 import { InfluencersList } from '../components/InfluencersList'
 import { TeamsFilesList } from '../components/TeamsFilesList'
 import { Team } from '@microsoft/microsoft-graph-types-beta'
+import { Stat } from '../components/shared/Stat'
+import './Teams.css'
+import { Container } from '@mui/material'
 
 export const Teams = () => {
     const [teams, setTeams] = useState<Array<Team & TeamActivity>>([])
@@ -229,17 +232,9 @@ export const Teams = () => {
         })
     }, [selectedPeriod])
 
-    const Stat = (props: { title: string; property: keyof typeof teamsStats }) => (
-        <Block title={props.title}>
-            <Box component="span" sx={boxStyle}>
-                {teamsStats[props.property]}
-            </Box>
-        </Block>
-    )
-
     return (
-        <div style={{}}>
-            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+        <Container maxWidth="xl">
+            <Box sx={{ display: 'flex', gap: '8px', justifyContent: 'center', padding: '20px 0' }}>
                 {periods.map(period => (
                     <Chip
                         key={period.value}
@@ -248,44 +243,70 @@ export const Teams = () => {
                         onClick={() => setSelectedPeriod(period.value)}
                     />
                 ))}
-            </div>
-
-            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr) 0.5fr 0.5fr' }}>
-                <Stat title="Teams count" property="total" />
-                <Stat title="Active Teams" property="active" />
-                <Stat title="Inactive Teams" property="inactive" />
-                <Stat title="Orphaned Teams" property="orphaned" />
-                <Stat title="Public" property="public" />
-                <Stat title="Private" property="private" />
             </Box>
+            {window.innerWidth < 900 ? (
+                <>
+                    <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                        <Stat title="Teams count" value={teamsStats?.total || 0} />
+                        <Stat title="Active Teams" value={teamsStats?.active || 0} />
+                        <Stat title="Inactive Teams" value={teamsStats?.inactive || 0} />
+                    </Box>
+                    <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                        <Stat title="Orphaned Teams" value={teamsStats?.orphaned || 0} />
+                        <Stat title="Public" value={teamsStats?.public || 0} />
+                        <Stat title="Private" value={teamsStats?.private || 0} />
+                    </Box>
+                    <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)' }}>
+                        <Stat title="Calls" value={teamsStats?.calls || 0} />
+                        <Stat title="Meetings" value={teamsStats?.meetings || 0} />
+                        <Stat title="Messages" value={teamsStats?.messages || 0} />
+                    </Box>
+                    <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+                        <Stat title="Active Member" value={teamsStats?.activeMembers || 0} />
+                        <Stat title="Guest-Enabled" value={teamsStats?.guestEnabled || 0} />
+                    </Box>
+                </>
+            ) : (
+                <>
+                    <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr) 0.5fr 0.5fr' }}>
+                        <Stat title="Teams count" value={teamsStats?.total || 0} />
+                        <Stat title="Active Teams" value={teamsStats?.active || 0} />
+                        <Stat title="Inactive Teams" value={teamsStats?.inactive || 0} />
+                        <Stat title="Orphaned Teams" value={teamsStats?.orphaned || 0} />
+                        <Stat title="Public" value={teamsStats?.public || 0} />
+                        <Stat title="Private" value={teamsStats?.private || 0} />
+                    </Box>
 
-            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
-                <Stat title="Calls" property="calls" />
-                <Stat title="Meetings" property="meetings" />
-                <Stat title="Messages" property="messages" />
-                <Stat title="Active Member" property="activeMembers" />
-                <Stat title="Guest-Enabled" property="guestEnabled" />
-            </Box>
-
+                    <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)' }}>
+                        <Stat title="Calls" value={teamsStats?.calls || 0} />
+                        <Stat title="Meetings" value={teamsStats?.meetings || 0} />
+                        <Stat title="Messages" value={teamsStats?.messages || 0} />
+                        <Stat title="Active Member" value={teamsStats?.activeMembers || 0} />
+                        <Stat title="Guest-Enabled" value={teamsStats?.guestEnabled || 0} />
+                    </Box>
+                </>
+            )}
             <Block title="Teams Activity">
-                <div style={{ height: '30vh' }}>
+                <Box sx={{ height: '30vh' }}>
                     <TeamsList teams={teams} />
-                </div>
+                </Box>
             </Block>
-
-            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            <Box component="div" className="TeamsBottomTableContainer">
                 <Block title="File collaboration">
                     <TeamsFilesList FilesByTeams={filesActivies} />
                 </Block>
                 <Block title="Top influencers">
-                    <div style={{ height: '280px' }}>
+                    <Box style={{ height: '280px' }}>
                         <InfluencersList users={influencersData} />
-                    </div>
+                    </Box>
                 </Block>
             </Box>
-
-            <AgChartsReact options={{ ...reactionsOptions, data: reactionsData }} />
-            <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
-        </div>
+            <Block>
+                <AgChartsReact options={{ ...reactionsOptions, data: reactionsData }} />
+            </Block>
+            <Block>
+                <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
+            </Block>
+        </Container>
     )
 }

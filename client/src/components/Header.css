@@ -1,0 +1,54 @@
+.headerLink,
+.headerMenuItem,
+.headerLinkActive {
+    display: block;
+    margin: 0 8px;
+    padding: 7px 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+    transition: 0.4s;
+    position: relative;
+}
+.headerLinkActive {
+    border-bottom: 2px solid #4c65eb; /* using primary color */
+}
+.headerMenuItem {
+    width: 150px;
+    text-transform: uppercase;
+}
+.headerMenu .MuiPaper-root {
+    box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+}
+
+.drawer {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 50px;
+    width: 320px;
+}
+.drawer .headerLinkActive,
+.drawer .headerLink {
+    padding: 7px 0;
+    margin: 5px 0;
+}
+.drawer button {
+    margin: 20px 0;
+}
+.sub-links {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+    padding-bottom: 30px;
+}
+
+.HeadLinkIcon {
+    position: absolute;
+    left: -30px;
+}
+.HeadLinkIcon svg {
+    transition: 0.5s;
+}

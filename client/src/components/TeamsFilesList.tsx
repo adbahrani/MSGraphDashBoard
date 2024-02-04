@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-material.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 
 import { defaultColDef } from '../utils/agGridSettings'
@@ -39,7 +39,7 @@ export const TeamsFilesList = ({ FilesByTeams }: TeamsFilesListProps) => {
     // }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
+        <div className="ag-theme-material" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={FilesByTeams}

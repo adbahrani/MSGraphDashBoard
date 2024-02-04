@@ -1,179 +1,114 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router-dom'
-import { scrollToSection } from '../utils/scroll'
-import { Box, Typography, Grid } from '@mui/material'
+import { Button, Container, Typography } from '@mui/material'
+import './Static.css'
+import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt'
+import LandingTopImg from '../assets/landing-top.jpg'
+import LandingMidImg from '../assets/landing-mid.jpg'
+import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined'
+import InsightsIcon from '@mui/icons-material/Insights'
+import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
+import Footer from '../components/Footer'
+import Pricing from './Pricing'
+import { getResponsiveVarient } from '../helpers/UIHelpers'
 
-import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
-
-export const Landing = () => {
-    const { hash } = useLocation()
-
-    useEffect(() => {
-        scrollToSection(hash?.replace('#', ''))
-    }, [hash])
-
+function Landing() {
     return (
-        <div>
-            <main>
-                <section style={{ padding: 20 }}>
-                    <Container>
-                        <Grid container spacing={6} alignItems="center">
-                            <Grid item xs={12} lg={6}>
-                                <Box>
-                                    <Typography variant="h2">
-                                        Empower Your Business with MS365 Pulse Platform
-                                    </Typography>
-                                    <Typography>
-                                        Harness the power of MS Graph API and MS 365 data to drive innovation and
-                                        productivity in your organization.
-                                    </Typography>
-                                    <div
-                                        style={{
-                                            display: 'flex',
-                                            flexDirection: 'column',
-                                            gap: 16,
-                                            marginTop: 24,
-                                        }}
-                                    >
-                                        <Button variant="contained" color="primary">
-                                            Get Started
-                                        </Button>
-                                        <Button variant="outlined" color="primary">
-                                            Learn More
-                                        </Button>
-                                    </div>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={12} lg={6}>
-                                <img src="/18383.jpg" alt="Hero" width="100%" />
-                            </Grid>
-                        </Grid>
-                    </Container>
-                </section>
-            </main>
-            <section
-                style={{
-                    width: '100%',
-                    paddingTop: 20,
-                    // '@media (min-width: 768px)': { paddingTop: '96px' },
-                    // '@media (min-width: 1024px)': { paddingTop: '128px' },
-                    backgroundColor: '#f3f4f6',
-                }}
-            >
-                <Container maxWidth="xl" sx={{ p: 2 }}>
-                    <div style={{ textAlign: 'center' }}>
+        <div className="Static">
+            <Container maxWidth="lg">
+                <div className="StaticTop">
+                    <div className="StaticTop-words">
                         <Typography
-                            variant="h3"
+                            component="h1"
+                            variant={getResponsiveVarient('h2')}
+                            color="text.primary"
                             gutterBottom
-                            fontWeight="bold"
-                            style={{ marginBottom: '16px', fontSize: '1.875rem', lineHeight: '2.5rem' }}
+                        >
+                            Empower Your Business with MS365 Pulse Platform
+                        </Typography>
+                        <Typography variant="h5" color="text.secondary" component="p">
+                            Harness the power of MS Graph API and MS 365 data to drive innovation and productivity in
+                            your organization.
+                        </Typography>
+                        <div className="StaticTop-buttons">
+                            <Button href="#" variant="contained" sx={{ borderRadius: '40px', px: 3 }}>
+                                Get Started
+                            </Button>
+                            <Button href="#" variant="text" sx={{ borderRadius: '40px', mr: 5, px: 3 }}>
+                                Learn more <ArrowRightAltIcon />
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="StaticTop-image">
+                        <img alt="" src={LandingTopImg} />
+                    </div>
+                </div>
+                <div className="StaticMid">
+                    <div className="StaticMid-words">
+                        <Typography
+                            component="h1"
+                            variant={getResponsiveVarient('h2')}
+                            align="center"
+                            color="text.primary"
+                            gutterBottom
                         >
                             Simplify Your Workflow
                         </Typography>
-                        <Typography variant="h4" paragraph color="textSecondary">
+                        <Typography
+                            variant="h5"
+                            align="center"
+                            color="text.secondary"
+                            component="p"
+                            sx={{ maxWidth: '800px' }}
+                        >
                             Our platform provides a seamless integration with MS Graph API and MS 365 data, enabling you
-                            to focus on what matters - building great applications.
+                            to focus on what matters - building great applications. customization.
                         </Typography>
                     </div>
-                    <Grid container alignItems="center" spacing={6} justifyContent="center">
-                        <Grid item xs={12} lg={6}>
-                            <img
-                                alt="Image"
-                                style={{
-                                    maxWidth: '100%',
-                                    height: 'auto',
-                                    borderRadius: '0.75rem',
-                                    width: '100%',
-                                    order: '2',
-                                }}
-                                src="/workFlow.jpg"
-                            />
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            lg={6}
-                            style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', order: '1' }}
-                        >
-                            <ul style={{ listStyle: 'none', padding: '0' }}>
-                                <li style={{ marginBottom: '32px' }}>
-                                    <div>
-                                        <Typography
-                                            variant="h5"
-                                            fontWeight="bold"
-                                            style={{ fontSize: '1.25rem', lineHeight: '1.75rem' }}
-                                        >
-                                            Easy Integration
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            color="textSecondary"
-                                            style={{ fontSize: '1rem', lineHeight: '1.75rem', color: '#6b7280' }}
-                                        >
-                                            Integrate MS Graph API and MS 365 data with ease.
-                                        </Typography>
+                    <div className="StaticMid-content">
+                        <div className="StaticMid-image">
+                            <img alt="" src={LandingMidImg} />
+                        </div>
+                        <div className="StaticMid-details">
+                            <div className="StaticMid-detailsBox">
+                                <div className="StaticMid-detailsBox-icon">
+                                    <IntegrationInstructionsOutlinedIcon sx={{ fontSize: '40px' }} />
+                                </div>
+                                <div className="StaticMid-detailsBox-textContainer">
+                                    <div className="StaticMid-detailsBox-textBig">Easy Integration</div>
+                                    <div className="StaticMid-detailsBox-textSmall">
+                                        Integrate MS Graph API and MS 365 data with ease.
                                     </div>
-                                </li>
-                                <li style={{ marginBottom: '32px' }}>
-                                    <div>
-                                        <Typography
-                                            variant="h5"
-                                            fontWeight="bold"
-                                            style={{ fontSize: '1.25rem', lineHeight: '1.75rem' }}
-                                        >
-                                            Automation
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            color="textSecondary"
-                                            style={{ fontSize: '1rem', lineHeight: '1.75rem', color: '#6b7280' }}
-                                        >
-                                            Automate your workflow with our platform.
-                                        </Typography>
+                                </div>
+                            </div>
+                            <div className="StaticMid-detailsBox">
+                                <div className="StaticMid-detailsBox-icon">
+                                    <InsightsIcon sx={{ fontSize: '40px' }} />
+                                </div>
+                                <div className="StaticMid-detailsBox-textContainer">
+                                    <div className="StaticMid-detailsBox-textBig">Automation</div>
+                                    <div className="StaticMid-detailsBox-textSmall">
+                                        Automate your workflow with our platform.
                                     </div>
-                                </li>
-                                <li style={{ marginBottom: '32px' }}>
-                                    <div>
-                                        <Typography
-                                            variant="h5"
-                                            fontWeight="bold"
-                                            style={{ fontSize: '1.25rem', lineHeight: '1.75rem' }}
-                                        >
-                                            Scalability
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            color="textSecondary"
-                                            style={{ fontSize: '1rem', lineHeight: '1.75rem', color: '#6b7280' }}
-                                        >
-                                            Scale your application with ease.
-                                        </Typography>
+                                </div>
+                            </div>
+                            <div className="StaticMid-detailsBox">
+                                <div className="StaticMid-detailsBox-icon">
+                                    <AspectRatioOutlinedIcon sx={{ fontSize: '40px' }} />
+                                </div>
+                                <div className="StaticMid-detailsBox-textContainer">
+                                    <div className="StaticMid-detailsBox-textBig">Scalability</div>
+                                    <div className="StaticMid-detailsBox-textSmall">
+                                        Scale your application with ease.
                                     </div>
-                                </li>
-                            </ul>
-                        </Grid>
-                    </Grid>
-                </Container>
-            </section>
-
-            <footer
-                style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    padding: '16px 24px',
-                    borderTop: '1px solid #ccc',
-                    color: '#666',
-                }}
-            >
-                <Typography variant="body2" style={{ alignSelf: 'flex-start' }}>
-                    © MS365 Pulse. All rights reserved.
-                </Typography>
-                <nav style={{ alignSelf: 'flex-end' }}>
-                    <span>Terms of Service | Privacy</span>
-                </nav>
-            </footer>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Container>
+            <Pricing />
+            <Footer />
         </div>
     )
 }
+
+export default Landing

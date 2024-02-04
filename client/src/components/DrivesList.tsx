@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from 'react'
 import Drawer from '@mui/material/Drawer'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-material.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { OneDriveActivity } from '../services/one-drive'
 import ListItemText from '@mui/material/ListItemText/ListItemText'
@@ -40,7 +40,7 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
     return (
         <>
             <div
-                className="ag-theme-alpine"
+                className="ag-theme-material"
                 style={{ margin: '8px', width: 'calc(100% - 16px)', height: 'calc(100% - 16px)' }}
             >
                 <AgGridReact

@@ -9,6 +9,8 @@ import { ExchangeList } from '../components/ExchangeList'
 import { PeriodValueInDays } from '../types/general'
 import { columnDefExchanges } from '../columnsDef/exchange'
 import { BoxLoader } from '../components/shared/Loaders/BoxLoader'
+import { Stats } from '../components/shared/Stats'
+import { Container } from '@mui/material'
 
 class ExchangeStats {
     totalMailboxesCount: number = 0
@@ -97,54 +99,45 @@ export const Exchange = () => {
         { title: 'Outlook other', value: statsDataFromApi.outlookOther },
     ]
 
-    return (
-        <>
-            <div style={{}}>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                    {periods.map(period => (
-                        <Chip
-                            key={period.value}
-                            label={period.label}
-                            variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
-                            onClick={() => setSelectedPeriod(period.value)}
-                        />
-                    ))}
-                </div>
-                {isLoading ? (
-                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                        <BoxLoader numberOfBoxes={16} boxHeight="8rem" boxWidth="23%" />
-                    </div>
-                ) : (
-                    <Box
-                        component="div"
-                        sx={{
-                            display: 'grid',
-                            gridTemplateColumns: '1fr 1fr 1fr 1fr',
-                            gap: '8px',
-                        }}
-                    >
-                        {statsData.map(dt => (
-                            <Block key={dt.title} title={dt.title}>
-                                <Box component="span" sx={boxStyle}>
-                                    {dt.value}
-                                </Box>
-                            </Block>
-                        ))}
-                    </Box>
-                )}
+    const processStatsData = stats => {
+        const tempMap = {}
+        for (const stat of stats) {
+            tempMap[stat.title] = stat.value
+        }
+        return tempMap
+    }
 
-                <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)' }}>
-                    <Block title="Mailbox logs">
-                        <ExchangeList
-                            columnDefs={columnDefExchanges}
-                            height="25rem"
-                            width="100%"
-                            exchanges={activityDetails}
-                            isLoading={isLoading}
-                        />
-                    </Block>
+    return (
+        <Container maxWidth="xl">
+            <Box sx={{ display: 'flex', gap: '8px', justifyContent: 'center', marginBottom: '1rem' }}>
+                {periods.map(period => (
+                    <Chip
+                        key={period.value}
+                        label={period.label}
+                        variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
+                        onClick={() => setSelectedPeriod(period.value)}
+                    />
+                ))}
+            </Box>
+            {isLoading ? (
+                <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+                    <BoxLoader numberOfBoxes={16} boxHeight="8rem" boxWidth="23%" />
                 </Box>
-            </div>
-        </>
+            ) : (
+                <Stats stats={processStatsData(statsData)} numberOfColumns={4} />
+            )}
+
+            <Box component="div" sx={{ display: 'grid', gridTemplateColumns: 'repeat(1, 1fr)' }}>
+                <Block title="Mailbox logs">
+                    <ExchangeList
+                        columnDefs={columnDefExchanges}
+                        height="25rem"
+                        width="100%"
+                        exchanges={activityDetails}
+                        isLoading={isLoading}
+                    />
+                </Block>
+            </Box>
+        </Container>
     )
 }

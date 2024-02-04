@@ -6,6 +6,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Chip from '@mui/material/Chip'
 import DownloadIcon from '@mui/icons-material/Download'
+import { Box, Container } from '@mui/material'
 
 const reportTypes: { [type in ReportType]: string } = {
     getTeamsTeamCounts: 'Team Counts',
@@ -25,16 +26,16 @@ export const Reports = () => {
 
     return (
         <>
-            <div style={{  }}>
+            <Container maxWidth="md">
                 <Stack spacing={2}>
                     {Object.entries(reportTypes).map(([reportType, title]) => (
                         <Card key={reportType} sx={{ minWidth: 275 }}>
                             <CardContent>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <Typography sx={{ fontSize: 16 }} fontWeight="bold">
+                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Typography sx={{ fontSize: 16, color: '#666' }} fontWeight="bold">
                                         {title}
                                     </Typography>
-                                    <div style={{ display: 'flex', gap: '8px' }}>
+                                    <Box sx={{ display: 'flex', gap: '8px' }}>
                                         {periodsByReportType[reportType as ReportType].map(period => (
                                             <Chip
                                                 key={`${reportType}-${period}`}
@@ -44,13 +45,13 @@ export const Reports = () => {
                                                 onClick={() => download(reportType as ReportType, period)}
                                             />
                                         ))}
-                                    </div>
-                                </div>
+                                    </Box>
+                                </Box>
                             </CardContent>
                         </Card>
                     ))}
                 </Stack>
-            </div>
+            </Container>
         </>
     )
 }

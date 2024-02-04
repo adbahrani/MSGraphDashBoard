@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
-import 'ag-grid-community/styles/ag-theme-alpine.css'
+import 'ag-grid-community/styles/ag-theme-material.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
 import { User } from '../services/users'
 
@@ -23,7 +23,7 @@ export const UsersList = ({ users, flex }: UsersListProps) => {
     }, [])
 
     return (
-        <div className="ag-theme-alpine" style={{ margin: '8px', flex: flex || 1 }}>
+        <div className="ag-theme-material" style={{ margin: '8px', flex: flex || 1, height: '100%' }}>
             <AgGridReact
                 ref={gridRef}
                 rowData={users}
