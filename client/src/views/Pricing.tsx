@@ -113,7 +113,7 @@ export default function Pricing() {
                                 <CardActions>
                                     <Button
                                         fullWidth
-                                        variant={tier.buttonVariant}
+                                        variant={tier.buttonVariant as any}
                                         sx={{ borderRadius: '40px', mx: 4, mb: 4 }}
                                     >
                                         {tier.buttonText}

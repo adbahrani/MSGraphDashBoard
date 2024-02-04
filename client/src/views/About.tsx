@@ -4,12 +4,7 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt'
 import WhyChooseUs from '../assets/whyChooseUs.jpg'
 import ExpertiseImg from '../assets/expertise.jpg'
 import outStoryImg from '../assets/outStory.jpg'
-import LandingMidImg from '../assets/landing-mid.jpg'
-import IntegrationInstructionsOutlinedIcon from '@mui/icons-material/IntegrationInstructionsOutlined'
-import InsightsIcon from '@mui/icons-material/Insights'
-import AspectRatioOutlinedIcon from '@mui/icons-material/AspectRatioOutlined'
 import Footer from '../components/Footer'
-import Pricing from './Pricing'
 import { getResponsiveVarient } from '../helpers/UIHelpers'
 import TipsAndUpdatesOutlinedIcon from '@mui/icons-material/TipsAndUpdatesOutlined'
 import AccessibilityNewOutlinedIcon from '@mui/icons-material/AccessibilityNewOutlined'
@@ -146,49 +141,6 @@ function About() {
                             your needs.
                         </Typography>
                     </Box>
-                    <div className="StaticMid-content">
-                        <div className="StaticMid-image">
-                            <img alt="" src={ExpertiseImg} />
-                        </div>
-                        <div className="StaticMid-details">
-                            <div className="StaticMid-detailsBox">
-                                <div className="StaticMid-detailsBox-icon">
-                                    <PsychologyOutlinedIcon sx={{ fontSize: '40px' }} />
-                                </div>
-                                <div className="StaticMid-detailsBox-textContainer">
-                                    <div className="StaticMid-detailsBox-textBig">Expertise</div>
-                                    <div className="StaticMid-detailsBox-textSmall">
-                                        Our team comprises industry experts with years of experience in data integration
-                                        and business solutions.
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="StaticMid-detailsBox">
-                                <div className="StaticMid-detailsBox-icon">
-                                    <TipsAndUpdatesOutlinedIcon sx={{ fontSize: '40px' }} />
-                                </div>
-                                <div className="StaticMid-detailsBox-textContainer">
-                                    <div className="StaticMid-detailsBox-textBig">Innovation</div>
-                                    <div className="StaticMid-detailsBox-textSmall">
-                                        We continually evolve our platform to include the latest technological
-                                        advancements, ensuring you're always ahead of the curve.
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="StaticMid-detailsBox">
-                                <div className="StaticMid-detailsBox-icon">
-                                    <AccessibilityNewOutlinedIcon sx={{ fontSize: '40px' }} />
-                                </div>
-                                <div className="StaticMid-detailsBox-textContainer">
-                                    <div className="StaticMid-detailsBox-textBig">Customer-Centric Approach</div>
-                                    <div className="StaticMid-detailsBox-textSmall">
-                                        Your success is our success. We provide dedicated support and tailored solutions
-                                        to meet your unique business needs.
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <Box className="StaticMid-words" sx={{ my: 10, mt: 20 }}>
                         <Typography
                             component="h1"
