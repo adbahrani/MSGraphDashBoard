@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Block } from '../components/shared/Block'
 import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import { DriveOneService, OneDriveActivity } from '../services/one-drive'
@@ -9,14 +8,13 @@ import { AgChartsReact } from 'ag-charts-react'
 import { periods } from '../constants'
 import { Stat } from '../components/shared/Stat'
 import { Container, Typography } from '@mui/material'
-import { formatBytesToGB } from '../utils/helpers'
+import { formatBytes } from '../utils/helpers'
 
 type OneDriveStats = {
     syncedFiles: number
     sharedInternally: number
     sharedExternally: number
-    viewsEdits: number
-    storage: number | string
+    totalUsedStorage: number | string
 }
 
 export const OneDrive = () => {
@@ -68,18 +66,19 @@ export const OneDrive = () => {
             syncedFiles: 0,
             sharedInternally: 0,
             sharedExternally: 0,
-            viewsEdits: 0,
-            storage: 0,
+            totalUsedStorage: 0,
         }
 
         DriveOneService.getActivity(selectedPeriod).then(oneDriveActivity => {
             setOneDriveActivity(oneDriveActivity)
 
-            oneDriveActivity.forEach(a => (stats.storage = Number(stats.storage) + a.storageUsedInBytes))
-            stats.storage = formatBytesToGB(stats.storage)
+            oneDriveActivity.forEach(
+                a => (stats.totalUsedStorage = Number(stats.totalUsedStorage) + a.storageUsedInBytes)
+            )
+            stats.totalUsedStorage = formatBytes(Number(stats.totalUsedStorage))
             const minDate = new Date()
             minDate.setDate(minDate.getDate() - selectedPeriod)
-
+            console.log('Inactive: ', oneDriveActivity.length)
             setActiveDrivesCount(
                 oneDriveActivity.filter(
                     ({ lastActivityDate }) => lastActivityDate && new Date(lastActivityDate) >= minDate
@@ -100,7 +99,6 @@ export const OneDrive = () => {
                     stats.syncedFiles += syncedFileCount
                     stats.sharedInternally += sharedInternallyFileCount
                     stats.sharedExternally += sharedExternallyFileCount
-                    stats.viewsEdits += viewedOrEditedFileCount
                     influencers.push({
                         userName: userPrincipalName,
                         sync: syncedFileCount,

@@ -10,6 +10,7 @@ import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import { defaultColDef } from '../utils/agGridSettings'
+import { formatBytes } from '../utils/helpers'
 
 interface DrivesListProps {
     drives: Array<OneDriveActivity>
@@ -22,7 +23,13 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
         { field: 'siteId', hide: true },
         { field: 'siteUrl', flex: 3 },
         { field: 'ownerDisplayName', headerName: 'Owner Name' },
-        { field: 'ownerPrincipalName', headerName: 'Owner Email' },
+        {
+            field: 'storageUsedInBytes',
+            valueGetter: params => formatBytes(params.data.storageUsedInBytes),
+            headerName: 'Storage Used',
+        },
+        { field: 'fileCount' },
+        { field: 'activeFileCount' },
     ]
 
     const getRowId = useMemo<GetRowIdFunc>(() => {
@@ -48,7 +55,8 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
                     rowData={drives}
                     columnDefs={columnDefs}
                     getRowId={getRowId}
-                    onFirstDataRendered={onFirstDataRendered}
+                    //Doesn't look like this is needed
+                    //onFirstDataRendered={onFirstDataRendered}
                     onRowClicked={onRowClicked}
                     defaultColDef={defaultColDef}
                 ></AgGridReact>
