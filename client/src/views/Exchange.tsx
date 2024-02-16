@@ -4,7 +4,7 @@ import Box from '@mui/material/Box'
 import Chip from '@mui/material/Chip'
 import { periods } from '../constants'
 import { ExchangeService, MailBoxUsageDetail } from '../services/exchange'
-import { formatBytestToGB } from '../utils/helpers'
+import { formatBytesToGB } from '../utils/helpers'
 import { ExchangeList } from '../components/ExchangeList'
 import { PeriodValueInDays } from '../types/general'
 import { columnDefExchanges } from '../columnsDef/exchange'
@@ -62,7 +62,7 @@ export const Exchange = () => {
             emailReadsCount: emailActivityUserDetails.reduce((acc, val) => acc + val.readCount, 0),
             emailReceivedCount: emailActivityUserDetails.reduce((acc, val) => acc + val.receiveCount, 0),
             emailSentCount: emailActivityUserDetails.reduce((acc, val) => acc + val.sendCount, 0),
-            totalStorage: formatBytestToGB(totalStorageUsedInBytes, 1),
+            totalStorage: formatBytesToGB(totalStorageUsedInBytes, 1),
             inactiveMailboxesCount: groupByActivityCounts.inactiveMailboxesCount,
             activeMailboxesCount: groupByActivityCounts.activeMailboxesCount,
             totalMailboxesCount: totalMailboxesCount,

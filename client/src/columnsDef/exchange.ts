@@ -1,5 +1,5 @@
 import { ColDef } from 'ag-grid-community'
-import { formatBytestToGB } from '../utils/helpers'
+import { formatBytesToGB } from '../utils/helpers'
 
 export const columnDefExchanges: ColDef[] = [
     { field: 'userPrincipalName', headerName: 'User Email Address', flex: 10 },
@@ -33,7 +33,7 @@ export const columnDefExchanges: ColDef[] = [
     {
         field: 'storageUsedInBytes',
         headerName: 'Storage Used (GB)',
-        valueFormatter: ({ value }) => formatBytestToGB(value, 3),
+        valueFormatter: ({ value }) => formatBytesToGB(value, 3),
         flex: 4,
     },
     {

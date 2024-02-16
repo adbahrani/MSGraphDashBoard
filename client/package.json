@@ -49,5 +49,11 @@
         "eslint": "^8.56.0",
         "eslint-plugin-react": "^7.33.2"
     },
-    "proxy": "http://localhost:5000"
+    "options": {
+        "allowedHosts": [
+            "localhost",
+            ".localhost"
+        ],
+        "proxy": "http://localhost:5000/"
+    }
 }

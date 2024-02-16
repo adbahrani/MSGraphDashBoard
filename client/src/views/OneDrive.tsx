@@ -7,19 +7,24 @@ import { DrivesList } from '../components/DrivesList'
 import { Stats } from '../components/shared/Stats'
 import { AgChartsReact } from 'ag-charts-react'
 import { periods } from '../constants'
+import { Stat } from '../components/shared/Stat'
+import { Container, Typography } from '@mui/material'
+import { formatBytesToGB } from '../utils/helpers'
+
+type OneDriveStats = {
+    syncedFiles: number
+    sharedInternally: number
+    sharedExternally: number
+    viewsEdits: number
+    storage: number | string
+}
 
 export const OneDrive = () => {
     const [oneDriveActivity, setOneDriveActivity] = useState<Array<OneDriveActivity>>([])
     const [activeDrivesCount, setActiveDrivesCount] = useState(0)
-    const [userActivityStats, setUserActivityStats] = useState({
-        syncedFiles: 0,
-        sharedInternally: 0,
-        sharedExternally: 0,
-        viewsEdits: 0,
-    })
+    const [oneDriveStats, setOneDriveStats] = useState<OneDriveStats>()
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
-    const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
 
     const [influencersData, setInfluencersData] = useState<
         Array<{
@@ -59,9 +64,19 @@ export const OneDrive = () => {
     }
 
     useEffect(() => {
+        const stats: OneDriveStats = {
+            syncedFiles: 0,
+            sharedInternally: 0,
+            sharedExternally: 0,
+            viewsEdits: 0,
+            storage: 0,
+        }
+
         DriveOneService.getActivity(selectedPeriod).then(oneDriveActivity => {
             setOneDriveActivity(oneDriveActivity)
 
+            oneDriveActivity.forEach(a => (stats.storage = Number(stats.storage) + a.storageUsedInBytes))
+            stats.storage = formatBytesToGB(stats.storage)
             const minDate = new Date()
             minDate.setDate(minDate.getDate() - selectedPeriod)
 
@@ -73,7 +88,6 @@ export const OneDrive = () => {
         })
 
         DriveOneService.getUserActivity(selectedPeriod).then(userActivity => {
-            const stats = { syncedFiles: 0, sharedInternally: 0, sharedExternally: 0, viewsEdits: 0 }
             const influencers: typeof influencersData = []
             userActivity.forEach(
                 ({
@@ -95,7 +109,7 @@ export const OneDrive = () => {
                     })
                 }
             )
-            setUserActivityStats(stats)
+            setOneDriveStats(stats)
             setInfluencersData(
                 influencers
                     .sort((i1, i2) => i2.sync + i2.share + i2.viewEdit - (i1.sync + i1.share + i1.viewEdit))
@@ -105,45 +119,64 @@ export const OneDrive = () => {
     }, [selectedPeriod])
 
     return (
-        <>
-            <div style={{}}>
-                <Block title="Sites count">
-                    <Box component="span" sx={boxStyle}>
-                        {oneDriveActivity.length}
-                    </Box>
-                </Block>
-                <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                    {periods.map(period => (
-                        <Chip
-                            key={period.value}
-                            label={period.label}
-                            variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
-                            onClick={() => setSelectedPeriod(period.value)}
-                        />
-                    ))}
-                </div>
-                <Box component="div" sx={{ display: 'flex', gap: '8px' }}>
-                    <Block title="Active sites">
-                        <Box component="span" sx={boxStyle}>
-                            {activeDrivesCount} ({Math.round((100 * activeDrivesCount) / oneDriveActivity.length)} %)
-                        </Box>
-                    </Block>
-                    <Block title="Inactive sites">
-                        <Box component="span" sx={boxStyle}>
-                            {oneDriveActivity.length - activeDrivesCount} (
-                            {100 - Math.round((100 * activeDrivesCount) / oneDriveActivity.length)} %)
-                        </Box>
-                    </Block>
-                </Box>
+        <Container maxWidth="xl">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center', my: 3 }}>
+                <Typography
+                    sx={{
+                        fontSize: 40,
+                        fontWeight: 700,
+                        textTransform: 'capitalize',
+                        minHeight: '60px',
+                        paddingTop: '15px',
+                    }}
+                    color="text.secondary"
+                    align={'center'}
+                >
+                    {oneDriveActivity.length}
+                </Typography>
+                <Typography
+                    sx={{
+                        fontSize: 22,
+                        fontWeight: 500,
+                        lineHeight: '100%',
+                        textTransform: 'capitalize',
+                    }}
+                    color="text.secondary"
+                    align={'center'}
+                >
+                    SITE COUNTS
+                </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: '8px', justifyContent: 'center', my: 3 }}>
+                {periods.map(period => (
+                    <Chip
+                        key={period.value}
+                        label={period.label}
+                        variant={selectedPeriod === period.value ? 'filled' : 'outlined'}
+                        onClick={() => setSelectedPeriod(period.value)}
+                    />
+                ))}
+            </Box>
+            <Box component="div" sx={{ display: 'flex', gap: '8px' }}>
+                <Stat
+                    title="Active sites"
+                    value={`${activeDrivesCount} (${Math.round(
+                        (100 * activeDrivesCount) / oneDriveActivity.length
+                    )} %)`}
+                />
+                <Stat
+                    title="Inactive sites"
+                    value={`${oneDriveActivity.length - activeDrivesCount} (${
+                        100 - Math.round((100 * activeDrivesCount) / oneDriveActivity.length)
+                    }%)`}
+                />
+            </Box>
+            {oneDriveStats && <Stats stats={oneDriveStats} numberOfColumns={Object.keys(oneDriveStats).length} />}
+            <Box style={{ width: '100%', height: '100vh' }}>
+                <DrivesList drives={oneDriveActivity} />
+            </Box>
 
-                <Stats stats={userActivityStats} />
-
-                <div style={{ width: 'calc(100vw - 128px)', height: '100vh' }}>
-                    <DrivesList drives={oneDriveActivity} />
-                </div>
-
-                <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
-            </div>
-        </>
+            <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />
+        </Container>
     )
 }
