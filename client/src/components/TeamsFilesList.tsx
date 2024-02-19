@@ -11,12 +11,7 @@ interface TeamsFilesListProps {
 }
 
 export const TeamsFilesList = ({ FilesByTeams }: TeamsFilesListProps) => {
-    //const navigate = useNavigate()
     const gridRef = useRef<AgGridReact>(null)
-
-    useEffect(() => {
-        console.log('Log', FilesByTeams)
-    }, [FilesByTeams])
 
     const columnDefs: ColDef[] = [
         { field: 'teamDisplayName', headerName: 'Team Name' },
@@ -30,14 +25,6 @@ export const TeamsFilesList = ({ FilesByTeams }: TeamsFilesListProps) => {
         return (params: GetRowIdParams) => params.data.id
     }, [])
 
-    const onFirstDataRendered = useCallback(() => {
-        gridRef?.current?.api.sizeColumnsToFit()
-    }, [])
-
-    // const onRowClicked = useCallback(({ data }: { data: Team }) => {
-    //     navigate(`/group?id=${data.id}`)
-    // }, [])
-
     return (
         <div className="ag-theme-alpine" style={{ width: 'calc(100%)', height: 'calc(100% - 16px)' }}>
             <AgGridReact
@@ -45,8 +32,6 @@ export const TeamsFilesList = ({ FilesByTeams }: TeamsFilesListProps) => {
                 rowData={FilesByTeams}
                 columnDefs={columnDefs}
                 getRowId={getRowId}
-                onFirstDataRendered={onFirstDataRendered}
-                // onRowClicked={onRowClicked}
                 defaultColDef={defaultColDef}
             ></AgGridReact>
         </div>

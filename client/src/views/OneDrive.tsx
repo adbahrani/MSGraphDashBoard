@@ -9,29 +9,16 @@ import { periods } from '../constants'
 import { Stat } from '../components/shared/Stat'
 import { Container, Typography } from '@mui/material'
 import { formatBytes } from '../utils/helpers'
-
-type OneDriveStats = {
-    syncedFiles: number
-    sharedInternally: number
-    sharedExternally: number
-    totalUsedStorage: number | string
-}
+import { OneDriveStats, Influencer } from '../services/one-drive'
 
 export const OneDrive = () => {
-    const [oneDriveActivity, setOneDriveActivity] = useState<Array<OneDriveActivity>>([])
+    const [driveActivities, setDriveActivities] = useState<Array<OneDriveActivity>>([])
     const [activeDrivesCount, setActiveDrivesCount] = useState(0)
     const [oneDriveStats, setOneDriveStats] = useState<OneDriveStats>()
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
 
-    const [influencersData, setInfluencersData] = useState<
-        Array<{
-            userName: string
-            sync: number
-            share: number
-            viewEdit: number
-        }>
-    >([])
+    const [influencersData, setInfluencersData] = useState<Array<Influencer>>([])
     const influencersOptions = {
         title: {
             text: 'Top 5 influencers',
@@ -61,63 +48,45 @@ export const OneDrive = () => {
         ],
     }
 
+    const fetchUserActivities = async () => {
+        const { stats, influencers } = await DriveOneService.getUserActivity(selectedPeriod)
+        setOneDriveStats(stats)
+        setInfluencersData(
+            influencers
+                .sort((i1, i2) => i2.sync + i2.share + i2.viewEdit - (i1.sync + i1.share + i1.viewEdit))
+                .slice(0, 5)
+        )
+    }
+
+    const fetchDriveActivity = async () => {
+        const oneDriveActivities = await DriveOneService.getActivity(selectedPeriod)
+
+        let totalUsedStorage = 0
+        oneDriveActivities.forEach(async (a: OneDriveActivity) => {
+            totalUsedStorage += a.storageUsedInBytes
+        })
+
+        const minDate = new Date()
+        minDate.setDate(minDate.getDate() - selectedPeriod)
+
+        setDriveActivities(oneDriveActivities)
+        setActiveDrivesCount(
+            oneDriveActivities.filter(
+                ({ lastActivityDate }) => lastActivityDate && new Date(lastActivityDate) >= minDate
+            ).length
+        )
+        setOneDriveStats(prev => prev && { ...prev, totalUsedStorage: formatBytes(totalUsedStorage) })
+    }
     useEffect(() => {
-        const stats: OneDriveStats = {
-            syncedFiles: 0,
-            sharedInternally: 0,
-            sharedExternally: 0,
-            totalUsedStorage: 0,
-        }
-
-        DriveOneService.getActivity(selectedPeriod).then(oneDriveActivity => {
-            setOneDriveActivity(oneDriveActivity)
-
-            oneDriveActivity.forEach(
-                a => (stats.totalUsedStorage = Number(stats.totalUsedStorage) + a.storageUsedInBytes)
-            )
-            stats.totalUsedStorage = formatBytes(Number(stats.totalUsedStorage))
-            const minDate = new Date()
-            minDate.setDate(minDate.getDate() - selectedPeriod)
-            console.log('Inactive: ', oneDriveActivity.length)
-            setActiveDrivesCount(
-                oneDriveActivity.filter(
-                    ({ lastActivityDate }) => lastActivityDate && new Date(lastActivityDate) >= minDate
-                ).length
-            )
-        })
-
-        DriveOneService.getUserActivity(selectedPeriod).then(userActivity => {
-            const influencers: typeof influencersData = []
-            userActivity.forEach(
-                ({
-                    userPrincipalName,
-                    syncedFileCount,
-                    sharedExternallyFileCount,
-                    sharedInternallyFileCount,
-                    viewedOrEditedFileCount,
-                }) => {
-                    stats.syncedFiles += syncedFileCount
-                    stats.sharedInternally += sharedInternallyFileCount
-                    stats.sharedExternally += sharedExternallyFileCount
-                    influencers.push({
-                        userName: userPrincipalName,
-                        sync: syncedFileCount,
-                        share: sharedExternallyFileCount + sharedInternallyFileCount,
-                        viewEdit: viewedOrEditedFileCount,
-                    })
-                }
-            )
-            setOneDriveStats(stats)
-            setInfluencersData(
-                influencers
-                    .sort((i1, i2) => i2.sync + i2.share + i2.viewEdit - (i1.sync + i1.share + i1.viewEdit))
-                    .slice(0, 5)
-            )
-        })
+        fetchDriveActivity()
+        fetchUserActivities()
     }, [selectedPeriod])
 
     return (
         <Container maxWidth="xl">
+            <button onClick={() => DriveOneService.getDriveActivityBySiteId('9a7f24f5-0e5c-4829-8b5b-148a1b12607c')}>
+                Test
+            </button>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center', my: 3 }}>
                 <Typography
                     sx={{
@@ -130,7 +99,7 @@ export const OneDrive = () => {
                     color="text.secondary"
                     align={'center'}
                 >
-                    {oneDriveActivity.length}
+                    {driveActivities.length}
                 </Typography>
                 <Typography
                     sx={{
@@ -158,20 +127,18 @@ export const OneDrive = () => {
             <Box component="div" sx={{ display: 'flex', gap: '8px' }}>
                 <Stat
                     title="Active sites"
-                    value={`${activeDrivesCount} (${Math.round(
-                        (100 * activeDrivesCount) / oneDriveActivity.length
-                    )} %)`}
+                    value={`${activeDrivesCount} (${Math.round((100 * activeDrivesCount) / driveActivities.length)} %)`}
                 />
                 <Stat
                     title="Inactive sites"
-                    value={`${oneDriveActivity.length - activeDrivesCount} (${
-                        100 - Math.round((100 * activeDrivesCount) / oneDriveActivity.length)
+                    value={`${driveActivities.length - activeDrivesCount} (${
+                        100 - Math.round((100 * activeDrivesCount) / driveActivities.length)
                     }%)`}
                 />
             </Box>
             {oneDriveStats && <Stats stats={oneDriveStats} numberOfColumns={Object.keys(oneDriveStats).length} />}
             <Box style={{ width: '100%', height: '100vh' }}>
-                <DrivesList drives={oneDriveActivity} />
+                <DrivesList drives={driveActivities} />
             </Box>
 
             <AgChartsReact options={{ ...influencersOptions, data: influencersData }} />

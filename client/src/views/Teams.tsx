@@ -9,6 +9,7 @@ import { UsersService } from '../services/users'
 import { InfluencersList } from '../components/InfluencersList'
 import { TeamsFilesList } from '../components/TeamsFilesList'
 import { Team } from '@microsoft/microsoft-graph-types-beta'
+import { periods } from '../constants'
 
 export const Teams = () => {
     const [teams, setTeams] = useState<Array<Team & TeamActivity>>([])
@@ -26,11 +27,6 @@ export const Teams = () => {
         activeMembers: 0,
         guestEnabled: 0,
     })
-
-    const periods = [
-        { label: 'Last 30 days', value: 30 },
-        { label: 'Last 90 days', value: 90 },
-    ] as const
 
     const [selectedPeriod, setSelectedPeriod] = useState<30 | 90>(30)
     const boxStyle = { display: 'flex', flex: 1, justifyContent: 'center', fontSize: 16, fontWeight: 'bold' }
@@ -238,7 +234,7 @@ export const Teams = () => {
     )
 
     return (
-        <div style={{}}>
+        <div>
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                 {periods.map(period => (
                     <Chip
