@@ -84,9 +84,6 @@ export const OneDrive = () => {
 
     return (
         <Container maxWidth="xl">
-            <button onClick={() => DriveOneService.getDriveActivityBySiteId('9a7f24f5-0e5c-4829-8b5b-148a1b12607c')}>
-                Test
-            </button>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '8px', justifyContent: 'center', my: 3 }}>
                 <Typography
                     sx={{
