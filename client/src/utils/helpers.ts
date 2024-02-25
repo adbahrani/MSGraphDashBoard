@@ -1,4 +1,4 @@
-export function formatBytes(bytes: number, decimals = 2) {
+export function formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) return '0 Bytes'
     const k = 1024
     const dm = decimals < 0 ? 0 : decimals
@@ -7,7 +7,11 @@ export function formatBytes(bytes: number, decimals = 2) {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 }
 
-export function formatBytestToGB(bytes, decimals = 2) {
+export function formatBytesToGB(bytes, decimals = 2) {
     const GB = bytes / (1024 * 1024 * 1024)
     return GB.toFixed(decimals) + ' GB'
+}
+
+export function camelCaseToWords(camelCaseString: string): string {
+    return camelCaseString.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/^./, str => str.toUpperCase())
 }

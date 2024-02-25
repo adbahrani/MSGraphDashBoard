@@ -4,38 +4,53 @@ import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
 import { ColDef, GetRowIdFunc, GetRowIdParams } from 'ag-grid-community'
-import { OneDriveActivity } from '../services/one-drive'
+import { DriveOneService, OneDriveActivity } from '../services/one-drive'
 import ListItemText from '@mui/material/ListItemText/ListItemText'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import Divider from '@mui/material/Divider'
 import { defaultColDef } from '../utils/agGridSettings'
+import { formatBytes } from '../utils/helpers'
+import { Counts } from '../services/teams'
 
 interface DrivesListProps {
     drives: Array<OneDriveActivity>
 }
+export interface OneDriveActivityWithCount extends OneDriveActivity {
+    counts: Counts
+    totalCount: number
+}
 
 export const DrivesList = ({ drives }: DrivesListProps) => {
-    const [selectedDrive, setSelectedDrive] = useState<OneDriveActivity | null>(null)
+    const [selectedDrive, setSelectedDrive] = useState<OneDriveActivityWithCount | null>(null)
     const gridRef = useRef<AgGridReact>(null)
     const columnDefs: ColDef[] = [
         { field: 'siteId', hide: true },
         { field: 'siteUrl', flex: 3 },
         { field: 'ownerDisplayName', headerName: 'Owner Name' },
-        { field: 'ownerPrincipalName', headerName: 'Owner Email' },
+        {
+            field: 'storageUsedInBytes',
+            valueGetter: params => formatBytes(params.data.storageUsedInBytes),
+            headerName: 'Storage Used',
+        },
+        { field: 'fileCount' },
+        { field: 'activeFileCount' },
     ]
 
     const getRowId = useMemo<GetRowIdFunc>(() => {
         return (params: GetRowIdParams) => params.data.siteId
     }, [])
 
-    const onFirstDataRendered = useCallback(() => {
-        gridRef?.current?.api.sizeColumnsToFit()
+    const onRowClicked = useCallback(async ({ data }: { data: OneDriveActivity }) => {
+        const counts: Counts = await DriveOneService.getDriveActivityBySiteId(data.siteId)
+
+        const totalCount = counts.created + counts.deleted + counts.modified
+        const res: OneDriveActivityWithCount = { ...data, counts, totalCount }
+        setSelectedDrive(res)
     }, [])
 
-    const onRowClicked = useCallback(({ data }: { data: OneDriveActivity }) => {
-        setSelectedDrive(data)
-    }, [])
+    const formatActivities = (counts: Counts) =>
+        `Created: ${counts.created}, Modified: ${counts.modified}, Deleted: ${counts.deleted}`
 
     return (
         <>
@@ -48,7 +63,8 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
                     rowData={drives}
                     columnDefs={columnDefs}
                     getRowId={getRowId}
-                    onFirstDataRendered={onFirstDataRendered}
+                    //Doesn't look like this is needed
+                    //onFirstDataRendered={onFirstDataRendered}
                     onRowClicked={onRowClicked}
                     defaultColDef={defaultColDef}
                 ></AgGridReact>
@@ -59,16 +75,18 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
                         <>
                             <List>
                                 <ListItem>
-                                    <ListItemText primary="Site ID" secondary={selectedDrive.siteId} />
+                                    <ListItemText
+                                        primary="Short URL"
+                                        secondary={selectedDrive.siteUrl.substring(
+                                            selectedDrive.siteUrl.lastIndexOf('/') + 1
+                                        )}
+                                    />
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
                                     <ListItemText primary="Owner Name" secondary={selectedDrive.ownerDisplayName} />
                                 </ListItem>
-                                <Divider component="li" />
-                                <ListItem>
-                                    <ListItemText primary="Owner Email" secondary={selectedDrive.ownerPrincipalName} />
-                                </ListItem>
+
                                 <Divider component="li" />
                                 <ListItem>
                                     <ListItemText
@@ -78,11 +96,13 @@ export const DrivesList = ({ drives }: DrivesListProps) => {
                                 </ListItem>
                                 <Divider component="li" />
                                 <ListItem>
+                                    <ListItemText primary="Activities Count" secondary={selectedDrive.totalCount} />
+                                </ListItem>
+                                <Divider component="li" />
+                                <ListItem>
                                     <ListItemText
-                                        primary="Used storage"
-                                        secondary={`${(selectedDrive.storageUsedInBytes / 1024 ** 2).toFixed(2)} MB / ${
-                                            selectedDrive.storageAllocatedInBytes / 1024 ** 3
-                                        } GB`}
+                                        primary="Activities Type"
+                                        secondary={formatActivities(selectedDrive.counts)}
                                     />
                                 </ListItem>
                             </List>

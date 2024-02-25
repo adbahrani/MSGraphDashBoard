@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { AgGridReact } from 'ag-grid-react'
 import 'ag-grid-community/styles/ag-grid.css'
 import 'ag-grid-community/styles/ag-theme-alpine.css'
@@ -18,19 +18,9 @@ export const UsersList = ({ users, flex }: UsersListProps) => {
         return (params: GetRowIdParams) => params.data.userPrincipalName
     }, [])
 
-    const onFirstDataRendered = useCallback(() => {
-        gridRef?.current?.api.sizeColumnsToFit()
-    }, [])
-
     return (
         <div className="ag-theme-alpine" style={{ margin: '8px', flex: flex || 1 }}>
-            <AgGridReact
-                ref={gridRef}
-                rowData={users}
-                columnDefs={columnDefs}
-                getRowId={getRowId}
-                onFirstDataRendered={onFirstDataRendered}
-            ></AgGridReact>
+            <AgGridReact ref={gridRef} rowData={users} columnDefs={columnDefs} getRowId={getRowId}></AgGridReact>
         </div>
     )
 }

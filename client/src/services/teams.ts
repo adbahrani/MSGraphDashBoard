@@ -2,6 +2,11 @@ import { graphLinks } from '../graphHelper'
 import { BaseService, makeGraphAPICall } from './base'
 import { Drive, Team } from '@microsoft/microsoft-graph-types-beta'
 
+export type Counts = {
+    modified: number
+    created: number
+    deleted: number
+}
 export interface TeamActivity {
     teamId: string
     teamName: string
@@ -65,6 +70,25 @@ export class TeamsService extends BaseService {
         }
     }
 
+    public static async getActivityCounts(driveId: string): Promise<Counts> {
+        let modified = 0
+        let created = 0
+        let deleted = 0
+
+        const driveActivities = await this.getDriveActivities(driveId)
+
+        driveActivities.forEach(activity => {
+            if (activity.action.edit) {
+                modified++
+            } else if (activity.action.create) {
+                created++
+            } else if (activity.action.delete) {
+                deleted++
+            }
+        })
+
+        return { modified, created, deleted }
+    }
     // Function to count activities for a team
     static async countActivitiesForTeam(team: any): Promise<any> {
         const driveIds = await this.getDriveIdsForTeam(team.id)
@@ -75,18 +99,10 @@ export class TeamsService extends BaseService {
 
         // Iterate through all drives of the team
         for (const driveId of driveIds) {
-            const activities = await this.getDriveActivities(driveId)
-
-            // eslint-disable-next-line no-loop-func
-            activities.forEach(activity => {
-                if (activity.action.edit) {
-                    modifyCount++
-                } else if (activity.action.create) {
-                    createCount++
-                } else if (activity.action.delete) {
-                    deleteCount++
-                }
-            })
+            const { modified, created, deleted } = await this.getActivityCounts(driveId)
+            modifyCount += modified
+            createCount += created
+            deleteCount += deleted
         }
 
         return {
