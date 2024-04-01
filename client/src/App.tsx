@@ -1,3 +1,4 @@
+import * as React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import './App.css'
 import { Users } from './views/Users'
@@ -15,95 +16,132 @@ import Admin from './views/Admin'
 import SignUp from './views/Signup'
 import { AuthContextProvider } from './contexts/Auth'
 import ProtectedRoute from './components/shared/ProtectedRoute'
-import { CssBaseline } from '@mui/material'
+import { CssBaseline, PaletteMode, createTheme } from '@mui/material'
 import { Exchange } from './views/Exchange'
+import { ThemeProvider } from '@emotion/react'
+
+export const ColorModeContext = React.createContext({
+    toggleColorMode: () => {},
+})
 
 export default function App() {
+    const [mode, setMode] = React.useState<PaletteMode>(
+        localStorage.getItem('darkMode') === undefined || localStorage.getItem('darkMode') === 'light'
+            ? 'light'
+            : 'dark'
+    )
+
+    const colorMode = React.useMemo(
+        () => ({
+            toggleColorMode: () => {
+                setMode(prevMode => {
+                    localStorage.setItem('darkMode', prevMode === 'light' ? 'dark' : 'light')
+                    return prevMode === 'light' ? 'dark' : 'light'
+                })
+            },
+        }),
+        []
+    )
+
+    const theme = React.useMemo(
+        () =>
+            createTheme({
+                palette: {
+                    mode,
+                },
+            }),
+        [mode]
+    )
+
     return (
-        <AuthContextProvider>
-            <CssBaseline />
-            <Router>
-                <Menu />
-                <Container maxWidth="xl">
-                    <Routes>
-                        <Route path="/" element={<Landing />} />
-                        <Route
-                            path="/users"
-                            element={
-                                <ProtectedRoute>
-                                    <Users />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/admin"
-                            element={
-                                <ProtectedRoute>
-                                    <Admin />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/groups"
-                            element={
-                                <ProtectedRoute>
-                                    <Groups />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/group"
-                            element={
-                                <ProtectedRoute>
-                                    <GroupDetails />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/teams"
-                            element={
-                                <ProtectedRoute>
-                                    <Teams />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/sharepoint"
-                            element={
-                                <ProtectedRoute>
-                                    <SharePoint />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/reports"
-                            element={
-                                <ProtectedRoute>
-                                    <Reports />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/onedrive"
-                            element={
-                                <ProtectedRoute>
-                                    <OneDrive />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route
-                            path="/exchange"
-                            element={
-                                <ProtectedRoute>
-                                    <Exchange />
-                                </ProtectedRoute>
-                            }
-                        />
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/signup" element={<SignUp />} />
-                    </Routes>
-                </Container>
-            </Router>
-        </AuthContextProvider>
+        <ColorModeContext.Provider value={colorMode}>
+            <ThemeProvider theme={theme}>
+                <AuthContextProvider>
+                    <CssBaseline />
+                    <Router>
+                        <Menu />
+                        <Container maxWidth="xl">
+                            <Routes>
+                                <Route path="/" element={<Landing />} />
+                                <Route
+                                    path="/users"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Users />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/admin"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Admin />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/groups"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Groups />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/group"
+                                    element={
+                                        <ProtectedRoute>
+                                            <GroupDetails />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/teams"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Teams />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/sharepoint"
+                                    element={
+                                        <ProtectedRoute>
+                                            <SharePoint />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/reports"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Reports />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/onedrive"
+                                    element={
+                                        <ProtectedRoute>
+                                            <OneDrive />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route
+                                    path="/exchange"
+                                    element={
+                                        <ProtectedRoute>
+                                            <Exchange />
+                                        </ProtectedRoute>
+                                    }
+                                />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/signup" element={<SignUp />} />
+                            </Routes>
+                        </Container>
+                    </Router>
+                </AuthContextProvider>
+            </ThemeProvider>
+        </ColorModeContext.Provider>
     )
 }
