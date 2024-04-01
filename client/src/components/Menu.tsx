@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import MuiMenu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -6,6 +6,11 @@ import { MenuLink } from '../types/general'
 import { TokenService } from '../services/token'
 import { AuthService } from '../services/auth'
 import { useAuthContext } from '../contexts/Auth'
+import { Box, IconButton, Stack } from '@mui/material'
+import { ColorModeContext } from '../App'
+import { useTheme } from '@mui/material/styles'
+import Brightness4Icon from '@mui/icons-material/Brightness4'
+import Brightness7Icon from '@mui/icons-material/Brightness7'
 
 const linkStyle = { color: '#343434', textDecoration: 'none' }
 const activeLinkStyle = { ...linkStyle, backgroundColor: '#eee', borderRadius: '15px', padding: '10px' }
@@ -41,6 +46,8 @@ export const Menu = () => {
     const [activeLinks, setActiveLinks] = useState(new Set())
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const open = Boolean(anchorEl)
+    const theme = useTheme()
+    const colorMode = useContext(ColorModeContext)
     const handleClick = (link: MenuLink, event: React.MouseEvent<HTMLAnchorElement>) => {
         if (link.title === 'Logout') logout()
         if (link.children) {
@@ -83,11 +90,11 @@ export const Menu = () => {
         [isLoggedIn]
     )
     return (
-        <div
+        <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
             style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
                 margin: 20,
                 padding: 10,
                 fontWeight: 600,
@@ -101,18 +108,14 @@ export const Menu = () => {
                 </Link>
             </div>
             <div>
-                <ul
-                    style={{
-                        listStyleType: 'none',
-                        padding: 0,
-                        display: 'flex',
-                        gap: '16px',
-                    }}
-                >
+                <Stack spacing={2} direction="row" alignItems="center">
+                    <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+                        {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                    </IconButton>
                     {links.map(link => {
                         if (shouldSkipAdding(link)) return null
                         return (
-                            <li key={link.title}>
+                            <Box key={link.title}>
                                 <Link
                                     to={link.to}
                                     style={
@@ -148,11 +151,11 @@ export const Menu = () => {
                                         ))}
                                     </MuiMenu>
                                 ) : null}
-                            </li>
+                            </Box>
                         )
                     })}
-                </ul>
+                </Stack>
             </div>
-        </div>
+        </Stack>
     )
 }
